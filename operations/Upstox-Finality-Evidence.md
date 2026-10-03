@@ -17,8 +17,10 @@ means final".
 `northstar finality-evidence observe` records what Upstox returns for one
 exact contract and trading date at one moment. Repeating it over time builds
 the evidence needed to see which fields revise, when, and for how long after
-the NSE close. A later report (8G-A2) analyses that evidence. Any automatic
-finality policy would be a separate, explicit decision made from it.
+the NSE close. `northstar finality-evidence report` derives that history from
+the evidence file (see [Reporting](#reporting)). Any automatic finality
+policy would be a separate, explicit decision; the report makes no
+recommendation.
 
 ## Strict separation from production
 
@@ -103,6 +105,81 @@ truncated, and each append is flushed and synced. Plain append mode does not
 make concurrent writers safe, so exactly one process may write a given
 evidence file at a time. A reader refuses a malformed line and reports an
 incomplete final line; it never skips either.
+
+## Reporting
+
+`northstar finality-evidence report` reads an evidence file and nothing
+else except Northstar's NSE calendar. It needs no token, contacts no
+provider, opens no Northstar database, reads no clock and changes nothing,
+so the same file and filters always produce the same report.
+
+**DEVELOPMENT MACHINE** (synthetic placeholders shown):
+
+```powershell
+cd C:\Code\Private\Northstar\northstar-api
+.\.venv\Scripts\northstar.exe finality-evidence report `
+  --evidence "$env:USERPROFILE\northstar-evidence\upstox-candles.jsonl"
+# optional exact filters:
+#   --product NIFTY --exchange NSE --expiration 2026-10-27 --trading-date <YYYY-MM-DD>
+```
+
+Filters match exactly. When nothing matches, the report says so and exits 0.
+A malformed or truncated evidence file is refused (exit 5) rather than
+partially analysed; a missing file is exit 3; an unreadable filter is exit 2.
+
+**Sessions.** Observations are grouped by exact contract (product, exchange,
+expiration) and trading date, and ordered by `requested_at`, then
+`received_at`. The Upstox instrument key is provider metadata: it never
+splits a session, and more than one key is listed as such.
+
+**Observed changes.** An observation is an observed change when it differs
+from the immediately previous observation of its session in at least one
+of `candle_presence`, `provider_timestamp`, `open`, `high`, `low`, `close`,
+`volume` (raw provider units), `open_interest`, `lot_size` and
+`volume_contracts`. Each field is compared on its own; numbers compare by
+exact Decimal value, so `25010.5` and `25010.50` are equal while the
+recorded text is what is shown. A candle appearing or disappearing is
+reported as `candle_presence` only. A lot-size change is reported as
+`lot_size` (and `volume_contracts` when the derived count differs), never
+as a raw `volume` change. An identical repeat is an unchanged observation.
+
+An observed change is timed by the observation that saw it. The provider
+revised the candle at some point before that observation and after the
+previous one; the report never claims more.
+
+**Timing from the close.** Each observation's elapsed time is its
+`requested_at` minus the session's close from the NSE calendar, including
+earlier close regimes (15:30 IST before 2026-08-03, 15:40 IST since). An
+observation before the close is kept and shown as negative, e.g.
+`-0h 15m 00s from close`. When the calendar cannot establish the session --
+an unloaded year, a special session whose timings are not notified (the
+2026-11-08 Muhurat session), a non-session date -- the close is shown as
+unavailable with the calendar's reason, and elapsed times are unavailable,
+never zero.
+
+**Per session** the report shows the session close, the observation count,
+the first and last observation, the observation span, when a candle was
+first observed (and whether an observation without a candle came first),
+every observed change with its elapsed time and changed fields, the last
+observed change, the number of unchanged observations since it, and the
+latest observation's candle, volumes, open interest and lot size.
+
+**Right-censoring.** Every session is right-censored at its last
+observation. "No observed change" after some time does not show that no
+later revision happened: a revision after the last observation, or after
+the contract stopped being collectible, is simply not in the evidence.
+
+**Aggregate.** Sessions and observations counted; observations per session
+(minimum, median, maximum); sessions with and without an observed change;
+sessions whose candle was first observed after an observation without one;
+sessions with the close unavailable; and the minimum, median and maximum
+delay from the close to each session's last observed change, over sessions
+with a resolved close and at least one observed change. These describe the
+recorded observations under their collection schedule. The report does not
+compute a share of sessions "revised after" a delay: that figure mostly
+reflects when observations were taken and would read like a probability or
+a threshold. The report labels nothing final, stable or safe and suggests no
+delay.
 
 ## Token safety
 
