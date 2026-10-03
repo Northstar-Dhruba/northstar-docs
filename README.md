@@ -13,4 +13,5 @@ This document provides the master index for Northstar documentation.
 | Templates | Support consistent delivery | Provides reusable templates for ADRs, domain modules, features, and pull requests. | [Templates](engineering/templates/) |
 | API | Describe interfaces | Documents public APIs and integration points. | [API](api/) |
 | Database | Describe data model | Documents persistence and data design decisions. | [Database](database/) |
+| Operations | Run deployed environments | Documents deployment, operation, backup, rollback and rollover runbooks. | [Indian Futures Deployment Runbook](operations/Indian-Futures-Deployment-Runbook.md) |
 | Images | Store supporting assets | Stores diagrams and supporting images for the documentation set. | [Images](images/) |
