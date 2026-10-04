@@ -46,7 +46,7 @@ project name, and the Indian compose file never references the CME volume.
 
 Indian services:
 
-- `india-api` -- the read-only dashboard API over the Indian volume. It
+- `india-api` -- the read-only dashboard and analysis API over the Indian volume. It
   receives the contract, strategy, portfolio, target and the safe finality
   settings (mode, final-through, go-live) so the dashboard can show the
   operational status. It never receives the Upstox token. No port is
@@ -58,8 +58,9 @@ Indian services:
   `UPSTOX_ANALYTICS_TOKEN`.
 - `india-web` -- Caddy serving the static dashboard behind basic auth, with
   the Indian `Caddyfile` mounted read-only over the one baked into the shared
-  web image. Only `GET`/`HEAD` on `/api/health` and `/api/futures/dashboard`
-  are proxied to the API; every other `/api/*` path or method gets 404, and
+  web image. Only `GET`/`HEAD` on `/api/health`, `/api/futures/dashboard`
+  and `/api/futures/analysis`, each by exact path, are proxied to the API;
+  every other `/api/*` path or method gets 404, and
   the legacy equity POST endpoints (`/analyze`, `/watchlist/refresh`) are not
   proxied at all. There is no control, run or approval endpoint.
 
@@ -377,6 +378,7 @@ On the host itself:
 ```sh
 curl -u <user> http://127.0.0.1:8081/api/health                 # {"status":"ok"}
 curl -u <user> http://127.0.0.1:8081/api/futures/dashboard
+curl -u <user> http://127.0.0.1:8081/api/futures/analysis
 ```
 
 The Operational Status card shows finality mode and final-through, the
