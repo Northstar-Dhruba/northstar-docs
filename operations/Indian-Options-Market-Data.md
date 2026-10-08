@@ -6,7 +6,8 @@ It never selects a contract, never reads the current day's candle and never
 declares a candle final.
 
 Decisions: ADR-013 (persisted provider listings), ADR-014 (canonical option
-daily bars and sessions) and ADR-015 (observed-subset acquisition).
+daily bars and sessions), ADR-015 (observed-subset acquisition) and ADR-016
+(point-in-time option chain; section 9).
 
 ## 1. Prerequisite: a persisted listing
 
@@ -118,3 +119,46 @@ operation.
 
 Every failure after acquisition starts ends with `Sync stopped. Nothing from
 this range was stored.`
+
+## 9. Inspecting a chain (read-only)
+
+`options chain show` reconstructs one expiration's option chain at one
+trading date's session close from what the database already holds. It needs no
+token, contacts no provider, reads no clock, takes no lock and writes nothing,
+not even a missing database file.
+
+```powershell
+.\.venv\Scripts\northstar.exe options chain show `
+  --database <PATH> --product NIFTY --exchange NSE `
+  --expiration 2026-10-27 --trading-date 2026-10-08
+```
+
+```
+OPTION CHAIN: NIFTY@NSE 2026-10-27
+Trading date: 2026-10-08
+As of: 2026-10-08T10:10:00Z (session close)
+Listed contracts known by as-of: 5
+Strikes: 3
+Contracts with a daily bar: 3
+Contracts with no daily bar: 2
+
+STRIKE    CALL            PUT
+22550     no daily bar    C=87.75 V=4064
+22600     C=132.6 V=40    C=140.1 V=12
+22650     no daily bar    no known listing
+```
+
+- **Membership is listing knowledge.** A contract appears only if `options instruments sync` had stored its listing before that session's close. Run the instruments sync before the close of any session whose chain you will want.
+- **Bars alone are not enough.** A bar acquired for an earlier date never puts its contract into that date's chain. A date before the first relevant instruments sync therefore exits 4 even when bars for it exist. That is correct, not a gap to fill.
+- **Exact bars only.** A cell shows the `1d` bar stamped exactly at that close (close premium `C`, volume `V` in contracts), `no daily bar`, or `no known listing` when that right of the strike is not a known listing. No earlier or later bar is substituted.
+- **`no daily bar` is not a provider gap.** It means only that no canonical daily bar is stored. The contract may not have traded, the provider may have had no candle, or the session may simply never have been acquired. Acquiring it later fills the cell on the next `chain show`; the members never change.
+- **No finality, and no selection.** The chain describes the market at that close. It does not claim Northstar held the bar then, and it chooses no contract.
+
+| Exit | Meaning | Operator action |
+|------|---------|-----------------|
+| 0 | Chain shown | None. |
+| 2 | Invalid input, an expiration before the trading date, or a weekend or holiday | Fix the command. |
+| 3 | Unusable database path | Fix the path. |
+| 4 | No listing of the expiration known by that close, or a date before 2026-08-03, in an unloaded year or on a special session | Choose a later date, or sync instruments before future closes. |
+| 5 | A corrupt stored listing or option bar | Investigate the database. |
+| 1 | Internal defect | Report it. |

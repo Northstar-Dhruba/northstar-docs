@@ -570,3 +570,63 @@ NIFTY@NSE 2026-10-27 22600 CALL on 2026-09-18: a session, and Upstox returned no
 
 Relationship to Other Options Concepts:
 Every resolved Option Trading Session in an acquired range is either an Option Daily Bar or a Session Without a Provider Candle. Governed by ADR-015.
+
+### Listing Known by Cutoff
+
+Business Meaning:
+An exact Option Contract whose listing Northstar had first observed at or before a given instant.
+
+Purpose:
+Decide, without hindsight, which contracts belong to a reconstructed option chain.
+
+Represents:
+An Option Contract whose stored provider listing was first observed at or before the cutoff, compared as instants. Once observed, Northstar treats the contract as eligible through its expiration unless it holds explicit contrary evidence: a Northstar reconstruction assumption, not an exchange guarantee of continuous listing.
+
+Does NOT Represent:
+A contract first observed after the cutoff, even when a daily bar for an earlier session was stored later; a contract inferred from a later instrument master; or a complete exchange listing.
+
+Examples:
+NIFTY@NSE 2026-10-27 22600 CALL, first observed at 2026-10-08T06:59:12Z, is known by the 2026-10-08 session close and not by the 2026-10-07 close.
+
+Relationship to Other Options Concepts:
+The Listing Known by Cutoff decides the entries of an Option Chain Snapshot; an Option Daily Bar never does. Governed by ADR-016.
+
+### Option Chain Snapshot
+
+Business Meaning:
+One option product's one expiration at one option session close: every Listing Known by Cutoff, each with its Option Daily Bar at that close when one is stored.
+
+Purpose:
+Give later contract selection a deterministic, point-in-time cross-section of one expiration without selecting anything itself.
+
+Represents:
+A product, an expiration date, the session close it is as of, and a non-empty set of Option Chain Entries ordered by strike ascending, then CALL before PUT.
+
+Does NOT Represent:
+A selection, ranking or filter; several expirations; an underlying value, open interest, days to expiry, moneyness, implied volatility or Greeks; a claim that Northstar held or finalized a bar at that close; or a frozen decision record. A later acquisition may add a bar to an entry of a rebuilt snapshot, never a member.
+
+Examples:
+NIFTY@NSE 2026-10-27 as of 2026-10-08T10:10:00Z.
+
+Relationship to Other Options Concepts:
+Built from Listings Known by Cutoff and Option Daily Bars; listed, observed and selected stay distinct. Governed by ADR-016.
+
+### Option Chain Entry
+
+Business Meaning:
+One exact Option Contract of an Option Chain Snapshot, with its Option Daily Bar at the snapshot's close or with none.
+
+Purpose:
+Keep a listed contract visible whether or not a market observation is stored for it.
+
+Represents:
+An Option Contract and either the daily bar stamped exactly at the snapshot's close or no daily bar.
+
+Does NOT Represent:
+With no daily bar, it claims only that no canonical daily bar is stored: not a no-trade session, not a Session Without a Provider Candle, not an acquisition attempt and not illiquidity. It never holds an earlier or later bar in place of a missing one.
+
+Examples:
+NIFTY@NSE 2026-10-27 22600 CALL: C=132.6 V=40. NIFTY@NSE 2026-10-27 22550 CALL: no daily bar.
+
+Relationship to Other Options Concepts:
+Every Listing Known by Cutoff of the expiration is exactly one Option Chain Entry. Governed by ADR-016.
