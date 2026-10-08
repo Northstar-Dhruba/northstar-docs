@@ -550,3 +550,23 @@ NIFTY@NSE 2026-10-27 25000 CALL at 2026-10-08T10:10:00Z, 1d.
 
 Relationship to Other Options Concepts:
 An Option Daily Bar is identified by its Option Contract, instant and timeframe; a neighbouring strike, the other right or another expiry never shares a bar. Governed by ADR-014.
+
+### Session Without a Provider Candle
+
+Business Meaning:
+A resolved Option Trading Session for which the market-data provider returned no daily candle for one exact Option Contract.
+
+Purpose:
+Report a session that acquisition could not represent with an Option Daily Bar, without inventing one.
+
+Represents:
+An Option Contract and the trading date of a resolved Option Trading Session that the provider's answer did not cover.
+
+Does NOT Represent:
+A no-trade session. The provider records no listing history, so the absence may also predate the contract's listing, or reflect a candle the provider has not published yet. It is never a zero-volume, carried-forward or settlement-price bar.
+
+Examples:
+NIFTY@NSE 2026-10-27 22600 CALL on 2026-09-18: a session, and Upstox returned no candle.
+
+Relationship to Other Options Concepts:
+Every resolved Option Trading Session in an acquired range is either an Option Daily Bar or a Session Without a Provider Candle. Governed by ADR-015.
