@@ -350,3 +350,63 @@ NIFTY@NSE 2026-10-27 25000 CALL.
 
 Relationship to Other Options Concepts:
 Two option contracts that differ in product, expiration date, strike or right are different contracts.
+
+### Option Premium
+
+Business Meaning:
+The observed market quotation of one option contract.
+
+Purpose:
+Express what an option contract traded or was quoted at, in premium points.
+
+Represents:
+A decimal of zero or greater in premium points. Zero is valid.
+
+Does NOT Represent:
+An Option Strike, a Price, Money, a futures quotation, or a currency amount.
+
+Examples:
+182.35, 0.
+
+Relationship to Other Options Concepts:
+Option Premium is converted into settlement currency only through an Option Point Value. Governed by ADR-011.
+
+### Option Point Value
+
+Business Meaning:
+The settlement-currency value of a 1.0 premium-point move on one option contract.
+
+Purpose:
+Provide the one rate that converts option premium movements into settlement currency.
+
+Represents:
+A strictly positive amount and its settlement Currency, per premium point, per option contract. The contract's lot size is folded into it.
+
+Does NOT Represent:
+A lot size or multiplier on its own, a Price, Money, a futures point value, or a margin requirement.
+
+Examples:
+65 INR/premium-point/contract.
+
+Relationship to Other Options Concepts:
+Each Option Point Value belongs to exactly one Option Contract through Option Contract Economics. Governed by ADR-011.
+
+### Option Contract Economics
+
+Business Meaning:
+The economic facts of one exact option contract.
+
+Purpose:
+State, for one Option Contract, the rate at which its premium movements are worth settlement currency.
+
+Represents:
+Exactly one Option Contract and its Option Point Value. The settlement currency is read from the point value.
+
+Does NOT Represent:
+Product-level economics, a lot size field, fees, taxes, margin, or a profit and loss calculation.
+
+Examples:
+NIFTY@NSE 2026-10-27 25000 CALL 65 INR/premium-point/contract.
+
+Relationship to Other Options Concepts:
+Option Contract Economics are keyed by the complete Option Contract. Neighbouring strikes, the other right, other expiries and other products never share them. Governed by ADR-011.
