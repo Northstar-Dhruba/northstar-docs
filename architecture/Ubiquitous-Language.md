@@ -266,3 +266,87 @@ Definition pending Core Domain Design.
 ### Analytics
 
 Definition pending Core Domain Design.
+
+## Options Vocabulary
+
+Governed by ADR-010: Option Contract Identity.
+
+### Option Product
+
+Business Meaning:
+One exchange-defined option specification, of which every individual option contract is an instance.
+
+Purpose:
+Identify the option family a contract belongs to, independently of any futures product with the same exchange code.
+
+Represents:
+A product code and the exchange that defines it, for example NIFTY@NSE, together with the underlying it is written on.
+
+Does NOT Represent:
+A futures product, an individual contract, an expiry series, a lot size, an exercise or settlement style, or a provider symbol.
+
+Examples:
+NIFTY@NSE on NIFTY50.
+
+Relationship to Other Options Concepts:
+Every Option Contract belongs to exactly one Option Product. The underlying belongs to the Option Product, not to the contract.
+
+### Option Right
+
+Business Meaning:
+The right an option contract grants its holder: CALL, the right to buy the underlying at the strike, or PUT, the right to sell it.
+
+Purpose:
+Distinguish calls from puts within one product, expiry and strike.
+
+Represents:
+Exactly CALL or PUT.
+
+Does NOT Represent:
+Exchange or provider spellings such as CE and PE, an order direction, a position direction, or an exercise style.
+
+Examples:
+CALL, PUT.
+
+Relationship to Other Options Concepts:
+Option Right is one of the four components of Option Contract identity.
+
+### Option Strike
+
+Business Meaning:
+The level at which an option's right is struck, fixed when the contract is listed.
+
+Purpose:
+Distinguish contracts of one product, expiry and right by where they are struck.
+
+Represents:
+A strictly positive decimal expressed in the underlying's quotation convention, for example NIFTY index points.
+
+Does NOT Represent:
+A Price, Money, an observed market quotation, an option premium, or a currency amount.
+
+Examples:
+25000, 24950.5.
+
+Relationship to Other Options Concepts:
+Option Strike is one of the four components of Option Contract identity.
+
+### Option Contract
+
+Business Meaning:
+One individual, exactly dated option contract.
+
+Purpose:
+Provide the canonical identity of what an option holding, observation or decision refers to.
+
+Represents:
+Exactly an Option Product, an expiration date, an Option Strike and an Option Right.
+
+Does NOT Represent:
+A futures contract, a weekly or monthly classification, a lot size, an underlying, an exercise or settlement style, or a provider instrument key or trading symbol.
+
+Examples:
+NIFTY@NSE 2026-10-27 25000 CALL.
+
+Relationship to Other Options Concepts:
+Two option contracts that differ in product, expiration date, strike or right are different contracts.
