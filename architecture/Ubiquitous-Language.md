@@ -410,3 +410,83 @@ NIFTY@NSE 2026-10-27 25000 CALL 65 INR/premium-point/contract.
 
 Relationship to Other Options Concepts:
 Option Contract Economics are keyed by the complete Option Contract. Neighbouring strikes, the other right, other expiries and other products never share them. Governed by ADR-011.
+
+### Option Expiration Rule
+
+Business Meaning:
+An exchange rule, in force from a stated date, that names the day on which an option product's weekly and monthly contracts expire.
+
+Purpose:
+Derive expiration dates from the exchange's published rule rather than assuming a timeless weekday.
+
+Represents:
+One product, the date from which the rule applies, the weekly and monthly expiry weekdays, the Expiry Adjustment, and the primary exchange source.
+
+Does NOT Represent:
+A listing cycle, a strike scheme, a lot size, a provider instrument, or proof that any contract was listed.
+
+Examples:
+NIFTY@NSE from 2025-09-01: weekly on the Tuesday of the expiry week, monthly on the last Tuesday of the month (NSE/FAOP/68747).
+
+Relationship to Other Options Concepts:
+An Option Expiration Rule gives the Nominal Expiry Date; the Expiry Adjustment turns it into the expiration date. No rule applies to a period before its effective date. Governed by ADR-012.
+
+### Nominal Expiry Date
+
+Business Meaning:
+The date an Option Expiration Rule names for a period, before any holiday adjustment.
+
+Purpose:
+Keep the rule's own answer visible when the actual expiration date has been adjusted.
+
+Represents:
+The Tuesday of an ISO expiry week, or the last Tuesday of an expiry month, under the current NIFTY@NSE rule.
+
+Does NOT Represent:
+The actual exchange expiration date, a trading-day judgement, or an Option Contract's identity.
+
+Examples:
+2026-11-24, the nominal monthly expiry for November 2026.
+
+Relationship to Other Options Concepts:
+The Nominal Expiry Date and the expiration date differ exactly when an Expiry Adjustment was applied. Governed by ADR-012.
+
+### Expiry-Eligible Trading Day
+
+Business Meaning:
+A date on which an option expiration may fall under the current rule.
+
+Purpose:
+Decide where an Expiry Adjustment stops.
+
+Represents:
+A Monday to Friday date in a loaded NSE calendar year that is neither a published trading holiday nor a published special session.
+
+Does NOT Represent:
+A claim about special sessions. A date with a published special session is not treated as eligible or ineligible: reaching one makes expiration resolution fail closed, because its expiration treatment is not yet established by a primary exchange source. A date in an unloaded calendar year likewise cannot be judged and fails closed.
+
+Examples:
+2026-11-23 is an Expiry-Eligible Trading Day; 2026-11-24 (a trading holiday) is not; reaching 2025-10-21 (a holiday with a Muhurat session) stops resolution with an error.
+
+Relationship to Other Options Concepts:
+The expiration date is the first Expiry-Eligible Trading Day on or before the Nominal Expiry Date. Governed by ADR-012.
+
+### Expiry Adjustment
+
+Business Meaning:
+Moving an expiry from its Nominal Expiry Date to the previous Expiry-Eligible Trading Day when the nominal date is not one.
+
+Purpose:
+Apply the exchange's holiday rule deterministically.
+
+Represents:
+A backward walk over weekends and trading holidays only, which fails closed on reaching a special session or an unloaded calendar year.
+
+Does NOT Represent:
+A forward move, a provider's listing decision, or a change to an Option Contract's identity.
+
+Examples:
+Nominal 2026-03-31 (Shri Mahavir Jayanti) adjusted to 2026-03-30.
+
+Relationship to Other Options Concepts:
+An adjusted expiry reports both its Nominal Expiry Date and its expiration date. Governed by ADR-012.
