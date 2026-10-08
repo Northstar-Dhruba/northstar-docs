@@ -490,3 +490,63 @@ Nominal 2026-03-31 (Shri Mahavir Jayanti) adjusted to 2026-03-30.
 
 Relationship to Other Options Concepts:
 An adjusted expiry reports both its Nominal Expiry Date and its expiration date. Governed by ADR-012.
+
+### Option Trading Session
+
+Business Meaning:
+One exchange trading session of an option product, named by its trading date and bounded by its normal-market open and close.
+
+Purpose:
+Decide which daily option bars exist and the instant at which each is stamped.
+
+Represents:
+A trading date and the open and close instants of the option normal market on that date, from a cited option session regime.
+
+Does NOT Represent:
+A futures session, a futures pre-open, a special session whose option timings are not established, or a provider timestamp.
+
+Examples:
+NIFTY@NSE on 2026-10-08: 09:15 to 15:40 IST.
+
+Relationship to Other Options Concepts:
+An Option Daily Bar is stamped at its Option Trading Session's close. Governed by ADR-014.
+
+### Option Native Daily Observation
+
+Business Meaning:
+One daily candle a market-data source reports for one exact Option Contract, labelled by its trading date.
+
+Purpose:
+Carry what a source knows about a session before Northstar stamps it as a canonical bar.
+
+Represents:
+An Option Contract, a trading date, open, high, low and close Option Premiums, and a volume in option contracts.
+
+Does NOT Represent:
+An instant, a provider identifier, open interest, or a finality judgement.
+
+Examples:
+NIFTY@NSE 2026-10-27 25000 CALL on 2026-10-08: O=182.35 H=190 L=175.5 C=186.1 V=1200.
+
+Relationship to Other Options Concepts:
+Each Option Native Daily Observation becomes one Option Daily Bar when its trading date matches a resolved Option Trading Session. Governed by ADR-014.
+
+### Option Daily Bar
+
+Business Meaning:
+The canonical daily market record of one exact Option Contract.
+
+Purpose:
+Hold the open, high, low and close premiums and the volume of one option session as immutable market data.
+
+Represents:
+An Option Contract, the close instant of its Option Trading Session, the daily timeframe, four Option Premiums and a whole-number volume of option contracts.
+
+Does NOT Represent:
+Open interest, bid or ask, a settlement price, implied volatility, Greeks, provider metadata, or a claim that the provider will not revise it.
+
+Examples:
+NIFTY@NSE 2026-10-27 25000 CALL at 2026-10-08T10:10:00Z, 1d.
+
+Relationship to Other Options Concepts:
+An Option Daily Bar is identified by its Option Contract, instant and timeframe; a neighbouring strike, the other right or another expiry never shares a bar. Governed by ADR-014.
