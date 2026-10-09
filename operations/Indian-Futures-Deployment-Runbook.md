@@ -93,7 +93,10 @@ Every command block in this runbook is labelled **DEVELOPMENT MACHINE** or
   These artifacts assume what the existing CME deployment already uses: Linux
   with Docker Engine, Docker Compose v2 and systemd. Those are requirements of
   the deployment machine, not facts about the development machine; a host
-  without systemd would need a different scheduler.
+  without systemd would need a different scheduler. A **Windows deployment
+  machine with Docker Desktop** uses Task Scheduler instead: see section 18.
+  Everything else in this runbook about the stack, finality and data still
+  applies there.
 
 Development machine, static checks of the deployment artifacts (text facts
 only; they do not run Docker, Compose or Caddy):
@@ -620,3 +623,217 @@ Stop-Process -Id <interpreter process id>
 ```
 
 Linux containers under systemd are not affected by this launcher detail.
+
+## 18. Windows deployment machine: scheduled operations (Task Scheduler)
+
+Stage 1 of Windows automation replaces the systemd timer of section 6 with a
+Windows Task Scheduler task. It schedules **only** the existing
+`india-operations` service -- `northstar operations daily` -- exactly as the
+systemd unit does. It does not automate finality approval, evidence
+collection, backups or rollover; those stay manual (sections 5, 13 and 14).
+
+Files, in `northstar-api/deploy/india/windows/` of the Indian checkout:
+
+| File | Role |
+|------|------|
+| `Invoke-NorthstarIndiaOperations.ps1` | The wrapper the task runs: preflight, one bounded run, cleanup of its own container, UTC logs, `last-run.json` |
+| `Register-NorthstarIndiaOperationsTask.ps1` | Registers the task for the current user, **disabled** |
+| `northstar-india-operations.task.xml` | The task definition template the installer renders |
+
+### A. Prerequisites
+
+- Windows with **Docker Desktop** in **Linux-containers** mode, started at
+  sign-in ("Start Docker Desktop when you sign in").
+- One Windows account that runs Docker Desktop and is a member of the
+  `docker-users` group. The task runs as that account, **only while it is
+  signed in** (an interactive token: no stored password). Docker Desktop is
+  not a headless service: signing out stops the engine, and runs then exit 10
+  until it is back. Locking the screen is fine.
+- The host must not sleep while unattended runs are expected, or the operator
+  accepts that runs resume after wake (see D).
+- The Indian checkout, its `deploy/india/.env`, the built images and the
+  running `india-api` / `india-web` stack from section 4: the same
+  prerequisites as on Linux. Windows PowerShell 5.1 (built in) runs the
+  scripts; ordinary operation needs no administrator rights.
+
+The installer never reads `.env`. The wrapper reads only
+`NORTHSTAR_FUTURES_DAILY_BAR_FINALITY` and `NORTHSTAR_FUTURES_FINAL_THROUGH`
+from it, to log them, and never writes it.
+
+### B. Install (registered disabled)
+
+**DEPLOYMENT MACHINE (Windows, PowerShell, as the Docker Desktop user)**
+
+```powershell
+cd "<Indian checkout>\northstar-api\deploy\india\windows"
+# Review first: renders the definition without registering anything.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Register-NorthstarIndiaOperationsTask.ps1 `
+  -RenderPath "$env:TEMP\northstar-india-operations.task.rendered.xml"
+# Register: task "Northstar India Operations", hourly, DISABLED.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Register-NorthstarIndiaOperationsTask.ps1
+Get-ScheduledTask -TaskName 'Northstar India Operations' | Select-Object TaskName, State
+```
+
+The task is:
+
+- **hourly:** a polling cadence, never a finality rule, as the Linux timer;
+- **single-instance:** "do not start a new instance" while one runs;
+- **catch-up:** a missed start runs as soon as possible;
+- **time-limited to 55 minutes:** above the wrapper's own 45-minute timeout,
+  so the wrapper, not Task Scheduler, ends a stuck run and removes its
+  container.
+
+It runs `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
+-File "<absolute wrapper path>"` from the deployment directory. Paths with
+spaces and parentheses are supported.
+
+The installer refuses to overwrite an existing task and never enables one.
+`-LogDirectory "<dir>"` moves the logs; the default is
+`%LOCALAPPDATA%\Northstar\india-operations` of the task's user.
+
+### C. Dry run, supervised run, enable
+
+1. **Preflight only.** It checks the files, Docker Desktop (Linux mode),
+   Compose, the Compose configuration and the `northstar-api:india` image. It
+   runs nothing and leaves `last-run.json` alone.
+
+   **DEPLOYMENT MACHINE (Windows)**
+
+   ```powershell
+   cd "<Indian checkout>\northstar-api\deploy\india\windows"
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Invoke-NorthstarIndiaOperations.ps1 -PreflightOnly
+   ```
+
+2. **One supervised run,** with the task still disabled. This is exactly one
+   `operations daily`: idempotent, under the database operations lock, and
+   through `NORTHSTAR_FUTURES_FINAL_THROUGH` only. With nothing newly approved
+   it reports `WAITING`, exits 0 and makes no provider request.
+
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Invoke-NorthstarIndiaOperations.ps1
+   $LASTEXITCODE
+   Get-Content "$env:LOCALAPPDATA\Northstar\india-operations\last-run.json"
+   ```
+
+3. **Enable,** and optionally trigger it once to confirm the task itself:
+
+   ```powershell
+   Enable-ScheduledTask -TaskName 'Northstar India Operations'
+   Start-ScheduledTask -TaskName 'Northstar India Operations'
+   Get-ScheduledTaskInfo -TaskName 'Northstar India Operations' |
+     Select-Object LastRunTime, LastTaskResult, NextRunTime
+   ```
+
+**Disable** at any time. An active run finishes; no new run starts.
+
+```powershell
+Disable-ScheduledTask -TaskName 'Northstar India Operations'
+```
+
+To stop processing without touching the task, set
+`NORTHSTAR_FUTURES_DAILY_BAR_FINALITY=disabled` as in section 5. Runs then
+wait without contacting the provider.
+
+### D. What each run does, and missed runs
+
+Each run, in order:
+
+1. creates its log;
+2. checks that `deploy/india`, `compose.yaml` and `.env` exist;
+3. logs the finality mode and final-through date;
+4. checks `docker info` (engine reachable, Linux containers), `docker compose
+   version`, `docker compose config --quiet` and the `northstar-api:india`
+   image;
+5. writes `last-run.json` as `RUNNING`;
+6. runs, with no command, environment override or volume of its own:
+
+```
+docker compose --project-directory <deploy\india> --file <deploy\india>\compose.yaml
+  --project-name northstar-india run --rm -T --no-deps
+  --name northstar-india-operations-<run id> india-operations
+```
+
+Finality, chronological processing, idempotent replay and the stop at the
+first `NOT_YET_FINAL` session are the operation's own behaviour (sections 5
+and 10).
+
+**Missed runs need no catch-up procedure.** Work is defined by the database
+and `NORTHSTAR_FUTURES_FINAL_THROUGH`, not by trigger times. The first run
+after a gap (host off, signed out, asleep, Docker Desktop stopped) processes
+every approved session in order, like the Linux timer's `Persistent=true`.
+Runs that found Docker unavailable exit 10 and changed nothing.
+
+### E. Logs, status and exit codes
+
+- **Per run:** `%LOCALAPPDATA%\Northstar\india-operations\logs\<run id>.log`.
+  - Every wrapper line is `<UTC timestamp> [<run id>] <LEVEL> <message>`.
+  - The operation's own output follows as `stdout | ...` and `stderr | ...`
+    lines, captured when the run ends. Northstar's lines carry no timestamps
+    of their own; the wrapper brackets them with UTC start and end times.
+  - Logs older than 90 days are pruned after each run (`-LogRetentionDays`;
+    0 keeps all).
+- **Latest run:** `%LOCALAPPDATA%\Northstar\india-operations\last-run.json`,
+  replaced atomically, so a reader never sees a partial file. It records:
+  - the run id, outcome, reason, exit code and class, and Northstar exit code;
+  - the final `STATUS:` line;
+  - UTC start and end, and the duration;
+  - the container name, finality mode, final-through and Docker engine
+    version;
+  - the log path.
+- **Task Scheduler's "Last Run Result"** is the wrapper's exit code.
+
+| Outcome | Meaning |
+|---------|---------|
+| `COMPLETED` | Exit 0; `STATUS: COMPLETED -- n session(s) processed` |
+| `WAITING` | Exit 0; nothing approved or eligible (`STATUS: WAITING`) |
+| `SKIPPED` | Exit 0; another operations writer held the database lock |
+| `FAILED` | Any non-zero exit, or exit 0 without a recognised status line |
+| `RUNNING` | Left only if the wrapper process itself was killed mid-run |
+
+| Exit | Source | Meaning and action |
+|------|--------|--------------------|
+| 0-6 | Northstar, passed through | As section 7, e.g. 3 `Rollover required` (section 13), 5 conflict or busy, 6 provider or calendar |
+| 10 | Wrapper | Docker unavailable: CLI missing, engine not running or not in Linux mode, or Compose missing. Nothing ran. Start Docker Desktop; the next run proceeds. |
+| 11 | Wrapper | Deployment invalid: missing directory, `compose.yaml` or `.env`; invalid Compose configuration; or the image is not built. Nothing ran. For an invalid configuration, run `docker compose config --quiet` by hand to see why: the wrapper does not log that message because it may quote `.env` values. |
+| 12 | Wrapper | Timeout: the run exceeded 45 minutes. Its own container (`northstar-india-operations-<run id>`) was stopped and removed, and no other container was touched. Read the log; the next run resumes idempotently. |
+| 13 | Wrapper | Wrapper error, or interrupted mid-run. Read the log. |
+
+### F. Concurrency
+
+Northstar's `DatabaseOperationsLock` remains the only database lock; the
+wrapper adds none. Task Scheduler never starts a second instance of the task.
+
+- A manual writer (section 9) started during a run exits 5.
+- A run started during a manual write reports `SKIPPED` and exits 0.
+- Every run's container has a unique name, and cleanup addresses only that
+  name; `india-api` and `india-web` are never stopped.
+- A wrapper killed from outside cannot clean up. Its container finishes on its
+  own and holds the database lock until then, so the next run reports
+  `SKIPPED`.
+
+### G. Finality safety boundaries
+
+- The task runs `operations daily` and nothing else: never `market-data
+  sync`, `paper run`, `economics set` or any options command.
+- Nothing in the task, the wrapper or the installer writes `.env` or changes
+  `NORTHSTAR_FUTURES_FINAL_THROUGH`. Approving a session remains the manual
+  procedure of section 5: verify, edit `.env`, `docker compose up -d
+  india-api`. The next hourly run picks it up.
+- There is no time-of-day finality: the hourly trigger only checks for
+  approved work.
+
+### H. Rollback
+
+Removing the task changes no data:
+
+**DEPLOYMENT MACHINE (Windows)**
+
+```powershell
+Disable-ScheduledTask -TaskName 'Northstar India Operations'
+Get-ScheduledTaskInfo -TaskName 'Northstar India Operations'   # wait until no run is active
+Unregister-ScheduledTask -TaskName 'Northstar India Operations' -Confirm:$false
+```
+
+Operations then run only manually (`docker compose run --rm --no-deps
+india-operations` from `deploy\india`), as before Stage 1. Logs and
+`last-run.json` stay where they are until deleted by hand.
