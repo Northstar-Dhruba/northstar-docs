@@ -224,6 +224,33 @@ stage and `expiry.position_flat` (from M1.4.3.2 also stage `expiry_exception`
 and `expiry.pending_orders`). Do not rely on its expiry `window` after the
 real expiry date: it is assessed as of the latest decision; see section 14.
 
+**Decisions, orders, fills and positions are different facts.** Read each
+from the right place:
+
+| Fact | What it is | Read-only source | Limits |
+|------|------------|------------------|--------|
+| Strategy decisions | Frozen research decisions (BUY, SELL, HOLD, including `Expiry flatten: yes`). A decision is **not** an execution | `operations daily` output (`Latest frozen decision:`); dashboard `recent_decisions` | The dashboard shows the latest 10 only |
+| Pending orders | Persisted orders with no persisted fill | `paper status`: `Pending: n` and one `PENDING <contract>: <side> <n> decided <instant> ID <order id>` line per order | Complete for the portfolio at the cutoff |
+| Persisted fills | Simulated executions; only a fill changes a position | `paper status`: `Fills: n`, the count only | See the limitation below |
+| Position | Derived from the persisted fills, never stored | `paper status` under `PORTFOLIO (all contracts)`: direction, contracts and average entry per contract, or `Flat` | Complete for the portfolio at the cutoff |
+
+**Limitation: no read-only command shows the details of each fill.** No
+existing read-only interface lists each persisted fill's identity, timestamp
+and price. As a result, the identity, time and price of the last fill cannot
+be established authoritatively today.
+- `paper status` gives only the count.
+- `/api/futures/analysis` gives counts and derived trade aggregates (opening
+  and closing times, average entry and exit), not fill records.
+- The dashboard's `recent_decisions` attach a fill's price and instant to the
+  orders of the latest 10 decisions only, without the fill identity. They are
+  context, **not** evidence of executed fills.
+- `paper run` prints fill details but is a writer: never use it to inspect.
+
+What can be established is whether C is flat and whether any order in C is
+pending (`paper status`). Never query or open the database to get fill
+details. A read-only fill listing would be new software and needs its own
+approved milestone.
+
 ## 8. Evidence to preserve
 
 Keep evidence on the deployment machine, in a new dated directory under
@@ -270,6 +297,40 @@ when one of these is recorded:
 
 Rollover to the next contract follows runbook section 13 only after one of
 these.
+
+### Contract-transition gate (proposed, not approved; D-EXP-7)
+
+S-1 and S-2 watch only the configured contract, so once `.env` names the next
+contract and portfolio, nothing reports an exception left on the previous one
+(section 14). Before editing `.env` for the next contract, the operator records
+all of the following, with the date, time and their name:
+
+| Gate | Check | Passes when |
+|------|-------|-------------|
+| TG-1 | The latest `operations daily` run on the **current** configuration (previous contract C) | Exit 3, `STATUS: ROLLOVER REQUIRED`, and `last-run.json` outcome not `EXPIRY_EXCEPTION`, from a deployed **S-1-protected** build: the deployment record names the deployed `northstar-api` build as 545b3b6 (M1.4.3.2) or a later `develop` commit. There is no need to wait for the calendar expiry date; ROLLOVER REQUIRED itself means every session of C through its expiry has been decided. If the deployed build is pre-M1.4.3.2 or cannot be identified, exit 3 says nothing about flatness: record TG-1 as **not authoritative** |
+| TG-2 | `paper status` for the current portfolio (section 7), with `--as-of` no earlier than C's latest frozen decision (printed by the TG-1 run as `Latest frozen decision:`) | Required in every case, independently of TG-1: no position line for C under `PORTFOLIO (all contracts)` (zero net position) and no `PENDING <C>:` line (zero pending orders in C). Any position or pending order in another contract is a STOP (section 11) |
+| TG-3 | Dashboard, if running (section 7) | Corroboration only, never sufficient alone: `position_flat: true`; with M1.4.3.2 deployed, also stage `rollover_required` and `pending_orders` 0 |
+| TG-4 | Evidence (section 8) | The TG-1 to TG-3 outputs, the deployed build identity used for TG-1 (or "not established"), and the next portfolio identity, which differs from the current one |
+| TG-5 | Approval | The approver acknowledges TG-1 to TG-4 before `.env` is changed, stating whether TG-1 was authoritative. Without an authoritative TG-1, the approver accepts in writing that the transition rests on TG-2 alone |
+
+If any gate fails, do not change the configuration: follow sections 6 to 9.
+
+`paper status` takes the portfolio as an argument rather than reading `.env`,
+so after the transition the operator can still check the previous portfolio.
+That check is manual; nothing runs it automatically.
+
+**Assessment (M1.4.3.3, for the approver to decide).** For the internal paper
+MVP, a procedural gate is a workable minimum **only once M1.4.3.2 is
+deployed** and its deployed build is recorded. TG-1 is then backed by S-1: the
+operation reports ROLLOVER REQUIRED only for a resolved contract, and TG-2
+confirms it independently. Before deployment, TG-1 is not authoritative and
+the gate rests on TG-2 alone. What it cannot prevent is an operator who edits `.env` despite exit
+7. Software enforcement would close that gap: for example, `operations daily`
+could refuse to start a new contract while another contract of the same
+strategy in the same database still holds a position or pending order. That
+would be a read-only check across portfolios, with no settlement. It is a
+**proposal only**, not implemented. Whether the procedural gate is sufficient
+is decision D-EXP-7.
 
 ## 11. STOP conditions
 
@@ -361,6 +422,60 @@ request, not exit 6); the same failure before expiry (still exit 6); and the
 wrapper's `EXPIRY_EXCEPTION` outcome. Every exception case asserts that
 market data, decisions, orders and fills are unchanged.
 
+### M1.4.3.3 operator exercise (synthetic, 2026-10-10)
+
+An isolated exercise on the development machine repeated V-1 to V-5 and the
+additional cases through the production CLI and runtime. It also walked the
+operator steps of sections 4 to 9. Setup:
+
+- `northstar-api` 545b3b6 (feature 71c32c1); `northstar-web` 4f6908c (feature
+  5862618); `northstar-docs` 99f8517 (feature d230fd3).
+- Temporary SQLite databases built by the fake-Upstox helpers above, removed
+  afterwards.
+- Injected clocks and a refused network. No Docker, provider, production
+  database, credential, scheduler or finality setting was used.
+
+**Scenarios.** A full SQL dump of each database was hashed before and after
+every detection command, and was identical in every scenario: no decision,
+order, fill or market bar was written, and no fill was fabricated or order
+cancelled.
+
+| Case | Observed |
+|------|----------|
+| V-1 | Exit 7 `EXPIRY EXCEPTION`, `OPEN LONG 1`, `Pending orders: 0`, one clock read, no request. A second run: exit 7 again, so nothing clears it |
+| V-2 | Exit 7, `OPEN LONG 1`, `Pending orders: 1`, no clock read |
+| V-3 | Exit 3 `ROLLOVER REQUIRED`, no exception |
+| V-4 | Exit 0 `WAITING` before expiry |
+| V-5 | Exit 3 `ROLLOVER REQUIRED` |
+| Flat with a pending order | Exit 7 |
+| 23:59 IST on E | Exit 0 |
+| 00:00 IST on E+1 | Exit 7 |
+| Nothing open after expiry | Exit 0 |
+| Expired instrument | Exit 7, not 6, with no request |
+| Finality `disabled` after expiry | Exit 7 |
+
+**Operator steps.**
+
+| Step | Result |
+|------|--------|
+| Recognise exit 7 | Verified with the real wrapper and a fake `docker` replaying the CLI's actual V-2 output: wrapper exit 7, `last-run.json` outcome and exit class `EXPIRY_EXCEPTION`, no secret logged. The real Task Scheduler result was **not verified** |
+| Identify the contract | Verified: the report's `Affected contract:` line, and the section 7 `Select-String` pattern on a synthetic `.env` returns only the five named settings, never the token |
+| Inspect position and pending orders | Verified with `paper status` run locally (the section 7 command without `docker compose`): `Pending: 1`, the `PENDING` line, `LONG 1`; no write |
+| Identify the last actual fill | **Not verified.** No read-only interface lists each fill's identity, timestamp and price; the dashboard's latest-10-decision view is not fill evidence (section 7 limitation). Flatness and pending orders were established with `paper status` |
+| Intended versus completed flatten | Verified: V-2's flatten decision with a pending order and an open position, against V-3's `Pending: 0` and `Flat` |
+| Suspend processing | Partly verified: finality `disabled` stops acquisition and still reports exit 7. `Disable-ScheduledTask` exists but was **not run**; real suspension is **not verified** |
+| Preserve evidence | Verified on synthetic text output, with no secret |
+| Escalate | A human step with no tool; database state verified unchanged throughout |
+
+**D-EXP-7.** On the same database, the dashboard configured for the next
+contract shows stage `go_live_required`, and `paper status` for the next
+portfolio shows `Orders: 0`, `Pending: 0`, `Flat`. Neither mentions the
+unresolved October contract, confirming the gap described in section 14. The
+proposed transition gate is in section 10.
+
+These are synthetic development results. They are not a production
+verification and grant no approval.
+
 ## 14. Known limitations and unresolved design decisions
 
 - **Until M1.4.3.2 is deployed**, every limitation found in M1.4.3.1 applies
@@ -390,7 +505,8 @@ market data, decisions, orders and fills are unchanged.
   until the previous contract is explicitly verified as resolved (section 10),
   or an approved exception-management procedure permits the transition.
   Manual `paper run` and `paper status` provide no automatic post-expiry
-  detection. This remains open for X-4 acceptance.
+  detection. This remains open for X-4 acceptance. M1.4.3.3 confirmed it on
+  synthetic data (section 13). A proposed transition gate is in section 10.
 - No reconciliation, settlement, cancel or expire mechanism exists. A
   surviving position or stranded order can only be recorded, not resolved.
 - Decisions D-EXP-1 to D-EXP-7 (section 9) are open.

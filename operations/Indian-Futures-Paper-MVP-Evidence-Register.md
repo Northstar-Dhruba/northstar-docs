@@ -176,3 +176,38 @@ private evidence files by date and description only.
 
 - **Production:** **not deployed, not committed, not approved.** It does not
   satisfy X-4 on its own.
+
+### E-11 M1.4.3.3 synthetic expiry exception operator exercise
+
+- **Observation (engineering session, 2026-10-10, development machine):** an
+  isolated exercise ran V-1 to V-5 and the additional cases through the
+  production CLI and runtime on temporary SQLite, with the fake-Upstox helpers,
+  injected clocks and a refused network:
+  - every exception case gave exit 7, V-3 and V-5 gave exit 3, and V-4 and the
+    on-expiry-date case gave exit 0;
+  - the SQL dump of each database was identical before and after every
+    detection command;
+  - the real Windows wrapper, fed the CLI's actual V-2 output through a fake
+    `docker`, recorded outcome `EXPIRY_EXCEPTION`, exit 7.
+  Details: [Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md),
+  section 13.
+- **Commits:** `northstar-api` 545b3b6, `northstar-web` 4f6908c,
+  `northstar-docs` 99f8517.
+- **Not verified:**
+  - real Task Scheduler suspension and last result: the wrapper run used a fake
+    `docker` and proves only the wrapper's classification;
+  - identifying the last actual fill (procedure section 7 limitation);
+  - anything on the deployment machine.
+- **Artifacts:** synthetic only, preserved on the development machine outside
+  every repository in
+  `C:\Code\Private\Northstar\NorthstarEvidence\M1.4.3.3-synthetic-2026-10-10`.
+  - Contents: 27 files listed in `MANIFEST.sha256` (SHA-256 of the manifest
+    itself: `23b565a781c56cfc9ba23f602f07f3a87051fb6e110ef07c7a3cb290f5f5b8c5`).
+    They are the exercise script, the local report, the 21 evidence files,
+    `CORRECTIONS.md` and the scan and preservation scripts.
+  - Redaction: two wrapper files had the temporary directory, Windows account
+    and computer name redacted; their original hashes are in `CORRECTIONS.md`.
+  - No production data, credential, provider-derived data or database copy is
+    included.
+- **Production:** M1.4.3.2 is **not deployed**. This entry grants no approval
+  and does not satisfy X-4.
