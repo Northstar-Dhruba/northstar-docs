@@ -135,3 +135,20 @@ private evidence files by date and description only.
 
 - **Production:** **not deployed.** No production deployment of M1.2 has been
   established.
+
+### E-9 Historical online SQLite backup tests (persistence audit)
+
+- **Observation:** earlier online SQLite backups of the production database
+  returned `PRAGMA integrity_check = ok` and no foreign-key violations, and
+  production snapshots taken before and after the isolated Docker acceptance
+  run were identical (see also E-6). Their output is in the deployment
+  machine's evidence directory
+  `C:\Local Disk(E)\Codes\NorthstarEvidence\persistence-audit`.
+- **Source:** operator-reported. Neither the files nor the method were
+  inspected when this entry was written.
+- **What this is not:** these were backup checks only. **No restore drill**
+  was performed, and they did not use the procedure in the
+  [Windows SQLite Backup and Isolated Restore Drill](Indian-Futures-Windows-SQLite-Backup-and-Restore-Drill.md).
+  They do not satisfy B-1 or B-2.
+- **Artifacts attached:** none. To attach: the file names, the method used,
+  and the integrity and foreign-key output.
