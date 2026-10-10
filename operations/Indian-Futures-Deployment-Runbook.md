@@ -108,23 +108,28 @@ cd C:\Code\Private\Northstar\northstar-api
 .\.venv\Scripts\python.exe -m pytest -q tests\test_india8e_indian_deployment.py
 ```
 
-### Pending deployment-machine validation
+### Deployment-machine validation status
 
-The artifacts were authored and tested statically on the development machine
-only. None of the following has been performed yet; each is deferred to the
-deployment machine:
+Recorded 2026-10-10. The production paper deployment runs on a **Windows
+deployment machine with Docker Desktop**, scheduled by the Task Scheduler task
+of section 18. A Linux/systemd deployment machine has not been established.
+"Operator-reported" means no log or file was inspected when this was written;
+the `E-n` entries are in the
+[Paper MVP Evidence Register](Indian-Futures-Paper-MVP-Evidence-Register.md).
 
-- `docker compose config` against `deploy/india/compose.yaml` with the real
-  `.env`;
-- Caddy validation of `deploy/india/Caddyfile` (for example `caddy validate`
-  inside the `northstar-web:india` image);
-- building the `northstar-api:india` and `northstar-web:india` images;
-- creation of the `northstar-india-data` and Caddy volumes;
-- container startup and the `india-api` health check;
-- installation of the `northstar-india-daily` service and timer;
-- the real `.env` and secrets (Upstox token, basic-auth login);
-- economics, historical bootstrap and every database step inside the
-  deployment.
+| Step | Status | Basis |
+|------|--------|-------|
+| Indian checkout, real `.env` and Upstox token | Performed | Operator-reported production operation (E-1 to E-4). Operator-approved finality cannot run without the token (section 3). |
+| `northstar-api:india` image built | Performed | Implied by E-4: every scheduled run checks the image before running (section 18 D). |
+| `docker compose config` with the real `.env` | Performed | Implied by E-4: every scheduled run runs `docker compose config --quiet` first (section 18 D). |
+| `northstar-india-data` volume | Performed | Implied by facts persisting across runs (E-1 to E-3). |
+| Economics, historical bootstrap, go-live and chronological operation | Performed | Operator-reported (E-1 to E-3). |
+| Task Scheduler task registered and enabled (section 18) | Performed | Operator-reported first automatic run, 2026-10-10 08:00 IST (E-4). |
+| Isolated real-Docker acceptance of the wrapper | Performed | Operator-reported 14/14, production database unchanged (E-5, E-6). |
+| `northstar-web:india` image, Caddy validation of `deploy/india/Caddyfile`, `india-api` / `india-web` startup and health check | Not recorded | No evidence recorded yet. |
+| `northstar-india-daily` systemd service and timer | Not applicable | Replaced by the Task Scheduler task on the Windows host. |
+| Backup and restore (section 14) | Not performed | Never exercised on the deployment machine. The Windows procedure is written but not yet run: [Windows SQLite Backup and Isolated Restore Drill](Indian-Futures-Windows-SQLite-Backup-and-Restore-Drill.md). |
+| Dashboard snapshot consistency fix (M1.2) | Not deployed | Merged to development only (E-8). |
 
 ## 3. Environment and secrets
 
@@ -427,6 +432,12 @@ The dashboard's Expiry safety block shows the window (`Outside flatten
 window`, `Flatten session`, `No-reopen window`), whether flatten is required,
 whether the contract position is flat, and whether reopening is blocked.
 
+The flatten happens only if the sessions through E-5 are approved and
+processed. A position or pending order that survives into or through expiry
+has no defined handling yet: see section 13 of the
+[Paper MVP Acceptance Specification](Indian-Futures-Paper-MVP-Acceptance.md)
+(open decisions EXP-1 and EXP-2).
+
 ## 12. Logs
 
 There is no run-journal table; the operation's stdout/stderr is the record.
@@ -455,6 +466,10 @@ Nothing rolls automatically. After expiry is processed every run exits 3
 
 1. Confirm the current contract reached the protected state and E was
    processed (dashboard: `No-reopen window`, position flat, rollover required).
+   A position that is not flat, or an order still pending, is an expiry
+   exception, not a completed flatten. Its handling is only proposed, not
+   approved or enforced (Paper MVP Acceptance Specification, section 13.7).
+   Record it and never edit the database.
 2. Stop the timer and take a backup (section 14):
 
    **DEPLOYMENT MACHINE**
@@ -528,6 +543,14 @@ sudo systemctl start northstar-india-daily.timer
 
 Retention is manual. CME backups remain wherever the CME runbook puts them
 and are never touched by these commands.
+
+These commands are written for the Linux/systemd deployment machine. On the
+Windows deployment machine use the
+[Windows SQLite Backup and Isolated Restore Drill](Indian-Futures-Windows-SQLite-Backup-and-Restore-Drill.md)
+instead. It mounts the production volume read-only, excludes the writer by
+holding the operations lock rather than stopping a timer, and restores only
+into a new disposable volume. It is written but has not been exercised yet. No
+Windows procedure for restoring **into production** exists.
 
 **Restore (concept and commands).** Stop every Indian reader and writer,
 write the chosen backup into the Indian volume through the SQLite backup API,
