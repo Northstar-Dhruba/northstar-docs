@@ -128,7 +128,7 @@ the `E-n` entries are in the
 | Isolated real-Docker acceptance of the wrapper | Performed | Operator-reported 14/14, production database unchanged (E-5, E-6). |
 | `northstar-web:india` image, Caddy validation of `deploy/india/Caddyfile`, `india-api` / `india-web` startup and health check | Not recorded | No evidence recorded yet. |
 | `northstar-india-daily` systemd service and timer | Not applicable | Replaced by the Task Scheduler task on the Windows host. |
-| Backup and restore (section 14) | Not performed | Never exercised on the deployment machine. |
+| Backup and restore (section 14) | Not performed | Never exercised on the deployment machine. The Windows procedure is written but not yet run: [Windows SQLite Backup and Isolated Restore Drill](Indian-Futures-Windows-SQLite-Backup-and-Restore-Drill.md). |
 | Dashboard snapshot consistency fix (M1.2) | Not deployed | Merged to development only (E-8). |
 
 ## 3. Environment and secrets
@@ -545,10 +545,12 @@ Retention is manual. CME backups remain wherever the CME runbook puts them
 and are never touched by these commands.
 
 These commands are written for the Linux/systemd deployment machine. On the
-Windows deployment machine the writer to stop is the Task Scheduler task
-(section 18: `Disable-ScheduledTask`, then wait until no run is active), not
-the systemd timer. A Windows-specific backup and restore procedure has not
-been written or exercised yet.
+Windows deployment machine use the
+[Windows SQLite Backup and Isolated Restore Drill](Indian-Futures-Windows-SQLite-Backup-and-Restore-Drill.md)
+instead. It mounts the production volume read-only, excludes the writer by
+holding the operations lock rather than stopping a timer, and restores only
+into a new disposable volume. It is written but has not been exercised yet. No
+Windows procedure for restoring **into production** exists.
 
 **Restore (concept and commands).** Stop every Indian reader and writer,
 write the chosen backup into the Indian volume through the SQLite backup API,

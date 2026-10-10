@@ -167,8 +167,8 @@ test or document here, and nothing in this specification changes the gate.
 
 | ID | Acceptance criterion | Implementation | Automated test evidence | Natural evidence | Status | Remaining action |
 |----|----------------------|----------------|-------------------------|------------------|--------|------------------|
-| B-1 | A backup procedure uses SQLite's online backup API with the writer stopped. | Runbook section 14 (written for the Linux/systemd host) | -- | Never exercised | PENDING | Write the Windows variant (disable the scheduled task instead of stopping the systemd timer) |
-| B-2 | One restore from a backup copy succeeds and the restored database is verified (integrity check and an identical dashboard snapshot). | Runbook section 14 | -- | Never exercised | PENDING | Perform the drill against a **copy**, never the live volume, and record it in the evidence register |
+| B-1 | A backup on the Windows deployment machine uses SQLite's backup API while no operations writer can run, passes `integrity_check` and `foreign_key_check`, and is recorded with its SHA-256. | [Windows SQLite Backup and Isolated Restore Drill](Indian-Futures-Windows-SQLite-Backup-and-Restore-Drill.md), blocks A, P (disposable-volume lock test), B, D and E (written and statically validated, never run); runbook section 14 for Linux | -- | Earlier online backup tests during the persistence audit (operator-reported, E-9) used a different, unrecorded method; they are not this procedure | PENDING | Run blocks A, P, B, D and E under supervision (M1.4.2); PASS only when `LOCK TEST OK`, `BACKUP OK`, the SHA-256 match and `VERIFY OK` are recorded |
+| B-2 | One restore from that backup into a new, isolated volume succeeds, and the restored copy passes `integrity_check` and `foreign_key_check` and is identical to the backup in schema and every table. | Same document, blocks F, H and I (written and statically validated, never run) | -- | No restore drill has been performed. E-9 is backup evidence only, not a restore. | PENDING | Run blocks F, H, I and J under supervision (M1.4.2); PASS only when `RESTORE OK` and `COMPARE OK` are recorded |
 
 ## 13. Contract expiry behaviour
 
@@ -409,7 +409,7 @@ What each open item still needs. "--" means nothing of that kind is needed.
 | D-4 (G-1) | The gate owner records the gate's status | -- | -- | The recorded status |
 | V-3 | -- | Deploy M1.2 to production | Dashboard reads after deployment | Deployed commits |
 | P-3 | -- | -- | Independent recomputation of the October valuation | The recomputation |
-| B-1, B-2 | -- | Windows backup and restore procedure | One restore drill on a copy | The drill record |
+| B-1, B-2 | -- | Done: the Windows procedure is written (not run) | The supervised drill, blocks A, P, B, D, E, F, H, I and J (M1.4.2) | The drill record (evidence register) |
 | D-2, D-3 and E-1 to E-6 | Or the approver accepts them as operator-reported | -- | -- | Logs, `last-run.json`, test output, hashes (no secrets) |
 | O-5, P-4, V-5 and L-1 to L-8 | The proposed scope limitations | -- | -- | -- |
 | Sign-off item 10 | -- | -- | Full suites at the deployed commits | Recorded counts |
