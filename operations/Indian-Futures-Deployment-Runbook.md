@@ -489,7 +489,9 @@ Nothing rolls automatically. After expiry is processed every run exits 3
    - **Release requirement:** never configure the next contract while the
      previous contract has an unresolved position or pending order. This
      remains necessary after S-1 and S-2 are deployed, because they inspect
-     only the configured contract (procedure section 14, D-EXP-7).
+     only the configured contract (procedure section 14, D-EXP-7). Record
+     the proposed contract-transition gate TG-1 to TG-5 (procedure section 10)
+     before step 3.
 
    Record it and never edit the database.
 2. Stop the timer and take a backup (section 14):

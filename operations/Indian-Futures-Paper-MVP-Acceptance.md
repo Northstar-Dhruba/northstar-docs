@@ -357,6 +357,23 @@ partly addresses 13.9 item 2 (enforcement of detection) and item 3 (automated
 tests). It does not satisfy item 1 (approval), the disposition and
 reconciliation part of item 2 (D-EXP-6), or deployment. X-4 stays BLOCKED.
 
+**M1.4.3.3 (2026-10-10): synthetic operator exercise, development machine.**
+V-1 to V-5 and the additional cases repeated through the production CLI with
+identical database dumps before and after every detection. The operator steps
+were walked through (procedure section 13):
+
+- Verified: recognising exit 7 (real wrapper, fake `docker`), identifying the
+  contract, inspecting the position and pending orders read-only, and telling an
+  intended flatten from a completed one.
+- Not verified: identifying the last actual fill. No read-only interface lists
+  each fill's identity, timestamp and price (procedure section 7 limitation).
+- Not verified: real scheduler suspension and the real Task Scheduler result.
+- Not executable: escalation, a human step.
+
+The D-EXP-7 gap was confirmed, and a contract-transition gate is proposed
+(procedure section 10). This is not a production verification and approves
+nothing.
+
 ## 14. Accepted MVP limitations (proposed scope decisions, subject to approval)
 
 None of these capabilities is implemented. Each is a proposed MVP scope
