@@ -129,7 +129,7 @@ section 13.
 | X-1 | K = 5 (code-frozen): a decision at the E-6 close requires the flatten, which fills at the E-5 open; from E-5 through E no signal may reopen or increase the contract; a flatten never reverses. | `FuturesExpiryFlattenGuard` (`northstar-application/.../futures_expiry_flatten_guard.py`); `NSE_EXPIRY_FLATTEN_SESSIONS = 5` (`northstar-api/src/northstar_api/runtime.py`) | `northstar-api/tests/test_futures_expiry_guard_runtime.py::test_the_october_contract_is_flattened_before_expiry`; `::test_the_flatten_fills_at_the_e5_open`; `test_futures_expiry_flatten_guard.py::test_a_flatten_never_reverses_through_zero` | -- | PASS | none |
 | X-2 | After E is processed, every run reports `STATUS: ROLLOVER REQUIRED`, exits 3, requests nothing and writes nothing; nothing rolls automatically. | `_chronological_daily_operation` (`backlog.exhausted` branch, `cli.py`) | `northstar-api/tests/test_india8b_nse_chronological_operations.py::test_the_expiry_window_and_then_rollover_required` | -- | PASS | none |
 | X-3 | The October contract's flatten is observed in production: decision at the 2026-10-16 close, fill at the 2026-10-19 open, flat through 2026-10-27. | As X-1 | As X-1 | Not yet reached | PENDING | Decide whether natural observation is required for sign-off (section 15, item 9) |
-| X-4 | A position or pending order that survives into or through expiry is handled as an approved, enforced and verified exception (EXP-1, EXP-2). | **Not defined in code.** A proposed policy exists (13.7) but is not approved, implemented or verified | -- | -- | BLOCKED | Satisfy 13.9: approve the policy, enforce it, verify the enforcement |
+| X-4 | A position or pending order that survives into or through expiry is handled as an approved, enforced and verified exception (EXP-1, EXP-2). | **Detection implemented in M1.4.3.2, not approved, not deployed.** `operations daily` reports `STATUS: EXPIRY EXCEPTION`, exit 7, instead of `ROLLOVER REQUIRED` (contract not flat or an order pending) or WAITING (the same after the Asia/Kolkata expiration date); dashboard stage `expiry_exception` (`northstar-api/src/northstar_api/cli.py` `_chronological_daily_operation`; `operational_status.py`). Nothing is settled or reconciled. The policy (13.7) and the [operator procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md) remain proposed | `northstar-api/tests/test_india_expiry_exception_detection.py` (V-1 to V-5, boundaries; local engineering result) | -- | BLOCKED | Satisfy 13.9: decide D-EXP-1 to D-EXP-7 (approval of S-1 and S-2, a reconciliation method), deploy the detection, and verify it on the deployment machine |
 
 ## 10. Dashboard and operational visibility
 
@@ -224,6 +224,8 @@ present today:
 
 1. **Finality not approved.** Sessions after `FINAL_THROUGH` are never
    processed: every run reports WAITING, and the position stays as it is.
+   From M1.4.3.2 (not deployed) a run after the expiration date reports
+   `EXPIRY EXCEPTION` (exit 7) instead.
    This includes the present state (final through 2026-10-08, October 9
    unapproved, SHORT 1 open).
 2. **Approval after the contract can no longer be acquired.** Upstox
@@ -246,7 +248,10 @@ When every session through E has been processed, `plan_session_backlog`
 reports the backlog exhausted. Each run then replays the latest cutoff
 idempotently, prints `STATUS: ROLLOVER REQUIRED`, exits 3 ("nothing rolls
 automatically"), makes no provider request and writes no fact. The dashboard
-shows the backlog stage `rollover_required`.
+shows the backlog stage `rollover_required`. From M1.4.3.2 (implemented, not
+deployed) this holds only when the contract is flat with no pending order;
+otherwise the run reports `STATUS: EXPIRY EXCEPTION` with exit 7 and the
+dashboard stage `expiry_exception` (13.9).
 
 ### 13.6 Manual operator intervention
 
@@ -283,7 +288,7 @@ outside the MVP (L-4, L-8).
 | Recorded position and decisions | Kept unchanged; the stores are insert-only | Keep the recorded position and every historical decision unchanged |
 | Fill, settlement or closing price | None is created | Do not invent a fill, a settlement, a price or a closing transaction |
 | Other contracts | Nothing rolls; a new contract needs manual configuration | Do not roll the position into another contract |
-| What Northstar reports | The position stays open, marked at the last stored close; runs report WAITING or fail with exit 6, not ROLLOVER REQUIRED; nothing identifies the state as an expiry exception | Treat the state as an **operational exception**, never as a successful expiry flatten |
+| What Northstar reports | The position stays open, marked at the last stored close. Before M1.4.3.2, runs reported WAITING or failed with exit 6, and nothing identified the state as an expiry exception. From M1.4.3.2 (implemented, not deployed): `operations daily` reports `STATUS: EXPIRY EXCEPTION`, exit 7, and the dashboard stage `expiry_exception` (13.9) | Treat the state as an **operational exception**, never as a successful expiry flatten |
 | Resolution | No procedure exists; the manual rollover (runbook section 13) assumes a flat position | The operator investigates, and the ledger is declared resolved only through an explicit, approved reconciliation or settlement procedure, which does not exist yet |
 
 **EXP-2: a pending paper order has no valid later execution session** (the
@@ -297,11 +302,12 @@ case in 13.3).
 | Disposition | None defined | An explicit, operator-reviewed disposition policy is required |
 | Audit | The order and its decision remain stored | Keep an auditable record of the exception, including how it was disposed of |
 
-### 13.8 Implementation options considered (none selected)
+### 13.8 Implementation options considered
 
-These are the ways the proposed policy could later be enforced. **None is
-selected or implemented.** Options that add code need their own approved
-milestone; settlement and new order states also need an ADR.
+These are the ways the proposed policy could later be enforced. M1.4.3.2
+implemented the **fail-closed exception signal** as detection only (13.9); it
+is not approved and not deployed. No other option is selected or implemented.
+Settlement and new order states would need an ADR.
 
 | Option | Applies to | What it would do | Implications |
 |--------|------------|------------------|--------------|
@@ -324,7 +330,32 @@ X-4 leaves BLOCKED only when all of the following are true:
    exercise of the procedure against a copy of the database, never the live
    volume.
 
-Approval alone, or this documentation alone, does not satisfy X-4.
+Approval alone, or this documentation alone, does not satisfy X-4. The proposed
+[Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md) concludes that
+procedure-only enforcement is not sufficient: nothing in the system flags
+either exception, WAITING reports success after the real expiry date, and
+`ROLLOVER REQUIRED` does not check flatness. It proposes the minimum
+fail-closed correction S-1 and the decision S-2 (its section 12) and the
+isolated verification V-1 to V-5 (its section 13).
+
+**M1.4.3.2 (2026-10-10): detection implemented, not approved, not deployed.**
+The procedure's corrections S-1, S-2 and S-3 are implemented in
+`northstar-api` (procedure section 12):
+
+- `operations daily` reports `STATUS: EXPIRY EXCEPTION` with exit 7 instead of
+  `ROLLOVER REQUIRED` when the contract is out of sessions but not flat, or has
+  a pending order (S-1).
+- It does the same instead of WAITING or any acquisition when the Asia/Kolkata
+  date is strictly later than the expiration date (S-2).
+- The dashboard reports stage `expiry_exception` and labels its expiry window
+  as assessed as of the latest decision (S-3).
+- The Windows wrapper records outcome `EXPIRY_EXCEPTION`.
+
+Nothing is settled, cancelled, expired, filled or rolled over. Local synthetic
+tests V-1 to V-5 and the boundary cases pass (procedure section 13). This
+partly addresses 13.9 item 2 (enforcement of detection) and item 3 (automated
+tests). It does not satisfy item 1 (approval), the disposition and
+reconciliation part of item 2 (D-EXP-6), or deployment. X-4 stays BLOCKED.
 
 ## 14. Accepted MVP limitations (proposed scope decisions, subject to approval)
 
@@ -403,7 +434,7 @@ What each open item still needs. "--" means nothing of that kind is needed.
 
 | Item | Approve | Implement | Test or verify | Evidence to attach |
 |------|---------|-----------|----------------|--------------------|
-| X-4 (EXP-1, EXP-2) | The 13.7 policy, as written or amended | Enforcement: tested code, or a written operator procedure (13.9) | Automated tests, or a recorded exercise on a database copy | The exercise record or test results |
+| X-4 (EXP-1, EXP-2) | The 13.7 policy, as written or amended, and decisions D-EXP-1 to D-EXP-7 of the [operator procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md) | Done for detection: S-1, S-2 and S-3 implemented and tested locally (M1.4.3.2). Open: deployment, and a reconciliation method (D-EXP-6) | V-1 to V-5 passed locally; verification on the deployment machine after deployment | The verification results |
 | X-3 | Whether live observation of the October flatten is required | -- | If required: the 2026-10-16 decision and 2026-10-19 fill observed | Read-only output of both |
 | N-4 | The written procedure for a revised session | Write the procedure (no automatic rule, no threshold) | -- | -- |
 | D-4 (G-1) | The gate owner records the gate's status | -- | -- | The recorded status |

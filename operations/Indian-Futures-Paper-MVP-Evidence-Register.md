@@ -152,3 +152,27 @@ private evidence files by date and description only.
   They do not satisfy B-1 or B-2.
 - **Artifacts attached:** none. To attach: the file names, the method used,
   and the integrity and foreign-key output.
+
+### E-10 M1.4.3.2 expiry exception detection
+
+- **Change (inspected):** uncommitted working-tree changes in `northstar-api`
+  (`cli.py`, `operations.py`, `operational_status.py`, `_cli_rendering.py`,
+  `schemas/futures.py`, the Windows wrapper) and `northstar-web` (dashboard
+  card). `operations daily` reports `STATUS: EXPIRY EXCEPTION`, exit 7, when
+  the operated contract holds a position or pending order and either no
+  session is left through expiry (S-1) or the Asia/Kolkata date is after its
+  expiration date (S-2). See the
+  [Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md),
+  sections 12 and 13.
+- **Results (engineering session, 2026-10-10, development machine):**
+
+  | Check | Result |
+  |-------|--------|
+  | `northstar-api/tests/test_india_expiry_exception_detection.py` (V-1 to V-5, combinations, boundaries) | 18 passed |
+  | `northstar-api` full suite | 890 passed, 18 skipped |
+  | Windows wrapper suite (fake docker), including exit 7 | 143 passed, 3 skipped |
+  | `northstar-web` tests | 63 passed; `tsc -b` and ESLint clean |
+  | Ruff check and format (API) | clean |
+
+- **Production:** **not deployed, not committed, not approved.** It does not
+  satisfy X-4 on its own.
