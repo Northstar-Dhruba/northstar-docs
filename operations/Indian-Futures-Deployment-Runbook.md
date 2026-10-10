@@ -360,6 +360,7 @@ approved makes no provider request and exits 0 (`WAITING`). The CME units
 | 4 | Data: e.g. contract economics missing for valuation | Set economics; rerun. |
 | 5 | State: a manual writer collided with an active runner, a persisted conflict, or SQLite busy (`database busy ...; retry later`) | Retry when the other writer finishes; investigate conflicts. |
 | 6 | Provider or calendar: Upstox failure or edge block, or the NSE calendar failing closed (e.g. Muhurat) | Retry later; nothing after the failure was decided. |
+| 7 | Expiry exception (from M1.4.3.2; implemented, not yet deployed): `STATUS: EXPIRY EXCEPTION`. The contract still holds a position or pending order and either no session is left through expiry or the Asia/Kolkata date is after its expiration date. Reported before any provider request; nothing is settled, cancelled or rolled over | Do not retry or roll over. Follow the [Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md). |
 | 1 | Internal | Inspect logs. |
 
 The operation stops at the first failure, so no later session is ever decided
@@ -436,7 +437,14 @@ The flatten happens only if the sessions through E-5 are approved and
 processed. A position or pending order that survives into or through expiry
 has no defined handling yet: see section 13 of the
 [Paper MVP Acceptance Specification](Indian-Futures-Paper-MVP-Acceptance.md)
-(open decisions EXP-1 and EXP-2).
+(open decisions EXP-1 and EXP-2). Detection and containment are described in the
+proposed [Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md). From M1.4.3.2
+(implemented, not yet deployed), a run whose contract still holds a position or
+pending order reports `STATUS: EXPIRY EXCEPTION` and exits 7 once the
+Asia/Kolkata date is after the expiration date, or when no session is left
+through expiry. Until that build is deployed, a run can still report `WAITING`
+and exit 0 after the real expiry date, so check the real date against the
+contract's expiry yourself.
 
 ## 12. Logs
 
@@ -467,8 +475,22 @@ Nothing rolls automatically. After expiry is processed every run exits 3
 1. Confirm the current contract reached the protected state and E was
    processed (dashboard: `No-reopen window`, position flat, rollover required).
    A position that is not flat, or an order still pending, is an expiry
-   exception, not a completed flatten. Its handling is only proposed, not
-   approved or enforced (Paper MVP Acceptance Specification, section 13.7).
+   exception, not a completed flatten.
+   - **Detection:** the M1.4.3.2 safeguards S-1 and S-2 are implemented and
+     locally tested, but not approved for production and not deployed. The
+     current production installation does not have them: its
+     `ROLLOVER REQUIRED` does not check flatness, so confirm flatness with
+     `paper status` (section 4E). Once deployed, a contract that is not flat or
+     has a pending order reports `STATUS: EXPIRY EXCEPTION` (exit 7) instead.
+   - **Policy:** EXP-1 and EXP-2 containment and reconciliation remain subject
+     to approval (Paper MVP Acceptance Specification, section 13.7;
+     [Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md)).
+     No settlement, cancellation or automatic rollover is implemented.
+   - **Release requirement:** never configure the next contract while the
+     previous contract has an unresolved position or pending order. This
+     remains necessary after S-1 and S-2 are deployed, because they inspect
+     only the configured contract (procedure section 14, D-EXP-7).
+
    Record it and never edit the database.
 2. Stop the timer and take a backup (section 14):
 
@@ -810,12 +832,13 @@ Runs that found Docker unavailable exit 10 and changed nothing.
 | `COMPLETED` | Exit 0; `STATUS: COMPLETED -- n session(s) processed` |
 | `WAITING` | Exit 0; nothing approved or eligible (`STATUS: WAITING`) |
 | `SKIPPED` | Exit 0; another operations writer held the database lock |
-| `FAILED` | Any non-zero exit, or exit 0 without a recognised status line |
+| `EXPIRY_EXCEPTION` | Exit 7 (from M1.4.3.2); `STATUS: EXPIRY EXCEPTION`. Never WAITING or a rollover (section 7) |
+| `FAILED` | Any other non-zero exit, or exit 0 without a recognised status line |
 | `RUNNING` | Left only if the wrapper process itself was killed mid-run |
 
 | Exit | Source | Meaning and action |
 |------|--------|--------------------|
-| 0-6 | Northstar, passed through | As section 7, e.g. 3 `Rollover required` (section 13), 5 conflict or busy, 6 provider or calendar |
+| 0-7 | Northstar, passed through | As section 7, e.g. 3 `Rollover required` (section 13), 5 conflict or busy, 6 provider or calendar, 7 expiry exception (from M1.4.3.2) |
 | 10 | Wrapper | Docker unavailable: CLI missing, engine not running or not in Linux mode, or Compose missing. Nothing ran. Start Docker Desktop; the next run proceeds. |
 | 11 | Wrapper | Deployment invalid: missing directory, `compose.yaml` or `.env`; invalid Compose configuration; or the image is not built. Nothing ran. For an invalid configuration, run `docker compose config --quiet` by hand to see why: the wrapper does not log that message because it may quote `.env` values. |
 | 12 | Wrapper | Timeout: the run exceeded 45 minutes. Its own container (`northstar-india-operations-<run id>`) was stopped and removed, and no other container was touched. Read the log; the next run resumes idempotently. |
