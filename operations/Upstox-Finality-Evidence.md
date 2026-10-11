@@ -181,6 +181,18 @@ reflects when observations were taken and would read like a probability or
 a threshold. The report labels nothing final, stable or safe and suggests no
 delay.
 
+**Candle identity (FG-9 builds; implemented, not yet released).**
+`northstar finality-evidence identity --evidence <file> --product NIFTY
+--exchange NSE --expiration <EXPIRY> --trading-date <D> [--line <n>]` reads the
+same file, offline, and prints the fdc1 fingerprint of exactly one record as a
+`Manifest entry:` for `NORTHSTAR_FUTURES_APPROVED_CANDLES`. When several
+records match the session it lists their line numbers and endpoints and
+requires `--line`. It refuses records without a candle or a whole contract
+volume, prints no candle value, reads no environment and writes nothing. A
+fingerprint approves nothing: the N-4 decision and a separate FG-8
+authorization do. Fingerprints are Upstox-derived, so G-1 governs whether one
+may be produced from real evidence or kept.
+
 ## Token safety
 
 The token is read through the CLI's secret handling, sent only as the

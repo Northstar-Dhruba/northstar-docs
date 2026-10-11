@@ -272,6 +272,10 @@ NORTHSTAR_FUTURES_DAILY_BAR_FINALITY=operator-approved
 NORTHSTAR_FUTURES_FINAL_THROUGH=<GO_LIVE>
 ```
 
+This applies to builds before FG-9. A build with reviewed-candle protection
+(FG-9; implemented, not yet released or accepted) acquires and decides no NSE
+session in `operator-approved` mode: use `operator-reviewed` as in section 5.
+
 ### H. Process sessions chronologically
 
 Install the timer (section 6) or run the operation once now:
@@ -291,8 +295,36 @@ skipped (section 10).
 ## 5. Operator-approved finality (daily workflow)
 
 Automatic Upstox finality is not implemented. Finality is an explicit
-operator decision recorded in `NORTHSTAR_FUTURES_FINAL_THROUGH`. For each new
-session `D`:
+operator decision recorded in `NORTHSTAR_FUTURES_FINAL_THROUGH`.
+
+**Builds with reviewed-candle protection (FG-9; implemented, not yet released
+or accepted).** A final-through date alone no longer authorizes anything: each
+session must also be the exact candle version an operator approved. For each
+new session `D`:
+
+1. **Review** `D` under the
+   [Revised Candle Approval Procedure](Indian-Futures-Revised-Candle-Approval-Procedure.md)
+   (N-4) and record the decision. A recorded APPROVE names one evidence line.
+2. **Produce its identity** from that line, offline, on the machine holding the
+   private evidence (G-1 governs whether this may be done with real evidence):
+   `northstar finality-evidence identity --evidence <file> --product NIFTY
+   --exchange NSE --expiration <EXPIRY> --trading-date D --line <n>`. It prints
+   one `Manifest entry:` and no candle value. It approves nothing.
+3. **Under a separate, recorded FG-8 authorization**, edit `.env`:
+   `NORTHSTAR_FUTURES_DAILY_BAR_FINALITY=operator-reviewed`, append the entry
+   to `NORTHSTAR_FUTURES_APPROVED_CANDLES` (comma-separated, no spaces, never
+   quoted with surrounding spaces), and set `NORTHSTAR_FUTURES_FINAL_THROUGH=D`.
+4. **Refresh, run and inspect** as in steps 3 to 5 below. Exit 8
+   (`CANDLE_APPROVAL`) means a session had no approved version or its candle
+   differs from it: nothing was stored. Do not retry; return to N-4.
+
+The first run of a write-capable command in an operated mode marks the
+database reviewed-candle protected; `northstar protection init` does so
+explicitly (Windows runbook). On a protected database a missing, blank or
+`disabled` mode is refused (exit 3) by every write-capable command.
+
+**Builds before FG-9 (the recorded production build).** For each new session
+`D`:
 
 1. **Verify** outside Northstar that the provider's daily candle for `D` is
    final. Northstar does not and cannot decide this; no clock time does either.
@@ -330,7 +362,10 @@ next run acquire every approved session as one range and decide each in order.
 
 To stop processing at once, set `NORTHSTAR_FUTURES_DAILY_BAR_FINALITY=disabled`
 (and `docker compose up -d india-api`); later runs then wait without contacting
-the provider.
+the provider. On a reviewed-candle protected database (FG-9) `disabled` is
+refused instead (exit 3, nothing written): to pause there, leave
+`NORTHSTAR_FUTURES_FINAL_THROUGH` where it is, so runs report `WAITING`, or
+disable the scheduled task.
 
 ## 6. Scheduled operation
 
@@ -363,6 +398,7 @@ approved makes no provider request and exits 0 (`WAITING`). The CME units
 | 5 | State: a manual writer collided with an active runner, a persisted conflict, or SQLite busy (`database busy ...; retry later`) | Retry when the other writer finishes; investigate conflicts. |
 | 6 | Provider or calendar: Upstox failure or edge block, or the NSE calendar failing closed (e.g. Muhurat) | Retry later; nothing after the failure was decided. |
 | 7 | Expiry exception (from M1.4.3.2; implemented, not yet deployed): `STATUS: EXPIRY EXCEPTION`. The contract still holds a position or pending order and either no session is left through expiry or the Asia/Kolkata date is after its expiration date. Reported before any provider request; nothing is settled, cancelled or rolled over | Do not retry or roll over. Follow the [Expiry Exception Operator Procedure](Indian-Futures-Expiry-Exception-Operator-Procedure.md). |
+| 8 | Candle approval (FG-9 builds only; implemented, not yet deployed): a session to be acquired or decided has no approved candle version in `NORTHSTAR_FUTURES_APPROVED_CANDLES`, its candle differs from the approved version, or an approved session has no stored bar. Nothing was stored or decided. Also refused with exit 3 on such builds: `operator-approved` with a session to process, a missing or malformed manifest, a `disabled` or unset mode on a protected database, and Databento for an NSE contract | Do not retry. Follow the [Revised Candle Approval Procedure](Indian-Futures-Revised-Candle-Approval-Procedure.md). |
 | 1 | Internal | Inspect logs. |
 
 The operation stops at the first failure, so no later session is ever decided
@@ -597,6 +633,25 @@ docker compose up -d
 sudo systemctl start northstar-india-daily.timer
 ```
 
+**Reviewed-candle protection after a restore (FG-9 builds).** The protection
+marker lives inside the database file, so a backup taken before the database
+was protected restores an unprotected file, and Northstar cannot tell that
+from a database that was never protected. After any restore, and before
+starting the timer, check it from the operation's image:
+
+**DEPLOYMENT MACHINE**
+
+```sh
+cd /opt/northstar-india/northstar-api/deploy/india
+docker compose run --rm --no-deps india-operations northstar protection status --database /data/northstar.sqlite3 --exchange NSE --require-protected
+```
+
+`STATUS: SAFE` (exit 0) is required. On `STATUS: UNSAFE`, keep the timer
+stopped. If the marker is absent and the restore was authorized, run
+`northstar protection init --database /data/northstar.sqlite3 --exchange NSE`
+the same way, with every writer stopped, then check again. An invalid marker is
+never repaired by hand: escalate.
+
 ## 15. Rollback
 
 Rolling back the Indian stack never affects CME, which keeps running.
@@ -642,6 +697,16 @@ sudo systemctl enable --now northstar-india-daily.timer
 The Indian data volume `northstar-india-data` is preserved throughout. If the
 Indian containers and network must be removed, use plain `docker compose down`
 from the Indian directory with no volume flag; named volumes are kept.
+
+**Rolling back from a reviewed-candle (FG-9) build to an older one is not safe
+for continued NSE writes.** An older build ignores the protection marker and
+`NORTHSTAR_FUTURES_APPROVED_CANDLES`, and its manual `market-data sync` and
+`paper run` never read the finality mode. After such a rollback do not
+re-enable the timer and run no manual write command: keep every write-capable
+operation disabled (containment) until a build with reviewed-candle protection
+is back and `northstar protection status --require-protected` reports
+`STATUS: SAFE`. An older build cannot run that check at all; that is itself the
+signal. The Windows runbook's RB-1 to RB-5 apply.
 
 ## 16. CME coexistence
 
@@ -876,6 +941,11 @@ wrapper adds none. Task Scheduler never starts a second instance of the task.
   india-api`. The next hourly run picks it up.
 - There is no time-of-day finality: the hourly trigger only checks for
   approved work.
+- With a reviewed-candle (FG-9) build, enable or re-enable the task only after
+  `northstar protection status --database /data/northstar.sqlite3 --exchange
+  NSE --require-protected`, run from the operation's image, reports
+  `STATUS: SAFE`. The wrapper records exit 8 as outcome `FAILED`, exitClass
+  `CANDLE_APPROVAL`: never `WAITING`.
 
 ### H. Rollback
 

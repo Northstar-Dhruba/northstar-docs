@@ -1,6 +1,9 @@
 # Indian Futures: Reviewed-Candle Equivalence Design (FG-9.1)
 
-Status: **design for engineering review; not implemented** (2026-10-11).
+Status: **design; implemented in development as FG-9.2A to FG-9.2E, not
+released and not accepted** (2026-10-11). Where the implementation differs
+from the design, "Implemented behaviour" in section 6 records what was
+built.
 - Nothing here changes code, configuration, finality, data or any acceptance
   status.
 - It proposes how to meet gate FG-9 of the
@@ -110,6 +113,9 @@ the HTTP routers:
 | `options ...` sync and economics commands | Option tables only | -- | Out of FG-9 scope |
 | HTTP: `/futures/*`, `/health` | None (GET) | -- | Unchanged |
 | HTTP: `POST /analyze`, `POST /watchlist/refresh` (`routers/analysis.py`) | Equity analysis from Yahoo; no futures table | -- | Out of scope |
+| `finality-evidence identity` (FG-9.2E, `_finality_evidence_identity`) | Nothing: reads one evidence file and the NSE calendar | -- | Prints an fdc1 manifest entry; approves nothing |
+| `protection init` (FG-9.2E, `_protection_init`) | Only the protection marker, under the operations lock | -- | The explicit OD-9 marker step |
+| `protection status` (FG-9.2E, `_protection_status`) | Nothing: opens the file read-only | -- | Preflight and postflight check |
 
 Every path to paper decisions, orders and fills goes through
 `_run_paper_session` (callers: `_paper_run`, `_replay_latest_cutoff`,
@@ -339,6 +345,23 @@ whether the version is trustworthy.
 - two explicit venue refusals;
 - no schema change, no port change, no adapter change;
 - every property is testable with synthetic data and a disposable database.
+
+### Implemented behaviour (FG-9.2A to FG-9.2E)
+
+Built in development, not released and not accepted. Where it differs from
+the items above, this is what the code does.
+
+| Topic | Implemented |
+|-------|-------------|
+| Identity and manifest | As section 4 and item 5. Values whose `str()` is not plain notation (magnitudes below 0.000001) have no identity and are refused. The manifest is parsed for the configured product, so a lookup for another symbol or exchange finds nothing |
+| OD-9 marker | Table `northstar_reviewed_candle_protection` (exchange, marking mode) inside the database file: created only when a file is first protected, one `BEGIN IMMEDIATE` transaction, rows only inserted, validated on every read (an invalid table or row is refused, never read as unprotected). It is written by `protection init`, or by the first write-capable NSE command in `operator-approved` or `operator-reviewed` mode, before anything else is written |
+| Protected database | Every write-capable NSE command of this build refuses a missing, blank or `disabled` mode (exit 3), in any process that opens the file through Northstar |
+| Paper guard scope | Applies in the operated modes on every database, and refuses `disabled` on a protected one. On an **unprotected** database `disabled` keeps the manual development workflow unchanged: a deliberate narrowing of item 8, whose "every mode" would have broken that workflow; the marker closes the gap for operated databases |
+| Paper beyond finality | Exit 5 (OD-8). An approved session with no stored bar: exit 8 |
+| Operator commands | `northstar finality-evidence identity` (requires an exact contract and session, and `--line` when several records match; prints no candle value; refuses records without a candle or a whole contract volume). `northstar protection init` (an existing Northstar database only; idempotent; never overwrites a marker; verified). `northstar protection status` (read-only; `--require-protected` exits 3 unless protected and writable by the configured mode; never prints a manifest entry) |
+| Compose | `NORTHSTAR_FUTURES_APPROVED_CANDLES: ${NORTHSTAR_FUTURES_APPROVED_CANDLES:-}` in the shared settings: unset becomes empty, which approves nothing (exit 8 when there is work), so under Compose a missing variable is not exit 3. Northstar never trims the value; Compose's own `.env` parsing of an unquoted value is outside Northstar and was not verified here |
+| Wrapper and web | Exit 8 is exitClass `CANDLE_APPROVAL`, outcome `FAILED`. The web type accepts `operator-reviewed` and shows it as the configured mode only |
+| Limits | A file without the marker cannot show whether it lost one (a restored older backup). A build before FG-9 never reads the marker. Writes outside Northstar are not stopped. These are release and rollback procedures (Windows upgrade runbook, RB-1 to RB-5) |
 
 ## 7. Approval and execution boundaries
 
