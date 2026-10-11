@@ -335,7 +335,9 @@ None of these is decided here.
    [Windows Controlled Upgrade and Rollback](Indian-Futures-Windows-Controlled-Upgrade-and-Rollback.md). It is not approved and
    has never been run; its approvals AP-1 to AP-8 belong to step 4.
 2. Draft the N-4 revised-candle decision procedure. It may contain no
-   automatic rule and no threshold.
+   automatic rule and no threshold. **Drafted for operator review**:
+   [Revised Candle Approval Procedure](Indian-Futures-Revised-Candle-Approval-Procedure.md). It is not accepted, so N-4
+   stays PENDING; applied to 2026-10-09 today, its expected outcome is DEFER.
 3. Add dated notes to E-10 and E-12 (merged commits), and record blocks A and
    P as operator-reported with their artifacts.
 
