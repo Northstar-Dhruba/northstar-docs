@@ -211,3 +211,38 @@ private evidence files by date and description only.
     included.
 - **Production:** M1.4.3.2 is **not deployed**. This entry grants no approval
   and does not satisfy X-4.
+
+### E-12 M1.4.4.2 synthetic independent P&L reconciliation
+
+- **Observation (engineering session, 2026-10-10, development machine):**
+  `northstar-api/tests/independent_pnl_verifier.py` recomputed positions and
+  gross P&L from synthetic SQLite facts.
+  - It uses the standard library, opens the database read-only and computes
+    with exact fractions.
+  - It was compared with Northstar's `paper status`, `economics show`,
+    dashboard and analysis outputs at the same cutoff.
+  - Results for PR-1 to PR-16, end to end, chronology and defect cases:
+    - no MISMATCH;
+    - every field EXACT except PR-13, whose repeating average differs by
+      6.5e-22 INR under the provisional 1e-15 INR threshold (U-3, not
+      approved);
+    - unavailable values (missing economics, no mark) unavailable on both
+      sides.
+  - Every database was byte, logically and sidecar-identical before and after
+    verification.
+  - Tests: `test_independent_pnl_reconciliation.py` 38 passed; targeted
+    regressions 156 (API) and 321 (application) passed.
+  - Details: [Independent Paper P&L Reconciliation](Indian-Futures-Independent-Paper-PnL-Reconciliation.md), section 15.
+- **Source:** engineering session.
+- **Commits:** `northstar-core` e54ccdf, `northstar-application` 9a0ab57,
+  `northstar-infrastructure` aa94428, `northstar-api` 545b3b6 (the three test
+  files uncommitted), `northstar-docs` 1d9bd0c (this documentation
+  uncommitted).
+- **Artifacts:** synthetic only, outside every repository in
+  `C:\Code\Private\Northstar\NorthstarEvidence\M1.4.4.2-synthetic-2026-10-10`.
+  - 8 files listed in `MANIFEST.sha256` (SHA-256 of the manifest:
+    `0f1b2c144acb83edc81909d2d6c14de8a48fe57eb1ee553ad732425282021e7c`).
+  - Scanned before preservation: no credential, account or computer name,
+    production path or production figure.
+- **What this is not:** a production reconciliation. P-3 stays PENDING (G-1),
+  and U-1 to U-8 remain undecided. It is not evidence of profitability.

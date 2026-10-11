@@ -98,7 +98,7 @@ validation (Phase 3); neither is part of this acceptance.
 |----|----------------------|----------------|-------------------------|------------------|--------|------------------|
 | P-1 | Positions carry direction, whole-contract quantity and weighted average entry; a reversal resets the average to the fill quote. | `_transition` (`northstar-application/.../build_futures_paper_portfolio.py`) | `northstar-application/tests/application_services/test_build_futures_paper_portfolio.py` | SHORT 1 after the October 8 fill (operator-reported, E-3) | PASS | none |
 | P-2 | Gross realized P&L and gross unrealized P&L (marked at the latest stored daily close at or before the cutoff) in INR at the contract's point value; an unmarked position is "unavailable", never zero. | `CalculateFuturesRealizedPnlUseCase`; `ValueFuturesPaperPortfolioUseCase`; `BuildFuturesPaperTradingValuationUseCase` | `northstar-api/tests/test_india6_nifty_baseline_acceptance.py::test_valuation_matches_an_independent_recomputation` | INR valuation observed (operator-reported, E-3) | PASS | none |
-| P-3 | The live valuation of the October portfolio agrees with an independent recomputation from its recorded fill and mark. | -- | -- | Not yet recomputed | PENDING | Recompute from read-only output (section 15) |
+| P-3 | The live valuation of the October portfolio agrees with an independent recomputation from its recorded fill and mark. | -- | `northstar-api/tests/test_independent_pnl_reconciliation.py` (synthetic only) | Not recomputed for production. M1.4.4.2 verified the accounting rules on synthetic databases with an independent verifier: PR-1 to PR-16 had no mismatch on the CLI, dashboard or analysis (E-12; [Independent Paper P&L Reconciliation](Indian-Futures-Independent-Paper-PnL-Reconciliation.md), section 15). That is not the October valuation | PENDING | Recompute from read-only output (section 15). A production recomputation needs G-1 resolved (that document, section 13) |
 | P-4 | Fees, taxes, slippage, cash and margin. | Explicitly excluded ("gross"): `build_futures_paper_trading_valuation.py` module docstring | -- | -- | DEFERRED (L-6) | Approve L-6 |
 
 ## 7. Operator-approved daily candle finality
@@ -456,7 +456,7 @@ What each open item still needs. "--" means nothing of that kind is needed.
 | N-4 | The written procedure for a revised session | Write the procedure (no automatic rule, no threshold) | -- | -- |
 | D-4 (G-1) | The gate owner records the gate's status | -- | -- | The recorded status |
 | V-3 | -- | Deploy M1.2 to production | Dashboard reads after deployment | Deployed commits |
-| P-3 | -- | -- | Independent recomputation of the October valuation | The recomputation |
+| P-3 | -- | Done for synthetic data: the independent verifier, M1.4.4.2 ([reconciliation](Indian-Futures-Independent-Paper-PnL-Reconciliation.md)) | Independent recomputation of the October valuation, after G-1 is resolved | The recomputation |
 | B-1, B-2 | -- | Done: the Windows procedure is written (not run) | The supervised drill, blocks A, P, B, D, E, F, H, I and J (M1.4.2) | The drill record (evidence register) |
 | D-2, D-3 and E-1 to E-6 | Or the approver accepts them as operator-reported | -- | -- | Logs, `last-run.json`, test output, hashes (no secrets) |
 | O-5, P-4, V-5 and L-1 to L-8 | The proposed scope limitations | -- | -- | -- |
