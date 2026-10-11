@@ -245,7 +245,9 @@ the ingested candle equals the reviewed one.
   2026-10-09, this blocks all further advancement for the October contract.
 - Closing the gap is an engineering decision (for example, approving a
   specific candle version and refusing ingestion of any other). It is not
-  implemented, and not part of this procedure.
+  implemented, and not part of this procedure. A proposed design, also not
+  implemented:
+  [Reviewed-Candle Equivalence Design](../architecture/Indian-Futures-Reviewed-Candle-Equivalence-Design.md).
 
 ## 10. Replay and accounting safeguards
 
