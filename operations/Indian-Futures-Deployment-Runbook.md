@@ -296,6 +296,8 @@ session `D`:
 
 1. **Verify** outside Northstar that the provider's daily candle for `D` is
    final. Northstar does not and cannot decide this; no clock time does either.
+   For a candle seen to change, follow the proposed
+   [Revised Candle Approval Procedure](Indian-Futures-Revised-Candle-Approval-Procedure.md) (N-4; not yet accepted).
 2. **Approve** by editing `.env`: `NORTHSTAR_FUTURES_FINAL_THROUGH=D`. Approve
    one session at a time; never approve a session whose candle you have not
    verified.
