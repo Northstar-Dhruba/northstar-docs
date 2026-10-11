@@ -6,6 +6,8 @@ This document defines the official vocabulary of Northstar. Its purpose is to el
 
 The vocabulary in this document is the shared language for architecture discussions, domain modeling, and implementation planning.
 
+> **Canonical vocabulary.** [`architecture/Ubiquitous-Language.md`](../architecture/Ubiquitous-Language.md) is the authoritative definition of every term it defines. This includes the Foundation, Core Domain, Futures Research and Recommendation, and Options vocabularies. Where the two documents differ, the canonical document applies. This document remains a broad platform glossary. In particular, research actions (BUY, SELL, HOLD), trade directions (LONG, SHORT), target exposure and order sides (BUY, SELL) are distinct concepts defined there (ADR-017).
+
 ---
 
 ## 1. Principles of the Language
@@ -109,6 +111,7 @@ For example:
 
 ## Related Documents
 
+- [Canonical Ubiquitous Language](../architecture/Ubiquitous-Language.md)
 - [02-domain-map.md](02-domain-map.md)
 - [04-domain-events.md](04-domain-events.md)
 - [05-dependency-rules.md](05-dependency-rules.md)

@@ -115,19 +115,31 @@ These goals should be supported by a domain model that remains stable even as pr
 
 ## 8. Repository Responsibilities
 
-The repository boundaries are a core architectural decision.
+The repository boundaries are a core architectural decision. They were first set by ADR-001 (three repositories) and are now recorded by [ADR-017](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md) (Proposed).
 
 ### northstar-core
 
-Responsible for domain logic, business rules, financial concepts, and platform intelligence. This is the authoritative home of Northstar’s business meaning.
+Responsible for domain logic, business rules, financial concepts, and platform intelligence. This is the authoritative home of Northstar’s business meaning. It contains pure domain models and policies, with no I/O, clock, persistence or transport.
+
+### northstar-application
+
+Responsible for application services (use cases) and the ports they depend on. It orchestrates the Core and holds no infrastructure code.
+
+### northstar-infrastructure
+
+Responsible for adapters: persistence, market-data providers, exchange calendars and other external integrations. It implements Application ports.
 
 ### northstar-api
 
-Responsible for orchestration, integration, coordination, and application services. It adapts domain capabilities to transport and infrastructure concerns.
+Responsible for composition, the CLI, scheduled operations and the HTTP interface. It wires Infrastructure adapters into Application services and adapts them to transport concerns.
 
 ### northstar-web
 
-Responsible for presentation, interaction, visualization, and user experience. It consumes capabilities from the system without owning business logic.
+Responsible for presentation, interaction, visualization, and user experience. It consumes capabilities through the supported API interfaces without owning business logic.
+
+### northstar-docs
+
+Responsible for architecture, domain, engineering-standard and operational documentation. It is not a runtime dependency of any repository.
 
 ---
 
