@@ -267,6 +267,174 @@ Definition pending Core Domain Design.
 
 Definition pending Core Domain Design.
 
+## Futures Research and Recommendation Vocabulary
+
+Governed by ADR-017: Repository Layering and Futures Recommendation Domain Boundary.
+
+Three activities stay distinct:
+
+- **Research evaluation** assesses a contract and produces a Research Decision with a Research Action. It advises; it does not trade.
+- **An actionable recommendation** is a Trade Recommendation: a trade setup with a Trade Direction, followed through its own Recommendation Lifecycle.
+- **Simulated execution** (paper trading) turns a Research Decision into a Target Exposure, simulated orders with an Order Side, fills and positions.
+
+A recommendation is not an order, a fill or a position, and a Recommendation Event is not an execution.
+
+### Research Action
+
+Business Meaning:
+The directional view a research assessment takes of one Futures contract: BUY, SELL or HOLD.
+
+Purpose:
+State what the research advises, independently of any trade setup or execution.
+
+Represents:
+The `RecommendationAction` value of a `FuturesRecommendation`.
+
+Does NOT Represent:
+A Trade Direction, a Target Exposure or an Order Side. A research SELL is not inherently a SHORT Trade Recommendation, and HOLD is not an instruction to close anything.
+
+Examples:
+BUY; SELL; HOLD.
+
+Relationship to Other Futures Concepts:
+Every Research Decision carries exactly one Research Action. The paper target-position policy maps BUY and SELL to a Target Exposure; any mapping to a Trade Direction belongs to a recommendation-generation policy, which is not yet defined.
+
+### Research Decision
+
+Business Meaning:
+A strategy's research assessment of one Futures contract at one decision instant.
+
+Purpose:
+Record what a named strategy concluded from the market observations available at the decision instant.
+
+Represents:
+A `FuturesRecommendation`: one Research Action, the analysis it was derived from, the strategy identity and the decision instant, which equals the analysis instant.
+
+Does NOT Represent:
+A Trade Recommendation, an entry, stop or target, a quantity, an order or a position.
+
+Relationship to Other Futures Concepts:
+A Research Decision becomes durable as a Frozen Research Record. Paper trading acts on Frozen Research Records only.
+
+### Frozen Research Record
+
+Business Meaning:
+A Research Decision persisted once and never changed.
+
+Purpose:
+Give execution and later evaluation an immutable, reproducible record of what research advised and on what evidence.
+
+Represents:
+A `FuturesForwardResearchRecord`, created by `FreezeFuturesForwardResearchDecisionUseCase` and stored insert-only, keyed by contract, timeframe, decision instant and strategy, with its supporting evidence.
+
+Does NOT Represent:
+A published recommendation or an execution. Some code and screens call it a "decision".
+
+Relationship to Other Futures Concepts:
+A Frozen Research Record is the input to the paper target-position policy and may be the input to a future recommendation-generation policy.
+
+### Target Exposure
+
+Business Meaning:
+The signed number of contracts of one Futures contract that a policy intends to hold.
+
+Purpose:
+Separate what a policy wants to hold from the orders needed to get there.
+
+Represents:
+A signed contract count: positive is long, negative is short, zero is flat. The existing paper target-position policy sets +N for BUY and -N for SELL, leaves exposure unchanged for HOLD, and targets zero inside the expiry flatten window.
+
+Does NOT Represent:
+A Research Action, a Trade Direction or an Order Side. The position actually held is the signed `FuturesPosition.net_contracts`.
+
+Relationship to Other Futures Concepts:
+The difference between the Target Exposure and the current net position determines the simulated order, and therefore its Order Side.
+
+### Trade Direction
+
+Business Meaning:
+Whether a Trade Recommendation is LONG or SHORT.
+
+Purpose:
+State the side of the market a trade setup takes, independently of research vocabulary and execution instructions.
+
+Represents:
+`TradeDirection` (LONG, SHORT) in `northstar_core.recommendations.futures` (planned).
+
+Does NOT Represent:
+A Research Action, a Target Exposure or an Order Side.
+
+Relationship to Other Futures Concepts:
+Every Trade Recommendation has exactly one Trade Direction.
+
+### Order Side
+
+Business Meaning:
+The side of an execution instruction: BUY or SELL.
+
+Purpose:
+Describe what a simulated or demo order does, independently of why it was placed.
+
+Represents:
+`OrderSide` in `northstar_core.paper_trading`, reused by `northstar_core.broker_execution`.
+
+Does NOT Represent:
+A Research Action or a Trade Direction. A SELL order may open a short position or reduce a long one, depending on the current position.
+
+Relationship to Other Futures Concepts:
+Order Side belongs to simulated and demo execution. The recommendation domain does not use it.
+
+### Trade Recommendation
+
+Business Meaning:
+An actionable trade setup for one Futures contract, followed through a Recommendation Lifecycle.
+
+Purpose:
+Express what a user could act on, separately from the research that informed it and from any execution that may follow.
+
+Represents:
+`FuturesTradeRecommendation` in `northstar_core.recommendations.futures` (planned): a Trade Direction together with the setup's planned entry, stop, target and validity. Detailed contents are defined by the F-2 engineering specification.
+
+Does NOT Represent:
+A Research Decision, a Frozen Research Record, an order, a fill or a position.
+
+Relationship to Other Futures Concepts:
+A Trade Recommendation may be derived from a Frozen Research Record by a recommendation-generation policy. Paper trading does not consume Trade Recommendations.
+
+### Recommendation Event
+
+Business Meaning:
+A recorded occurrence in the life of one Trade Recommendation, determined from market observations.
+
+Purpose:
+Make the history of a Trade Recommendation auditable and reproducible.
+
+Represents:
+An immutable lifecycle occurrence of one Trade Recommendation, stamped with the market observation that caused it. When a daily candle cannot establish the intraday order of prices, the event records that ambiguity explicitly.
+
+Does NOT Represent:
+A broker fill, a paper-trading fill or any other execution.
+
+Relationship to Other Futures Concepts:
+The ordered Recommendation Events of a Trade Recommendation make up its Recommendation Lifecycle.
+
+### Recommendation Lifecycle
+
+Business Meaning:
+The sequence of states a Trade Recommendation passes through, as recorded by its Recommendation Events.
+
+Purpose:
+Track a Trade Recommendation from creation to closure independently of any execution.
+
+Represents:
+The states and transitions defined by the F-2 engineering specification. Under the approved daily-candle policy, when the stop and target of an ACTIVE recommendation are both touched in one daily candle the stop applies first and the ambiguity is reported. The entry candle never establishes an order between entry, target and stop, and an ambiguous entry-candle outcome is represented explicitly.
+
+Does NOT Represent:
+The state of an order, fill, position or portfolio.
+
+Relationship to Other Futures Concepts:
+A Recommendation Lifecycle belongs to exactly one Trade Recommendation. Recorded history is never rewritten.
+
 ## Options Vocabulary
 
 Governed by ADR-010: Option Contract Identity.

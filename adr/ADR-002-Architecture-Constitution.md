@@ -4,6 +4,8 @@ Status
 
 Accepted
 
+Supersession note (2026-10-12): ADR-017 (Repository Layering and Futures Recommendation Domain Boundary, Proposed) records the five-repository layering now in force. When ADR-017 is accepted, it supersedes the repository-role statements of this decision; the architectural principles of this decision remain in force. The text below is the original decision of 2026-08-09 and is not modified.
+
 Date
 
 2026-08-09

@@ -14,10 +14,14 @@ The core domain must remain the source of truth for business logic.
 
 ### Rule
 
-- northstar-core may define business concepts and domain rules.
-- northstar-api may orchestrate and adapt those concepts.
-- northstar-web may present and interact with them.
+- northstar-core may define business concepts and domain rules. It depends on no other Northstar repository.
+- northstar-application may orchestrate those concepts through application services and ports. It depends only on northstar-core.
+- northstar-infrastructure may implement Application ports with adapters. It depends on northstar-application and northstar-core.
+- northstar-api composes northstar-core, northstar-application and northstar-infrastructure, and exposes them through the CLI and HTTP.
+- northstar-web may present and interact with them through the supported API interfaces only.
 - Infrastructure concerns must depend on the domain, not the reverse.
+
+The repository layering is recorded by [ADR-017](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md) (Proposed).
 
 ### Reason
 
@@ -62,28 +66,32 @@ The presentation layer should not depend directly on the core domain in a way th
 - The web layer should consume capabilities through a stable application boundary rather than coupling itself directly to domain internals.
 
 **Preferred Direction**
-- Web → API → Core
+- Web → API (HTTP) → Application → Core
 
 ---
 
-### Rule 4: API imports Core
+### Rule 4: API composes Core, Application and Infrastructure
 
-The orchestration layer should depend on the core domain.
+The API repository is the composition root. It depends on the Core domain, on Application services and on Infrastructure adapters, and wires them together.
 
 **Reason**
-- The API layer exists to coordinate and adapt domain capabilities for external use.
+- The API layer exists to compose and adapt domain capabilities for external use through the CLI and HTTP.
 
 **Preferred Direction**
-- API → Core
+- API → Application, Infrastructure, Core
 
 ---
 
-### Rule 5: Infrastructure depends on Core
+### Rule 5: Infrastructure depends on Application and Core
 
-Infrastructure concerns such as persistence, messaging, scheduling, and integrations should depend on the domain model.
+Infrastructure concerns such as persistence, messaging, scheduling, and integrations should depend on the domain model and implement the ports defined by Application.
 
 **Reason**
 - Infrastructure must serve the domain, not define it.
+
+**Preferred Direction**
+- Infrastructure → Application, Core
+- Application never imports Infrastructure or API.
 
 ---
 
@@ -117,6 +125,10 @@ Notification capabilities should communicate results, not define business logic.
 ### Research never replaces the domain model
 
 Research may evaluate ideas, but it should not become the place where the platform’s core meaning is defined.
+
+### Recommendations never depend on execution
+
+The Futures trade recommendation package (`northstar_core.recommendations.futures`, planned) may consume the pure types of Foundation, Derivatives, Futures and Strategy. It must not depend on Paper Trading or Broker Execution, and Strategy must never import Recommendations. A recommendation is not an order, a fill or a position. See [ADR-017](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md).
 
 ---
 
