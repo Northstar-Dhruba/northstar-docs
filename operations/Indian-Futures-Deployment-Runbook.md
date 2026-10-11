@@ -599,6 +599,11 @@ sudo systemctl start northstar-india-daily.timer
 
 Rolling back the Indian stack never affects CME, which keeps running.
 
+This section is written for Linux/systemd. For the Windows deployment machine, a
+controlled upgrade and complete rollback procedure is prepared for operator review in
+[Windows Controlled Upgrade and Rollback](Indian-Futures-Windows-Controlled-Upgrade-and-Rollback.md); it is not approved and has
+never been run.
+
 Stop the Indian stack, keeping its data:
 
 **DEPLOYMENT MACHINE**
@@ -871,6 +876,9 @@ wrapper adds none. Task Scheduler never starts a second instance of the task.
   approved work.
 
 ### H. Rollback
+
+To roll back a release rather than the task, see the proposed
+[Windows Controlled Upgrade and Rollback](Indian-Futures-Windows-Controlled-Upgrade-and-Rollback.md) (not approved, never run).
 
 Removing the task changes no data:
 
