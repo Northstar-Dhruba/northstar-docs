@@ -212,7 +212,7 @@ proposed date `P`, **all** of these must hold:
 | FG-6 | `P` is a valid NSE trading session (as `YYYY-MM-DD`) not after the contract's expiration date, and no earlier session up to `P` is unresolved in the NSE calendar |
 | FG-7 | The operator states the expected runtime behaviour: the next run acquires and decides every session up to `P` in one range, oldest first, may create orders and fills, and stops with exit 5 or 4 on a conflict or a missing candle |
 | FG-8 | The `.env` change is **separately and explicitly authorized** (who, when, the old and new values), and made one approval at a time as in runbook section 5 |
-| FG-9 | **Review-to-ingestion equivalence.** For every session reviewed under this procedure, an approved, technically supported method ensures that the candle the run will ingest is the candle that was reviewed. **No such method exists today** (below), so FG-9 cannot be met |
+| FG-9 | **Review-to-ingestion equivalence.** For every session reviewed under this procedure, an approved, technically supported method ensures that the candle the run will ingest is the candle that was reviewed. **No such method exists today** in the deployed build (below), so FG-9 cannot be met |
 
 **STOP on incomplete evidence.** If any gate cannot be shown, do not change
 `.env`. The decision is DEFER, final-through stays unchanged, and every run
@@ -245,9 +245,13 @@ the ingested candle equals the reviewed one.
   2026-10-09, this blocks all further advancement for the October contract.
 - Closing the gap is an engineering decision (for example, approving a
   specific candle version and refusing ingestion of any other). It is not
-  implemented, and not part of this procedure. A proposed design, also not
-  implemented:
-  [Reviewed-Candle Equivalence Design](../architecture/Indian-Futures-Reviewed-Candle-Equivalence-Design.md).
+  implemented in the deployed build, and not part of this procedure. The
+  [Reviewed-Candle Equivalence Design](../architecture/Indian-Futures-Reviewed-Candle-Equivalence-Design.md)
+  is now implemented in development (FG-9.2A to FG-9.2E) but not released
+  or accepted. Once it is, an APPROVE additionally requires: the identity of
+  the exact evidence line reviewed, from `northstar finality-evidence
+  identity`, recorded by line number; and the manifest entry added under
+  FG-8. Producing a fingerprint approves nothing.
 
 ## 10. Replay and accounting safeguards
 
@@ -385,6 +389,7 @@ location and line count, never copied.
 | Current final-through; proposed final-through | |
 | Runtime change authorization (FG-8): by whom, when; or "not authorized" | |
 | Review-to-ingestion method (FG-9): the approved method; or "none: FG-9 unmet" | |
+| FG-9 build only: evidence line given to `finality-evidence identity`, and where the manifest entry was added (never the fingerprint itself while G-1 is unresolved) | |
 
 ## 15. Known implementation gaps
 

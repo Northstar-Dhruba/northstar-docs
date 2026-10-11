@@ -72,6 +72,13 @@ The independent P&L verifier (M1.4.4.2) is test-only and is not deployed.
   must not be used on this machine (section 12);
 - any G-1 decision.
 
+**Reviewed-candle (FG-9) builds.** This procedure and its release manifest
+(section 3) were prepared for the M1.5.2 release. A build containing FG-9
+reviewed-candle protection is a different release: it needs its own manifest
+and AP-1. When it is released, the additions in sections 8, 9 and 14 marked
+"FG-9" apply as well. FG-9 is implemented in development only; nothing here
+releases or accepts it.
+
 ## 2. Version and environment prerequisites
 
 - Runbook section 18A holds: Docker Desktop in Linux-containers mode, the
@@ -668,6 +675,17 @@ The same applies after a rollback.
 | Paper trading state preserved | `paper status` after 7.7, compared with `paper-status.before.txt`: same orders, fills, pending and position after WAITING | R (AP-8; G-1 retention) |
 | Scheduler behaviour | After 7.8: `Get-ScheduledTaskInfo` `LastTaskResult` and `last-run.json` after the next hourly run | R (observation) |
 
+**FG-9 additions (a reviewed-candle build only).** Run each `northstar`
+command below from `deploy\india` as `docker compose run --rm --no-deps
+india-operations northstar ...`, which mounts `northstar-india-data` at
+`/data`.
+
+| Check | How | Class |
+|-------|-----|-------|
+| Protection before any writer | With the task disabled and the system quiet (section 6), and **before** AP-7 or any manual write: `northstar protection init --database /data/northstar.sqlite3 --exchange NSE`. Expect `PROTECTION: INITIALIZED -- verified`, or `PROTECTION: ALREADY PRESENT -- unchanged`. It holds the operations lock and writes only the marker: no candle, decision, order, fill or finality setting | **W** (a write to the production database; needs its own authorization) |
+| Protection preflight and postflight | `northstar protection status --database /data/northstar.sqlite3 --exchange NSE --require-protected`. It opens the database read-only. `STATUS: SAFE` (exit 0) is required before AP-7; with the recorded `.env` (`operator-approved`) it reports that the mode may wait or replay but acquires nothing | R |
+| Exit 8 through the wrapper | Synthetic only: the wrapper records outcome `FAILED`, exitClass `CANDLE_APPROVAL` (PowerShell 5.1 test). Never induce it in the production portfolio | Synthetic only |
+
 ## 9. Rollback triggers
 
 **Roll back (section 10) when:**
@@ -692,6 +710,28 @@ The same applies after a rollback.
 - a rollback STOPs.
 
 **Every branch leaves the task disabled.** Re-enabling is only ever AP-7.
+
+**FG-9: rolling back from a reviewed-candle build.** A build before FG-9
+ignores the protection marker and the approved-candle manifest, and its manual
+`market-data sync` and `paper run` never read the finality mode. Such a rollback
+is therefore **never safe for continued NSE writes**: it is containment. The
+task stays disabled and no manual write command runs until a reviewed-candle
+build is back and its preflight reports `STATUS: SAFE`.
+
+| # | Condition | Required behaviour |
+|---|-----------|--------------------|
+| RB-1 | The `.env` the rollback target runs with has a final-through after the latest decision's session (the dashboard shows approved finality ahead of the latest decision) | STOP: the older build would acquire and decide those sessions unverified |
+| RB-2 | A refused start (exit 3, `operator-reviewed` unknown to the older build) tempts a mode change to `operator-approved` | STOP: never edit the mode to get an older build running |
+| RB-3 | Any manual `market-data sync` or `paper run` on the production database while a pre-FG-9 build is running | STOP: those commands are unprotected there |
+| RB-4 | Any advance of `NORTHSTAR_FUTURES_FINAL_THROUGH` while a pre-FG-9 build is running | STOP |
+| RB-5 | The rollback target's protection cannot be verified: `northstar protection status` is not a command of that build (an older build answers exit 2, "invalid choice") or does not report `STATUS: SAFE` | Treat it as a pre-FG-9 build: containment |
+| -- | A database restored from a backup taken before protection existed (no marker: indistinguishable from a database never protected) | The preflight reports `STATUS: UNSAFE`. Keep writers disabled; initialize protection only under authorization, then re-check |
+| -- | The section 10 restore of the pre-upgrade `.env` brings back `operator-approved` | On a reviewed-candle build it only waits or replays; on an older build RB-1 decides |
+| -- | Configuration and database disagree (for example a marked database and a `disabled` or unset mode) | Every write-capable command of a reviewed-candle build refuses (exit 3): fix the configuration, never the marker |
+| -- | A scheduler restart before the preflight reports `STATUS: SAFE` | Not allowed: AP-7 requires it |
+
+Nothing in a rollback rewrites stored bars, decisions, orders, fills or
+approvals.
 
 ## 10. Complete rollback procedure
 
@@ -934,7 +974,12 @@ Stop, change nothing further, leave the task disabled and escalate when:
 - any step would approve a session or change `NORTHSTAR_FUTURES_FINAL_THROUGH`;
 - an exception would have to be created in the production portfolio to test
   exit 7;
-- the `.env` copy would be placed inside a checkout or the evidence directory.
+- the `.env` copy would be placed inside a checkout or the evidence directory;
+- FG-9: the task would be re-enabled, or a manual write run, before
+  `northstar protection status --require-protected` reports `STATUS: SAFE`;
+- FG-9: the protection marker is reported invalid, or a database restore
+  removed it without an authorization to initialize it again;
+- FG-9: any of RB-1 to RB-5 (section 9) holds.
 
 ## 15. Outstanding decisions and readiness verdict
 
