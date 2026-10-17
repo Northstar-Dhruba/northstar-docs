@@ -405,6 +405,10 @@ The operation stops at the first failure, so no later session is ever decided
 past one that did not complete. A rerun resumes from the latest frozen
 decision; completed sessions are idempotent.
 
+With private futures recommendations enabled (section 19) the same codes apply;
+section 19.6 lists what each recommendation condition returns. With the
+feature disabled -- the default -- nothing in this table changes.
+
 ## 8. Dashboard access
 
 The Indian site listens only on host loopback `127.0.0.1:8081` (the CME site
@@ -965,3 +969,141 @@ Unregister-ScheduledTask -TaskName 'Northstar India Operations' -Confirm:$false
 Operations then run only manually (`docker compose run --rm --no-deps
 india-operations` from `deploy\india`), as before Stage 1. Logs and
 `last-run.json` stay where they are until deleted by hand.
+
+## 19. Private futures recommendations (F-5D-2; disabled by default)
+
+Northstar is a private, single-user decision-support tool. A futures
+recommendation here is an internal record in the operated SQLite file for the
+owner's own review. Nothing is published, delivered, notified or sent to a
+broker, and this milestone adds no way to do so. **Do not enable it on real
+Upstox data:** G-1 (written data-use permission) is unresolved, and no
+production generation policy is approved (ADR-018). Everything below has been
+exercised only with synthetic data.
+
+### 19.1 Settings
+
+| Variable | Meaning |
+|---|---|
+| `NORTHSTAR_FUTURES_RECOMMENDATIONS` | `disabled` (default when unset) or `enabled`. Any other value is a configuration error (exit 3). |
+| `NORTHSTAR_FUTURES_RECOMMENDATION_PROFILE` | Required when enabled: the name of an **approved** recommendation configuration (generation policy and profile). |
+| `NORTHSTAR_FUTURES_CONTRACT_LAST_SESSION` | Optional: the operated contract's last tradable session, `YYYY-MM-DD`. |
+| `NORTHSTAR_FUTURES_CONTRACT_CUTOFF_AUTHORITY` | Required with the last session: the reference it was taken from. |
+
+Disabled reads none of the others and changes nothing: the daily output, exit
+codes and database are exactly as before, and no recommendation table is
+created.
+
+Enabled is necessary, never sufficient. It also requires, checked before the
+operations lock and before anything is written:
+
+- the chronological NSE operation (`NORTHSTAR_FUTURES_MARKET_DATA_PROVIDER=upstox`);
+- `NORTHSTAR_FUTURES_DAILY_BAR_FINALITY=operator-reviewed` with a valid
+  `NORTHSTAR_FUTURES_APPROVED_CANDLES` manifest (section 5);
+- a profile present in the build's approved-configuration registry, approving
+  the operated `NORTHSTAR_STRATEGY`.
+
+**The approved registry is empty in this build.** No production lookback,
+multipliers, price increment, minimum reward-to-risk or validity horizon is
+approved, so enabling the feature with any profile is refused with exit 3.
+Nothing falls back to test parameters. A configuration becomes usable only
+when the product owner approves one and it is added in code.
+
+### 19.2 Contract cutoff
+
+Generation needs the operated contract's last tradable session. Northstar
+never derives it from the expiration date. When the two cutoff variables are
+set, the session must be an NSE calendar session on or before the expiration
+date (otherwise exit 3), and it is recorded with the authority
+`operator-configured: <reference>`: the operator's statement of its source,
+not an exchange verification by Northstar. Without them, generation is
+BLOCKED with `CONTRACT_CUTOFF_UNAVAILABLE` and nothing is recorded.
+
+### 19.3 What the daily operation does
+
+Recommendations use the one `NORTHSTAR_DATABASE`: definitions, generation
+audits, lifecycle steps and the `futures_ohlcv` candles they reference must
+share one file, and there is no separate setting. Under the same operations
+lock, after the unchanged paper workflow, on both its COMPLETED and WAITING
+paths:
+
+1. monitor every open recommendation of the product, on every expiry, through
+   sessions whose bars are FINAL under the finality policy, stored, and the
+   exact operator-approved version. A gap stops that recommendation; nothing
+   after a gap is evaluated, and missing evidence is never treated as quiet;
+2. re-read the stored lifecycles;
+3. refuse to generate on an open anomaly or an unsafe rollover (19.4);
+4. otherwise generate for the operated contract and strategy. A new
+   recommendation and its RECORDED generation audit are stored in one
+   transaction; a retry returns the stored one unchanged.
+
+Every read verifies each recommendation's RECORDED audit and lifecycle
+evidence. A definition without its audit, a changed candle or corrupt evidence
+fails the run with exit 5; it is never reported as a rejection.
+
+The output adds a `RECOMMENDATIONS (private; ...)` section: recommendations
+monitored, steps recorded, status changes, evidence gaps, open
+recommendations, generation status, recorded and existing identities,
+rejection reasons and any operator action.
+
+### 19.4 Guards
+
+- **Open anomaly.** If more than one recommendation of the product is open,
+  each is still monitored, no recommendation is generated, and the run exits 5.
+  Nothing is netted, cancelled or expired. Investigate before the next run.
+- **Unsafe rollover.** Daily acquisition follows only the configured contract.
+  If a recommendation is open on any other expiry it would never receive the
+  candles that close it, so no recommendation is generated and the run exits 5.
+  Do not move `NORTHSTAR_FUTURES_EXPIRATION` while a recommendation on the
+  current contract is open: operate it until the recommendation closes, or
+  declare incomplete coverage (19.5).
+- A recommendation whose validity date has passed is **not** closed by the
+  date. Only a recorded terminal step closes it and releases the product.
+
+### 19.5 Incomplete-coverage declaration
+
+A recommendation held open past its validity by missing, unapproved or
+not-yet-final evidence is reported as `AWAITING_EVIDENCE_PAST_VALIDITY`, with
+the gap, and keeps blocking the product. There is no automatic timeout. If the
+evidence will not arrive, the owner may declare it, once, explicitly:
+
+```
+northstar recommendations expire-incomplete \
+    --recommendation <identity> --operator <who> \
+    --case <ticket or case reference> --monitor-policy <version>
+```
+
+It uses the same environment and gates as the daily operation, takes the
+operations lock, and runs the monitor with this one declaration. Only a
+recommendation a gap holds open after its validity has ended is expired, as
+`EXPIRED_WITH_INCOMPLETE_COVERAGE` -- never as a stop, target or verified
+expiry. The declaration is recorded in the lifecycle's time evidence as
+`northstar.futures-incomplete-coverage/1;monitor_policy=...;operator=...;case=...;recommendation=...`.
+It is the operator's assertion, not proof that the evidence is lost. Never put
+a declaration in `.env`.
+
+### 19.6 Exit codes
+
+| Condition | Exit |
+|---|---|
+| Feature disabled or unset | Unchanged |
+| Invalid flag, missing or unapproved profile, finality not operator-reviewed, Databento, invalid cutoff configuration, a configuration version reused with other contents | 3 |
+| Generation blocked (no research, unverified or unreviewed history, no cutoff), a session not final, a missing or unapproved candle, awaiting a declaration, progress recorded concurrently by another writer (`CONCURRENT_PROGRESS`; the next run resumes) | Unchanged; reported in the section |
+| A candle differing from its approved version | 8 |
+| Corrupt or unaudited recommendation evidence, an open anomaly, an unsafe rollover, a recording race that cannot be reconciled, SQLite busy | 5 |
+| The NSE calendar cannot resolve a recommendation's sessions (an unloaded year) | 6 |
+| `expire-incomplete`: invalid input, an unknown or already terminal recommendation | 2 |
+| `expire-incomplete`: a declaration that does not apply (validity not ended, or no gap) | 5 |
+
+A rerun is idempotent: evaluated sessions are not evaluated again, and a
+recorded recommendation is returned, not generated again. A run that stopped
+part-way resumes from the stored lifecycle. Lock contention is the existing
+`SKIPPED`, exit 0. The Windows task (section 18) runs the same daily command;
+no second task or service is needed.
+
+### 19.7 Evidence-provenance limitation
+
+Each lifecycle step stores the fingerprint of the candle evaluated. It proves
+which candle bytes were evaluated, not that they were final or approved when
+evaluated, and not who approved them or when. Approval is checked against
+`NORTHSTAR_FUTURES_APPROVED_CANDLES` at evaluation time; who approved a candle,
+and when, stays in the operator's evidence register.
