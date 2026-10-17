@@ -5,6 +5,15 @@ is PENDING. Nothing here is a verified contract reference, and no
 verified-reference code exists: Infrastructure's
 `HistoricalFuturesReferenceKind` has only `SYNTHETIC` (R-1B-1).
 
+> **Note, 2026-10-18 (R-1B-2B-2).**
+> - The owner approved governance decisions D-1 and D-2 (section 7.1). They
+>   approve no fact.
+> - An evidence acceptance gate now exists in Infrastructure (section 6.1).
+>   Its production registry is empty.
+> - Accepted facts: **0**. Verified historical contracts: **0**. Every
+>   extracted fact (NSE-F-01 to NSE-F-22) remains individually PENDING, and
+>   `HistoricalFuturesReferenceKind` is still only `SYNTHETIC`.
+
 This register records which official NSE documents were located and
 inspected, which facts were extracted from them, and what is still missing
 before any historical NIFTY futures contract reference can be built. It
@@ -247,15 +256,103 @@ Limits:
   verification.
 - There is no automatic VERIFIED classification and no self-approval.
 
+### 6.1 Implemented gate (R-1B-2B-2, 2026-10-18)
+
+The mechanism exists; it accepts nothing. Code:
+`northstar-infrastructure/src/northstar_infrastructure/market_data/historical_futures_reference_evidence.py`
+and the trust anchor
+`northstar-infrastructure/src/northstar_infrastructure/market_data/nse_accepted_reference_evidence.py`.
+
+**What each part is**
+
+- `HistoricalFuturesDocumentIdentity`: evidence ID (`NSE-EV-nn`), NSE
+  document ID, an https URL on an official NSE host, and the SHA-256 where
+  verified.
+- `HistoricalFuturesAcceptedFact` binds one fact ID (`NSE-F-nn`) to:
+  - its document;
+  - its category;
+  - the product and the exact contract;
+  - the value;
+  - its effective boundaries and their semantics (`SESSION_INCLUSIVE` or
+    `AFTER_END_OF_DAY`);
+  - the accepted interpretation, limitations and unresolved conditions;
+  - the owner's acceptance: decision ID, owner, date and purpose.
+
+  It has no "accepted" field. Building one accepts nothing.
+- `HistoricalFuturesAcceptedEvidenceRegistry` is one version of a set of
+  facts. It refuses a repeated or conflicting fact ID, and an evidence ID
+  naming two documents.
+- `PRODUCTION_ACCEPTED_EVIDENCE` is the only production registry. It is
+  **empty** (`nse-accepted-evidence/0`).
+
+**What the gate does**
+
+`HistoricalFuturesEvidenceGate` authorizes a value only when an accepted fact
+states exactly that category, product, contract and value, within its closed
+effective period and with the same boundary semantics. It refuses:
+
+- end-of-day boundaries, until D-3 is decided;
+- any fact with an unresolved condition;
+- expiry rules, scheduled expiries and product lot or tick rules, which
+  never authorize a contract value.
+
+Authority comes only from the gate. It is labelled `nse-accepted-evidence`
+only when the registry is the production object itself, and
+`test-accepted-evidence` otherwise. It never grants market-data rights.
+
+**Evidence-backed cutoffs**
+
+`HistoricalFuturesEvidenceCutoffSource` implements the existing Application
+cutoff port:
+
+- The last session is the accepted LAST_TRADABLE_SESSION fact's own value
+  for exactly that contract. The caller supplies no dates.
+- It is checked against the NSE calendar resolver.
+- A scheduled expiry, an expiry rule, or a lot or tick fact never stands in
+  for it, and nothing is derived from the expiration date.
+- No accepted fact means no cutoff. Two accepted facts for one contract, or
+  an unverifiable session, fail closed.
+
+Today it returns no cutoff for any contract.
+
+**What is unchanged**
+
+- The R-1B-1 synthetic path, including its `synthetic-reference` authority.
+- `HistoricalFuturesReferenceKind`, still only `SYNTHETIC`. A full
+  `HistoricalFuturesContractReference` cannot yet be built from accepted
+  evidence; only an evidence-backed cutoff can (section 9).
+
+**Trust boundary.** The trust boundary is code review of the trust anchor, an
+identity check on the production registry object, and a private token
+required to build an authority. None of it is cryptographic. Anyone able to
+edit the code can change it, so review of `nse_accepted_reference_evidence.py`
+is the control.
+
+**Adding an accepted fact later.** Only after the owner accepts that exact
+fact:
+
+1. Identify the official document (section 2).
+2. Extract the specific fact (section 3).
+3. Resolve its scope and uncertainty. A fact with an unresolved condition is
+   not usable.
+4. Present the exact fact, scope and interpretation to the owner.
+5. The owner explicitly accepts or rejects it.
+6. Record the decision here: decision ID, date, purpose and the accepted
+   boundaries.
+7. Add only that fact to `PRODUCTION_ACCEPTED_EVIDENCE` and bump its version.
+8. Add a regression test pinning the fact against this register.
+9. Record any later correction or revision as a dated note here and as a new
+   registry version; never rewrite an earlier one.
+
 ## 7. Owner decisions required
 
-None of these has been made. Each is recorded here when the owner confirms
-it.
+D-1 and D-2 were approved on 2026-10-18 (section 7.1). The others have not
+been made. Each is recorded here when the owner confirms it.
 
 | ID | Decision | State |
 |---|---|---|
-| D-1 | Accept NSE F&O circulars, read from NSE's official archive, as the authority for historical contract reference facts. | PENDING |
-| D-2 | Adopt the review gate in section 6. | PENDING |
+| D-1 | Accept NSE F&O circulars, read from NSE's official archive, as the authority for historical contract reference facts. | APPROVED 2026-10-18 (7.1) |
+| D-2 | Adopt the review gate in section 6. | APPROVED 2026-10-18 (7.1) |
 | D-3 | How EOD wording maps to effective periods (first affected session = next trading session). | PENDING |
 | D-4 | Whether NSE-F-02 changed the lot of contracts already listed before 2024-04-26 (a mid-life change). | PENDING |
 | D-5 | Whether NSE-F-14 applies to NIFTY futures. | PENDING |
@@ -263,6 +360,39 @@ it.
 | D-7 | The per-contract source to pursue: the contract master (section 5), a licensed NSE reference product, or another authorized source, after a terms review. | PENDING |
 | D-8 | How R-2 treats monthly index futures tick sizes against F-4's single `price_increment`. | PENDING |
 | D-9 | Whether PDF copies, quotations or only identifiers and fingerprints may be kept (section 8). | PENDING |
+
+### 7.1 Recorded decisions
+
+Recorded 2026-10-18 from the product owner's written instruction for
+R-1B-2B-2. The owner's wording is reproduced exactly. No signature or other
+acceptance timestamp was given, and none is recorded.
+
+**D-1 Primary reference authority: APPROVED.**
+
+> Official NSE circulars, exchange notices and contract specifications are
+> acceptable primary authorities for historical Futures reference facts.
+>
+> However, each fact's actual applicability must be reviewed separately.
+>
+> An official document does not automatically validate every proposed
+> interpretation.
+
+**D-2 Individual fact acceptance: APPROVED.**
+
+> Every extracted reference fact requires the owner's explicit acceptance
+> before that fact may enter the verified reference catalog.
+>
+> Acceptance of one fact does not imply acceptance of related facts, an
+> entire document or a derived contract record.
+
+**What these decisions do not do.**
+
+- D-1 and D-2 are governance decisions only. They approve none of
+  NSE-F-01 to NSE-F-22, each of which remains PENDING.
+- Accepted facts: 0. Verified historical contracts: 0.
+- D-3 to D-9 remain PENDING.
+- G-1 (Upstox written data-use permission) remains unresolved, and no
+  real-market data use is authorized.
 
 ## 8. Source use and retention
 
@@ -304,3 +434,19 @@ it.
 - The NSE calendar reference already cites circulars per fact, and EV-10
   agrees with it. No calendar change is made.
 - R-0 remains SYNTHETIC-only.
+
+> **Note, 2026-10-18 (R-1B-2B-2).**
+>
+> **What exists now:**
+> - The evidence-linked authority this section anticipated now exists for
+>   cutoffs only: `HistoricalFuturesEvidenceCutoffSource` names the registry
+>   version, fact, evidence, document, fingerprint and decision (section 6.1).
+> - Its production registry is empty, so it resolves no cutoff.
+>
+> **What did not change:**
+> - No reviewed kind was added to `HistoricalFuturesReferenceKind`. Adding a
+>   public member would let a source be built from strings alone.
+> - A full `HistoricalFuturesContractReference` from accepted evidence (listing,
+>   lot and tick periods) therefore remains future work. That work must keep
+>   the gate at the catalog boundary.
+> - R-0 and R-1A semantics are unchanged.
