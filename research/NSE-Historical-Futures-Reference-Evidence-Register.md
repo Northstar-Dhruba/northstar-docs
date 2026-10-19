@@ -14,6 +14,16 @@ verified-reference code exists: Infrastructure's
 >   extracted fact (NSE-F-01 to NSE-F-22) remains individually PENDING, and
 >   `HistoricalFuturesReferenceKind` is still only `SYNTHETIC`.
 
+> **Note, 2026-10-19 (R-1B-2B-3A).**
+> - The D-6/D-7 investigation added four sources, NSE-EV-11 to NSE-EV-14
+>   (section 2.1). They are recorded as source findings, not as extracted
+>   facts, so the fact count stays at 22.
+> - D-6 and D-7 remain PENDING (sections 7.2 and 7.3).
+> - NSE website terms concerns are recorded for clarification (section 8.1).
+> - An inquiry to NSE Data & Analytics was sent; a response is pending
+>   (section 10).
+> - Accepted facts: **0**. Verified historical contracts: **0**.
+
 This register records which official NSE documents were located and
 inspected, which facts were extracted from them, and what is still missing
 before any historical NIFTY futures contract reference can be built. It
@@ -120,6 +130,78 @@ the same retrieved bytes.
   SEBI/HO/MRD-PoD2/CIR/P/2024/00181 (2024-12-30) and
   SEBI/HO/MRD/TPD-1/P/CIR/2025/76 (2025-05-26).
 
+### 2.1 Sources added 2026-10-19 (D-6/D-7 investigation)
+
+These sources were retrieved and read during the D-6/D-7 investigation on
+2026-10-18. They are recorded here as **source findings**. No fact is
+extracted from them into section 3, and none is proposed for acceptance.
+
+| ID | Issuer | Document | Published / version | Official URL |
+|---|---|---|---|---|
+| NSE-EV-11 | NSE | Equity derivatives settlement price web page | Not stated | https://www.nseindia.com/static/products-services/equity-derivatives-settlement-price |
+| NSE-EV-12 | NSE Data & Analytics Ltd | NSE Masters Data technical specification (CM, F&O, CD and COM segments) | Version 1.5, dated 2024-07-01 | https://nsearchives.nseindia.com/web/sites/default/files/inline-files/NSE_MasterData_Technical_Specifications.pdf |
+| NSE-EV-13 | NSE | Website Terms of Use | Not stated | https://www.nseindia.com/static/nse-terms-of-use |
+| NSE-EV-14 | NSE | Website Copyright Policy | Not stated | https://www.nseindia.com/static/nse-copyright |
+
+| ID | Bytes | SHA-256 (reported by the investigation) | Status |
+|---|---|---|---|
+| NSE-EV-11 | 371919 | `28e3682da5d53fa023f14f2770c68ea2802e343ec75970726ca57f7f2a349190` | Inspected in the D-6/D-7 investigation. HTML of a live page. |
+| NSE-EV-12 | 849404 | `9e7e32e54402ec47e3dff39a5869d55e403ab467e31e949975fa7b9beb7b5b11` | Inspected in the D-6/D-7 investigation (38 pages; F&O `contract.txt` on pp. 13-17) |
+| NSE-EV-13 | 327495 | `156bb21a69b730bc5bb8a48a5f06c6c057b32a27110acf3d5c8d11c5a4618474` | Inspected in the D-6/D-7 investigation. HTML of a live page. |
+| NSE-EV-14 | 304347 | `6edc4c8dffa345392b3739c7e282066c443cfa0c142f8ab717190b2c1bc292e9` | Inspected in the D-6/D-7 investigation. HTML of a live page. |
+
+**What was and was not rechecked in R-1B-2B-3A**
+
+- The fingerprints are the ones the investigation reported.
+- During R-1B-2B-3A (2026-10-19) the same retained session copies were hashed
+  again locally and match. No new request was made to NSE.
+- The contents were **not re-read** in R-1B-2B-3A.
+- Live pages change, so each fingerprint identifies only that one retrieval.
+
+**Findings**
+
+**NSE-EV-11 (final settlement).**
+
+- The page describes the final settlement price of index futures as the
+  closing price of the underlying index in NSE's Capital Market segment on
+  the contract's *last trading day*.
+- It uses the term "last trading day" without defining it, and does not
+  state that it is the contract's expiry date.
+- It does not settle D-6.
+
+**NSE-EV-12 (Masters Data).**
+
+The specification describes NSE Data & Analytics' licensed Masters Data
+product: contract master files generated at end of day and delivered over
+SFTP to vendors holding a user ID for their agreement period.
+
+The F&O `contract.txt` layout documents fields for:
+- instrument name and underlying (symbol and instrument of asset);
+- a token as the contract identity, and the symbol;
+- expiry date;
+- a "Listing Date";
+- lot quantities and tick size;
+- trading status (permitted-to-trade, eligibility and status per market,
+  delete flag);
+- price-like reference fields: base price and low/high price ranges.
+
+What it leaves open:
+- No separate last-trading-date field is documented in that layout.
+- What "Listing Date" means for futures is not defined, and neither is the
+  unit of tick size for F&O (section 2.3 of the specification states that
+  F&O price fields are in paise).
+- Historical availability of files for 2024 to 2026, revision history, and
+  retention and research rights are **not established**.
+- **No claim is made** that the website MII file
+  `NSE_FO_contract_ddmmyyyy.csv.gz` uses this schema.
+- The document carries its own copyright notice, so its layout is summarized
+  here, not reproduced.
+
+**NSE-EV-13 and NSE-EV-14 (website terms).** See section 8.1.
+
+**Retrieved but not reviewed:** the NSE website Disclaimer page (D-6/D-7
+investigation). Nothing here relies on it.
+
 ## 3. Extracted facts
 
 Common to every fact: product `NIFTY@NSE` (index futures where the source
@@ -225,6 +307,30 @@ about whether old files can be downloaded or whether the owner may keep them.
 | 9 | May the owner keep these files locally for private research? | UNKNOWN |
 | 10 | May private backups and derived reference records be kept? | UNKNOWN |
 | 11 | What happens when any access entitlement ends? | UNKNOWN |
+
+> **Note, 2026-10-19 (R-1B-2B-3A).**
+>
+> NSE-EV-12 documents the licensed Masters Data `contract.txt` layout. It
+> does not document the website MII CSV, so the answers above still hold for
+> the MII file. For the Masters Data product only:
+>
+> **Documented in the layout**
+> - Q4 (tick size): a Tick Size field is documented; its unit is unconfirmed.
+> - Q5 (lot size): Board Lot and Minimum Lot Quantity fields are documented.
+> - Q8 (price-like fields): Base Price and price-range fields are present and
+>   need separate treatment.
+>
+> **Only partly answered**
+> - Q2 (first trading date): a Listing Date field exists, but its meaning for
+>   futures is undefined.
+> - Q3 (separate last tradable session): an Expiry Date field exists, and no
+>   separate last-trading-date field is documented.
+>
+> **Unknown**
+> - Q1 (historical files), Q6 (monthly tick revisions), Q7 (versions and
+>   corrections), and Q9 to Q11 (rights).
+>
+> No contract file was retrieved.
 
 ## 6. Owner review gate
 
@@ -394,6 +500,66 @@ acceptance timestamp was given, and none is recorded.
 - G-1 (Upstox written data-use permission) remains unresolved, and no
   real-market data use is authorized.
 
+### 7.2 D-6 investigation record (2026-10-19): PENDING
+
+Question: how is each NIFTY futures contract's actual last tradable session
+established?
+
+**What the evidence shows**
+
+- "Last trading day" is a term NSE uses in its settlement documentation
+  (NSE-EV-11).
+- The current specification defines the expiry day and its holiday rule
+  (NSE-EV-09, current rules only).
+- Dated notices change "expiry and maturity" dates together (NSE-EV-08).
+- The Masters Data layout has an Expiry Date and no separate last-trading
+  field (NSE-EV-12).
+
+**Why D-6 stays open**
+
+- None of these sources states that the expiry date is the last trading day.
+  Their consistency with that reading is an inference, not evidence.
+- The Thursday regime (to August 2025) and the Tuesday regime (from September
+  2025) each need evidence applicable to their own period. Today's rules are
+  not applied to earlier years.
+- Holiday-adjusted contracts need specific evidence. The March 2026 move is a
+  dated notice (NSE-F-14), and the November 2026 adjustment is unresolved
+  (NSE-F-20). Neither notice states when trading ends.
+- No NSE F&O regulation, NSE Clearing final-settlement notice, or
+  contract-generation specification defining the last trading day was
+  located.
+
+**Rule for Northstar:** a contract's expiry date must not be substituted for
+its last tradable session. The evidence cutoff source accepts only a
+LAST_TRADABLE_SESSION fact, and a fact with an unresolved condition is
+refused (section 6.1).
+
+**Awaiting** an authoritative NSE rule, a contract-specific confirmation or
+NSE's written clarification (section 10).
+
+### 7.3 D-7 investigation record (2026-10-19): PENDING
+
+Question: which official or licensed source can supply historical
+per-contract reference records?
+
+**Preferred candidate for investigation:** NSE Data & Analytics Masters Data
+(NSE-EV-12). It is **not an approved source**.
+
+**Unresolved**
+
+- whether daily files for 2024 to 2026 can be obtained, and how complete the
+  archive is;
+- the exact contract-master schema, including whether the website MII CSV
+  matches `contract.txt`;
+- what Listing Date means for futures;
+- evidence of the last tradable session, since no such field is documented;
+- the unit of the tick size;
+- revision and correction history;
+- local retention and private backups;
+- keeping derived reference records;
+- personal backtesting and simulation rights (see section 8.1);
+- product availability and pricing for a private, single-user researcher.
+
 ## 8. Source use and retention
 
 - **Terms not reviewed.** NSE's website terms of use, and any terms covering
@@ -411,6 +577,52 @@ acceptance timestamp was given, and none is recorded.
 - **Not authorized by this register:** downloading OHLCV, importing bhavcopy
   or contract master files, authorized-data evaluation, and any production
   configuration change.
+
+### 8.1 NSE website terms: points requiring clarification (2026-10-19)
+
+> **Note, 2026-10-19 (R-1B-2B-3A).** The "Terms not reviewed" point above is
+> superseded in part: the website Terms of Use and Copyright Policy were read
+> in the D-6/D-7 investigation (NSE-EV-13, NSE-EV-14). They are summarized
+> below. This is **not a legal determination**.
+
+**What the website terms appear to address**
+
+- **Automated collection.** The Terms of Use prohibit systematic or automated
+  data collection from the website, such as scraping, data mining,
+  extraction or harvesting.
+- **Electronic storage.** They restrict copying, or storing website content
+  in an electronic retrieval system, without NSE's prior written permission.
+  Content made available for download is treated differently. How the two
+  provisions interact for reference documents is unclear.
+- **Virtual trading and simulation.** They state that website data or
+  content must not be used for gaming, virtual trading or simulation
+  activities.
+- **Reuse and retention.** The Copyright Policy permits viewing, printing and
+  downloading for personal, non-commercial or educational purposes, without
+  modification and with acknowledgement. Whether that covers normalized
+  reference records, private backups or derived evidence is unclear.
+
+**Scope**
+
+- These are the **public website** terms. Licensed NSE Data & Analytics
+  products, such as Masters Data, are governed by their own agreements, which
+  have not been seen.
+- Nothing here concludes that independently licensed research, or
+  simulations on synthetic data, are prohibited. Northstar's evaluation
+  remains synthetic-only.
+- Whether these terms affect any planned research or paper-trading use of
+  website-sourced content is a question for the owner and NSE (section 10).
+
+**Disclosure**
+
+- The R-1B-2A, R-1B-2B-1 and D-6/D-7 tasks retrieved roughly twenty NSE
+  documents and pages with command-line requests.
+- Whether that counts as automated collection under these terms has not been
+  determined. Automated requests to NSE stopped once the terms were read.
+- The copies remain in temporary engineering-session folders outside every
+  repository. None has been deleted, and their disposal awaits the owner's
+  decision.
+- Future retrieval should be manual until NSE clarifies.
 
 ## 9. Compatibility with existing contracts
 
@@ -450,3 +662,26 @@ acceptance timestamp was given, and none is recorded.
 >   lot and tick periods) therefore remains future work. That work must keep
 >   the gate at the catalog boundary.
 > - R-0 and R-1A semantics are unchanged.
+
+## 10. External inquiries
+
+Each inquiry is recorded as the owner reports it. A response is recorded only
+when it is received, with its date and reference. Nothing here records an
+NSE response, ticket number or approval.
+
+| ID | Sent | Recipient | Reported by | Status |
+|---|---|---|---|---|
+| Q-NSE-1 | 2026-10-19 | NSE Data & Analytics, marketdata@nse.co.in | Owner (confirmed) | SENT, RESPONSE PENDING |
+
+**Q-NSE-1 scope**
+
+- historical NIFTY futures contract data;
+- expiry date versus last trading day (D-6);
+- contract-master fields and archive availability (D-7);
+- rights for private research and backtesting;
+- local retention and private backups;
+- suitable licensed products and pricing.
+
+**Kept separate.** This inquiry is separate from G-1 (Upstox written data-use
+permission), which remains unresolved. Neither grants any data-use right
+until a written answer is received and recorded.
