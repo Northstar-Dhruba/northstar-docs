@@ -2,12 +2,12 @@
 
 ## Status
 
-**Draft for product-owner review (EI-0). Not approved.**
+**Draft for product-owner review (EI-0). Not approved as a whole: only owner decision EI0-D4 is approved.**
 
 This document proposes the smallest product definition for Northstar's first actionable equity capability: NSE cash-equity, LONG-only, intraday trade recommendations built from completed 5-minute candles.
 
-- Every owner decision is marked **PROPOSED** or **PENDING**, and is listed in the [owner decision register](#14-owner-decision-register).
-- Nothing here has been approved by the product owner, Architecture Review or Engineering Review.
+- Every owner decision is listed in the [owner decision register](#14-owner-decision-register). EI0-D4 is **APPROVED** (2026-11-01, [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md)). Every other decision is marked **PROPOSED** or **PENDING**.
+- Apart from EI0-D4, nothing here has been approved by the product owner. Nothing here has been approved by Architecture Review or Engineering Review.
 - No strategy, parameter, threshold or cost rate is approved for production.
 - This document changes no ADR status and no existing contract. Where an implementation milestone needs a binding policy, it will be recorded in its own ADR. The Futures precedent is [ADR-018](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md).
 
@@ -63,7 +63,7 @@ The optimized **Equity Intraday Master Roadmap** is not present in the developme
 ### 2.3 Governing documents
 
 - [ADR-002 Architecture Constitution](../adr/ADR-002-Architecture-Constitution.md)
-- [ADR-004 Composed Foundation Value Objects](../adr/ADR-004-Composed-Foundation-Value-Objects.md)
+- [ADR-019 Symbol Ampersand Extension](../adr/ADR-019-Symbol-Ampersand-Extension.md)
 - [ADR-007 PointInTime Foundation Extension](../adr/ADR-007-PointInTime-Foundation-Extension.md)
 - [ADR-017 Repository Layering and Futures Recommendation Domain Boundary](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md) (Proposed)
 - [ADR-018 Futures V1 Research-to-Recommendation Generation Policy](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md) (Proposed)
@@ -109,7 +109,7 @@ Futures types are bound to `FuturesContract`, `FuturesOHLCVBar` and `FuturesProd
 - **The research labels `BUY`, `SELL` and `HOLD`** are research vocabulary. A research `SELL` never becomes an equity SHORT and never becomes an overnight cash-equity short.
 - **`SQLiteHistoricalMarketDataStore`** upserts on logical identity: a conflicting bar replaces the stored one with no correction audit. That is acceptable for research fixtures but not for recommendation evidence; see [section 6.6](#66-candle-finality-and-late-corrections).
 - **The `/analyze` and `/watchlist/refresh` API surfaces and the web watchlist** are current-state analysis. They are not recommendation surfaces, and they may analyse an unfinished bar.
-- **`Symbol`** uses `^[A-Z0-9._-]{1,32}$` and rejects `&`, so NSE symbols such as `M&M` cannot be represented today.
+- **`Symbol`** uses `^[A-Z0-9._-]{1,32}$` and rejects `&`, so NSE symbols such as `M&M` cannot be represented at this baseline. [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md) approves extending it to `^[A-Z0-9._&-]{1,32}$`.
 
 ---
 
@@ -158,10 +158,12 @@ Futures types are bound to `FuturesContract`, `FuturesOHLCVBar` and `FuturesProd
 ### 5.2 Symbol compatibility (ampersand)
 
 - NSE trading symbols include `&`, for example `M&M`. That such symbols exist is AWAITING OFFICIAL VALIDATION against the NSE securities list for the period in use.
-- `Symbol` currently rejects `&`, and `Symbol` is an approved Foundation value object (ADR-004).
-- **PENDING (owner):** approve an ADR-004 amendment that widens the `Symbol` character set to include `&`.
-  - It would be the smallest widening needed. Every existing valid symbol stays valid.
-  - It is a prerequisite of EI-1.
+- `Symbol` is an approved Foundation value object, reference implementation RVO-001. Its pattern `^[A-Z0-9._-]{1,32}$` rejects `&`.
+- **APPROVED (owner, EI0-D4, 2026-11-01):** [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md) extends the `Symbol` character set to `^[A-Z0-9._&-]{1,32}$`.
+  - It is the smallest widening needed. Every existing valid symbol stays valid, and every other `Symbol` rule is unchanged.
+  - `Symbol` stays exchange-neutral: listing and series eligibility remain separate concerns.
+  - `UnderlyingReference` is not changed.
+  - It is implemented in EI-1B. RVO-001 becomes v1.1 when the Core change is merged.
 - **Not allowed instead:** provider-specific encodings such as `M_M` or `M%26M` must never become canonical Northstar symbols.
 
 ### 5.3 Series and eligibility
@@ -669,7 +671,7 @@ The Futures dashboard is the integration pattern: an API read model over persist
 | Milestone | Scope | Depends on |
 | --- | --- | --- |
 | **EI-0** | This specification and its owner decision register | — |
-| **EI-1** | NSE equity identity and session foundations: equity session port and 5-minute grid; `Symbol` `&` (after the ADR-004 amendment); the NSE cash-equity calendar reference with an evidence register; series and listing eligibility facts; the `EquityUniverseVersion` | EI-0 decisions D1, D2, D4, D5 |
+| **EI-1** | NSE equity identity and session foundations: equity session port and 5-minute grid; `Symbol` `&` (EI-1B, [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md)); the NSE cash-equity calendar reference with an evidence register; series and listing eligibility facts; the `EquityUniverseVersion` | EI-0 decisions D1, D2, D4, D5 |
 | **EI-2** | Synthetic intraday OHLCV ingestion, replay and finality, **including immutable, insert-only bar revisions** (moved earlier). Acceptance: earlier revisions stay retrievable, and replay as of a knowledge instant reproduces the revisions known then. | EI-1 |
 | **EI-3** | One intraday strategy, research control, explainable candidate screening, **liquidity and price eligibility** (moved earlier) | EI-2, D8 |
 | **EI-4** | Risk-validated recommendation generation, **including cost schedule, cost-aware validation and position sizing** (moved earlier), and an equity generation-policy ADR | EI-3, D10 to D14 |
@@ -734,14 +736,14 @@ Evidence is recorded in a register following the [Upstox Finality Evidence](../o
 
 ## 14. Owner Decision Register
 
-None of these decisions is approved.
+Only EI0-D4 is approved. Every other decision remains PROPOSED or PENDING.
 
 | ID | Decision | Proposal | Status |
 | --- | --- | --- | --- |
 | EI0-D1 | Market and currency | NSE cash equities, INR | PROPOSED |
 | EI0-D2 | Series | `EQ` only | PROPOSED |
 | EI0-D3 | Direction | LONG only. Research SELL is rejected, never mapped to SHORT. | PROPOSED |
-| EI0-D4 | `Symbol` `&` support | Amend ADR-004 to allow `&` | PENDING (owner approval of a Foundation change) |
+| EI0-D4 | `Symbol` `&` support | Extend the `Symbol` pattern to `^[A-Z0-9._&-]{1,32}$` through a new Foundation ADR ([ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md)); `UnderlyingReference` unchanged | APPROVED (owner, 2026-11-01) |
 | EI0-D5 | Universe | Versioned, owner-configured, no more than 10 stocks | PROPOSED |
 | EI0-D6 | Bar timestamp convention | Interval end | PROPOSED |
 | EI0-D7 | Cutoffs | Signal 14:25, entry 14:30, planned exit 15:00 IST. No special sessions in V1. At the planned exit, an evidenced exit is recorded; otherwise `SESSION_CUTOFF_REACHED` (unresolved, no exit price) or `INCOMPLETE_EVIDENCE` ([section 6.7](#67-entry-and-exit-cutoffs-policy-proposals)). | PROPOSED |
@@ -774,7 +776,7 @@ None of these decisions is approved.
 | Corporate actions are absent | Prior-session references and liquidity windows are corrupted on ex-dates | Exclude those days. An authoritative source before EI-9. |
 | Costs or sizing appear late | Uneconomic setups are issued | Moved into EI-4 |
 | Intrabar ordering is invented | Overstated or understated outcomes | Lifecycle uses `UNKNOWN`. Evaluation shows best and worst bounds. |
-| The `Symbol` change ripples into Futures, Options and provider parsing | Regressions in existing products | ADR-004 amendment, plus regression checks of every `Symbol` consumer in EI-1 |
+| The `Symbol` change ripples into Futures, Options and provider parsing | Regressions in existing products | [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md), plus regression checks of every `Symbol` consumer in EI-1B |
 | Overfitting through parameter search | A false edge | Pre-declared grids, frozen versions, out-of-sample once, and a count of versions tried |
 | Data rights assumed from API access | Unauthorized storage or derived use | The D16 gate before EI-9 |
 | A universal trading framework creeps in | Coupling across products | Product-specific packages. Only truly generic components are shared. |
