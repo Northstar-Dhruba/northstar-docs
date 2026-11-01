@@ -14,6 +14,11 @@ Status: **evidence register; no fact is verified or accepted.**
 > - Every fact remains **DISCOVERED**. Verified facts: **0**. Accepted facts: **0**.
 > - Verification is **blocked** until the owner supplies manually downloaded copies (section 13.4).
 
+> **Note, 2026-11-02 (EI-1C-1B, local source inspection).** This note supersedes the status lines above.
+> - The owner supplied six manually obtained copies: NSE/CMTR/75479, 76941, 71775 and 72260, and browser prints of the CAS page (CE-S-03) and the market-timings page (CE-S-02). Each was inspected and fingerprinted (section 14). No NSE host was contacted, and no copy is committed.
+> - **Verified facts: 10**, all awaiting owner acceptance. **Accepted facts: 0.** Production session reference data: **none**.
+> - Normal-day continuous hours for CAS-eligible securities are still **not** verified (CE-F-12). No normal trading day can yet be resolved from verified facts.
+
 This register records what Northstar needs to know before an evidence-backed NSE cash-equity session resolver can exist:
 
 - where the authoritative NSE material is believed to be;
@@ -287,6 +292,15 @@ Neither "every equity trades continuously until 15:30" nor "every equity stops a
 > - **CE-C-04 and CE-C-05:** unchanged.
 > - **CE-C-06:** unchanged, and still applies.
 
+> **Note, 2026-11-02 (EI-1C-1B, local source inspection): conflicts after inspecting the sources.** Details are in section 14.7.
+> - **CE-C-01: resolved for the cash segment.** NSE/CMTR/76941 gives official Muhurat timings (CE-F-31). Futures NSE-F-19 is still not modified, and its F&O counterpart (CE-S-31) was not inspected.
+> - **CE-C-02: resolved.** The base circular is NSE/CMTR/71775, dated 2025-12-12, circular reference 172/2025. "Ref. No. 67/2025" is not this circular's number, and no fact depends on it.
+> - **CE-C-03: resolved as to mock versus live.** Every clock in NSE/CMTR/75479 belongs to the 2026-08-01 mock session (CE-F-19). The normal-day close for CAS-eligible securities is still unverified (CE-F-12).
+> - **CE-C-04: resolved.** There are 15 weekday holidays in 71775, plus 1 added by 72260, giving 16. Another 4 weekend holidays are listed separately, giving 20 entries in all.
+> - **CE-C-05:** unchanged. The correction to EI-0 section 6.1 is now confirmed as needed.
+> - **CE-C-06:** unchanged. The CAS page also gives the derivatives segment 09:15 to 15:40, which is consistent with CE-X-01 and is still never a cash fact.
+> - New conflicts **CE-C-07 to CE-C-09** are in section 14.7.
+
 ## 9. Unresolved decisions
 
 These are owner decisions for EI-1C. All are **PENDING**.
@@ -453,6 +467,240 @@ CE-D1 to CE-D10 remain **PENDING**.
   - CE-S-19 inspected, for 2026-11-08;
   - each resulting fact ACCEPTED by the owner.
 - **Any session after 2026-08-03** additionally needs CE-D5 and CE-D6 decided. Otherwise the per-security close must fail closed.
+
+## 14. EI-1C-1B local source inspection (2026-11-02)
+
+The owner manually obtained six official NSE documents and supplied them as local files. They are held outside every repository.
+
+- No NSE host was contacted in this task.
+- Nothing is quoted. Facts are original summaries with page references.
+- No copy is committed.
+
+### 14.1 Files inspected
+
+The fingerprint identifies the supplied copy only. For a page print, it identifies that one capture of a page that changes over time.
+
+| Source | Supplied file | Bytes | SHA-256 | Pages | Form |
+|---|---|---|---|---|---|
+| CE-S-15, NSE/CMTR/75479 | `CMTR75479.pdf` | 241038 | `17e415f619be6a132f86a4edbc127412f44e90f87e838151d86484e2204022c1` | 6 | Circular PDF. Metadata creation time 2026-07-30 18:16 IST. |
+| CE-S-19, NSE/CMTR/76941 | `CMTR76941.pdf` | 161272 | `ce94ee1c54d98eccdf3c30fa0673ae2b6a49ea4ed4a72fb83d826f4359f71d58` | 2 | Circular PDF. Metadata creation time 2026-10-19 15:14 IST. |
+| CE-S-17, NSE/CMTR/71775 | `CMTR71775.pdf` | 176256 | `aa97e0afc0ce394097f2fc62631c68e3c2e4c7c23541ed35f21d9fc06b0dcacb` | 2 | Circular PDF. Metadata creation time 2025-12-12 11:56 IST. |
+| CE-S-18, NSE/CMTR/72260 | `CMTR72260.pdf` | 78974 | `c5d32a838b46d5044717b830a4793479a51a40f8e4e19d3896c65682d15b6ebc` | 1 | Circular PDF. Metadata creation time 2026-01-12 15:29 IST. |
+| CE-S-03, CAS page | `NSE-CAS.pdf` | 1754349 | `11bae310d99b7659a823aa6fae0f5d8cfc838f2f2ca337091e44e4077ba39eb5` | 8 | Browser print made 2026-11-02 02:15 IST. The page shows it was updated on 12/08/2026. |
+| CE-S-02, market-timings page | `NSE-Market-Timings.pdf` | 886030 | `a57b20044afb042eca30018212ead7bd3090fe4f0fcc0b6b145ed14c1fe957a2` | 5 | Browser print made 2026-11-02 02:17 IST. The page shows it was updated on 04/08/2025. |
+
+**Notes on the files:**
+
+- **Location.** The owner gave the folder as `NorthstarEvidence\NSE-Cash-Equity-Sessions\Official-Sources`. That folder did not exist. The six files were found together in another owner folder outside every repository.
+- **Date format.** NSE's "updated on" dates are read as day/month/year. A month/day reading of 12/08/2026 would be a date after the capture, which is impossible.
+- **Capture gaps.** Both prints lose content where the page breaks: the site's fixed header covers the top of each printed page. Missing content is recorded as missing and never reconstructed.
+  - CE-S-03 is missing the first CAS timetable rows, from 15:15 up to the limit-only order-entry window, and the top of its circulars list.
+  - CE-S-02 is missing the rows before the first block-deal close and the rows after the closing-session open.
+- **URLs.** Both prints carry the page's official path with a `utm_source` query parameter. The canonical URLs are those in sections 3.1 and 13.2.
+- **Not supplied:** the holidays page (CE-S-01). It is not needed for any fact here.
+
+### 14.2 Source identities
+
+| Source | Department | Download reference | Circular reference | Date | Subject (paraphrased) |
+|---|---|---|---|---|---|
+| CE-S-15 | Capital Market | NSE/CMTR/75479 | 108/2026 | 2026-07-30 | Mock trading on Saturday 2026-08-01 and go-live of the CAS trading modalities in the equity cash segment; new NEAT+ version |
+| CE-S-19 | Capital Market | NSE/CMTR/76941 | 149/2026 | 2026-10-19 | Diwali Muhurat trading session |
+| CE-S-17 | Capital Market | NSE/CMTR/71775 | 172/2025 | 2025-12-12 | Trading holidays for calendar year 2026 |
+| CE-S-18 | Capital Market | NSE/CMTR/72260 | 07/2026 | 2026-01-12 | Trading holiday on 2026-01-15 in the Capital Market segment |
+| CE-S-03 | Equities, Closing Auction Session page | — | — | Updated 2026-08-12 | CAS applicability, timings and mechanics |
+| CE-S-02 | Market Timings page, Capital Market tab | — | — | Updated 2025-08-04 | Capital Market session timetable |
+
+**New identifiers cited by the inspected sources** (SOURCE LOCATED; not retrieved):
+
+| ID | Reference | Cited by | Relevance |
+|---|---|---|---|
+| CE-S-05 | NSE continuous-markets FAQs, section on CAS in the CM and F&O segments (`https://www.nseindia.com/static/trade/continuous-markets-FAQs`) | CE-S-15 p. 1; CE-S-03 p. 5 | CAS mechanics and possibly eligibility |
+| CE-S-20 | NSE/CMTR/73927 (2026-04-28) | CE-S-03 p. 5 | Self-trade prevention in call auctions. Not a session fact. |
+| CE-S-21 | Circular with download number 71999 (2025-12-24) | CE-S-15 p. 1 | Mock trading schedule. Relevant to CE-F-32. |
+
+CE-S-11 (73362), CE-S-12 (73845) and CE-S-13 (74466) are confirmed as CAS circulars by name in CE-S-15 (p. 1) and CE-S-03 (p. 6). Their contents are **not** inferred from those listings (rule 4). CE-S-10 (72394) and CE-S-14 (74969) do not appear in the visible parts of either source.
+
+### 14.3 Verified facts
+
+For every fact below:
+
+- the state is **VERIFIED FROM SOURCE**;
+- owner acceptance is **PENDING** (section 14.9);
+- nothing is ACCEPTED.
+
+CE-F-15, CE-F-16, CE-F-17 and CE-F-19 are new IDs. Each one records something a source established that no earlier candidate stated exactly.
+
+| Fact | Verified content (original summary) | Applicability | Effective | Evidence |
+|---|---|---|---|---|
+| CE-F-10 | The changes in equity-segment trading modalities that come from introducing CAS take effect in live trading from Monday 2026-08-03. | CM equity segment; CAS-eligible securities per CE-F-15 | From 2026-08-03 | CE-S-15 p. 1; Monday confirmed at Annexure 1, p. 5 |
+| CE-F-13 | Continuous trading for securities not in CAS runs from 09:15 to 15:30 IST. | Non-CAS securities | Current rule as of the page update on 2026-08-12. The page states no effective-from date. | CE-S-03 p. 3. CE-S-19 p. 2 confirms the 15:30 non-CAS close for 2026-11-08. |
+| CE-F-15 | CAS phase 1 applies only to cash-segment stocks on which derivative contracts are available. | Instrument level | Current as of 2026-08-12 | CE-S-03 p. 2 |
+| CE-F-16 | CAS is a separate 20-minute session from 15:15 to 15:35 IST on all trading days. The visible sub-periods: a limit-order-only entry window from 15:25 to 15:30, closing at a random time in its last 2 minutes; order matching and trade confirmation from 15:30 to 15:35; a transition from 15:35 to 15:50; a post-close session from 15:50 to 16:00. The CAS reference price is the VWAP of trades from 15:00 to 15:15. | CAS-eligible securities (CE-F-15) | Current as of 2026-08-12. Whether this timetable applied unchanged from 2026-08-03 is **not** stated. | CE-S-03 pp. 2-3. The rows from 15:15 to 15:25 are lost in the capture (section 14.1). |
+| CE-F-17 | The inspected Capital Market sources treat the pre-open and CAS as sessions distinct from normal-market continuous trading. CE-S-19 names the normal market the continuous trading session (CTS), and lists pre-open, CAS, transition and post-close periods as separate rows. CE-S-03 calls CAS a separate session. | CM | 2026-11-08 (CE-S-19); current as of 2026-08-12 (CE-S-03) | CE-S-19 pp. 1-2; CE-S-03 p. 2 |
+| CE-F-19 | Every timetable in NSE/CMTR/75479 is for the **mock** session on Saturday 2026-08-01. That day had three mock trading sessions: from the primary site, then the DR site, then the primary site. The circular gives no live-day session clock. Mock trades carry no fund pay-in or payout, so 2026-08-01 is not a live session. | CM mock environment | 2026-08-01 only | CE-S-15 pp. 1-3 (timetables), p. 5 (Annexure 1) |
+| CE-F-20 | 2026 CM trading holidays (weekdays): 01-26, 03-03, 03-26, 03-31, 04-03, 04-14, 05-01, 05-28, 06-26, 09-14, 10-02, 10-20, 11-10, 11-24 and 12-25. Holidays falling on a weekend are listed separately: 02-15 (Sunday), 03-21 (Saturday), 08-15 (Saturday) and 11-08 (Sunday, Diwali Laxmi Pujan). A footnote says Muhurat trading will be held on 2026-11-08, with timings to follow. | CM segment, calendar year 2026 | Notified 2025-12-12; modified by CE-F-21 | CE-S-17 p. 1 (weekday list), p. 2 (weekend list and footnote) |
+| CE-F-21 | Thursday 2026-01-15 is an added CM trading holiday (Maharashtra municipal corporation elections). It partially modifies NSE/CMTR/71775. | CM segment only | 2026-01-15; notified 2026-01-12 | CE-S-18 p. 1 |
+| CE-F-30 | A special **live** CM trading session is held on Sunday 2026-11-08 for Diwali Muhurat trading. All of its trades carry settlement obligations. | CM segment | 2026-11-08 | CE-S-19 pp. 1-2; announced in CE-S-17 p. 2 |
+| CE-F-31 | Muhurat 2026-11-08 timings, IST (detailed in section 14.6): the continuous trading session opens at 14:20. It closes at 15:15 for CAS securities and at 15:30 for non-CAS securities. CAS runs from 15:15 to 15:35. | CM segment; split by CAS eligibility; separate hours for special pre-open stocks | 2026-11-08 | CE-S-19 pp. 1-2 |
+
+All 22 weekdays named in CE-S-15, CE-S-17 and CE-S-18 were checked against the calendar and match.
+
+### 14.4 Facts inspected but not promoted
+
+| Fact | Finding | State |
+|---|---|---|
+| CE-F-01 | CE-S-02 shows a normal-market open of 09:15. That page was last updated 2025-08-04, predates CAS and gives no effective dates. CE-S-03 confirms 09:15 for non-CAS securities only (CE-F-13). No inspected source states the normal-day open for CAS securities. | DISCOVERED |
+| CE-F-02 | CE-S-02 shows a single normal-market close of 15:30 for the CM segment. It gives no effective dates and is stale after 2026-08-03 (CE-C-07). A dated CM circular is still needed for the regime in force before CAS. | DISCOVERED |
+| CE-F-03 | CE-S-02 lists a regular pre-open from 09:00 to 09:08, before the 09:15 open, on a stale page. The separateness of pre-open is verified in CE-F-17. Its exclusion from the grid is policy (CE-F-14). | DISCOVERED |
+| CE-F-04 | No inspected source addresses a pre-open change from 2026-09-07. | DISCOVERED |
+| CE-F-11 | The criterion is verified as CE-F-15. The figure of about 220 stocks, the condition about both NSE and BSE, the publication method and how often the list is revised appear in **no** inspected source. They stay SECONDARY. | DISCOVERED (remainder) |
+| CE-F-12 | **Strong support, but no explicit statement.** CE-S-03 places CAS from 15:15 and computes its reference price from trades up to 15:15, but the visible text never states when continuous trading ends for CAS securities on a normal day. CE-S-19 states 15:15 for 2026-11-08 only. The 15:15 normal-day close is **not** inferred. | DISCOVERED |
+| CE-F-14 | Northstar policy, not an exchange fact. The exchange basis for it is now verified in CE-F-17. | Owner acceptance only |
+| CE-F-22 | NSE/CMTR/76941 continues 71775 only to set Muhurat timings. No review of 2026 CM circulars for other holiday amendments was made. | DISCOVERED |
+| CE-F-32 | CE-S-15 cites a mock trading schedule (CE-S-21). Mock sessions are not live (CE-F-19). No other 2026 CM special session was inspected. | DISCOVERED |
+| CE-F-40 to 42 | Not addressed. CE-S-19 and CE-S-02 list a call auction session for illiquid securities, which is consistent with CE-F-42 but is not an instrument-level source. | DISCOVERED |
+
+### 14.5 Effective dates and applicability
+
+**Chain for holidays and special sessions:**
+
+| Date | Source | Effect |
+|---|---|---|
+| 2025-12-12 | 71775 | Base list of 2026 CM holidays; Muhurat announced without timings |
+| 2026-01-12 | 72260 | Adds 2026-01-15, in partial modification of 71775 |
+| 2026-10-19 | 76941 | Continues 71775 and sets the timings for 2026-11-08 |
+
+**Chain for CAS:**
+
+| Date | Source | Effect |
+|---|---|---|
+| 2026-03-18 | 73362 | Cited CAS circular (operating guidelines). Not inspected. |
+| 2026-04-22 | 73845 | Cited CAS circular (security master files). Not inspected. |
+| 2026-05-29 | 74466 | Cited CAS circular (trading modalities). Not inspected. |
+| 2026-07-30 | 75479 | Live go-live date 2026-08-03; mock session on 2026-08-01 |
+| 2026-08-12 | CE-S-03 page update | Current CAS applicability and timings |
+| 2026-10-19 | 76941 | Confirms CAS operates on the 2026-11-08 special session too |
+
+**What is not established:**
+
+- the exact clocks in force for CAS securities from 2026-08-03 to 2026-08-12;
+- any CM regime before 2026-08-03 with a start date;
+- any change from 2026-09-07.
+
+**Applicability by instrument.** Three groups of securities can have different continuous phases on the same date:
+
+- **CAS-eligible stocks** (CE-F-15);
+- **non-CAS securities** (CE-F-13);
+- **stocks in a special pre-open session**, meaning IPOs and relistings. CE-S-19 gives these a normal market from 15:05 to 15:30 on 2026-11-08. This is an instrument-level exception like CAS, and the venue-level session port cannot express it either.
+
+### 14.6 CAS live versus mock, and the Muhurat session
+
+**Mock versus live (checklist item G).**
+
+- Every clock in CE-S-15 is a mock clock for 2026-08-01 (CE-F-19). That includes the 15:30 closes behind CE-C-03.
+- No CE-S-15 clock may enter live reference data.
+- The live normal-day CAS clocks come from CE-S-03 (CE-F-16).
+
+**Muhurat, Sunday 2026-11-08 (CE-S-19), times in IST:**
+
+| Phase | Time | In the 5-minute grid? |
+|---|---|---|
+| Block deal session | 13:50 to 14:05 | No |
+| Pre-open order entry. All orders until 14:10; limit orders only until 14:15, closing at a random time in the last 2 minutes. | 14:05 to 14:15 | No |
+| Pre-open matching | 14:15 to 14:17 | No |
+| Pre-open buffer | 14:17 to 14:20 | No |
+| Continuous trading session (CTS), CAS securities | 14:20 to 15:15 | Yes: 11 five-minute intervals |
+| Continuous trading session (CTS), non-CAS securities | 14:20 to 15:30 | Yes: 14 five-minute intervals |
+| Reference-price calculation and transition to CAS | 15:15 to 15:20 | No |
+| CAS order entry. All orders until 15:25; limit orders only until 15:30, closing at a random time in the last 2 minutes. | 15:20 to 15:30 | No |
+| CAS matching | 15:30 to 15:35 | No |
+| CAS transition | 15:35 to 15:50 | No |
+| Post-close session | 15:50 to 16:00 | No |
+| Special pre-open session (IPO and relisted stocks), closing at a random time in the last 10 minutes | 14:05 to 14:50 | No |
+| Normal market for special pre-open stocks | 15:05 to 15:30 | Instrument-specific |
+| Call auction for illiquid securities, closing at a random time in the last minute | 14:25 to 15:10 | No |
+| Trade modification window | 14:20 to 16:15 | No |
+
+- The interval counts are arithmetic on the stated clocks. Every continuous boundary is 5-minute aligned, so EI-1A's grid can represent each one.
+- V1 still does not trade special sessions (EI0-D7).
+- CE-D10's precondition (CE-S-19 verified) is now met. The decision itself stays PENDING.
+
+### 14.7 Conflicts and unresolved evidence
+
+CE-C-01 to CE-C-06 are covered by the dated note in section 8.
+
+| ID | Conflict | Treatment |
+|---|---|---|
+| CE-C-07 | **Stale timings page.** CE-S-02, last updated 2025-08-04 and captured 2026-11-02, still shows one CM normal market from 09:15 to 15:30 and a closing session from 15:40, with no CAS. CE-S-15 and CE-S-03 put CAS live from 2026-08-03, with CAS from 15:15 to 15:35 and a post-close session from 15:50. | CE-S-02 is not used for any rule after 2026-08-03. It is not used for effective dates for any period either. |
+| CE-C-08 | **Subject of NSE/CMTR/74466.** CE-S-15 (p. 1) gives 74466 a subject about the derivatives segment. CE-S-03 (p. 6) gives 74466 as the cash-segment trading modalities, and NSE/FAOP/74467 as the derivatives change. | Unresolved until 74466 is read. No verified fact depends on it. |
+| CE-C-09 | **Label in CE-S-19.** The circular expands CTS as "Continuous Trading Session" in one row, and as a closing trading session in the row for the transition to CAS. | The clocks are unaffected. Recorded only. |
+
+**Still unresolved:**
+
+- CE-F-12, the normal-day continuous close for CAS securities;
+- historical CAS membership (section 13.5). No inspected source publishes a membership list, an as-of rule or a revision process;
+- completeness of 2026 holiday amendments (CE-F-22).
+
+### 14.8 Totals after this task
+
+There are 22 facts: the original 18, plus CE-F-15, 16, 17 and 19.
+
+| State | Facts |
+|---|---|
+| DISCOVERED | 12: CE-F-01 to 04, 11, 12, 14 (policy), 22, 32, 40 to 42 |
+| VERIFIED FROM SOURCE, owner acceptance pending | 10: CE-F-10, 13, 15, 16, 17, 19, 20, 21, 30, 31 |
+| PENDING ACCEPTANCE (owner review opened) | 0 |
+| ACCEPTED | 0 |
+
+CE-D1 to CE-D10 remain **PENDING**. The verified facts are proposed for acceptance in section 14.9. They move to PENDING ACCEPTANCE when the owner opens that review. CE-D1 and CE-D2 decide whether this review gate applies at all.
+
+### 14.9 Proposed for owner acceptance
+
+The owner may accept, reject or defer each fact. Acceptance would be for the cash-equity session reference only.
+
+1. **CE-F-20 and CE-F-21:** the 16 weekday CM holidays and 4 weekend holidays of 2026, as listed in section 14.3.
+   - Proposed with the condition that CE-F-22 (later amendments) is open. Any amending circular creates a new reference version.
+2. **CE-F-30 and CE-F-31:** a live CM special session on 2026-11-08, with the phases in section 14.6.
+   - It is recorded so the date is not mistaken for a holiday. V1 excludes it.
+3. **CE-F-10:** the CAS trading-modality changes are live from 2026-08-03.
+4. **CE-F-13:** non-CAS continuous trading from 09:15 to 15:30 IST.
+   - Proposed as current as of 2026-08-12. Its effective-from date stays open.
+5. **CE-F-15:** CAS phase 1 applies to cash-segment stocks with available derivative contracts.
+   - Proposed as a criterion only. It is not a list, and it is not historical membership.
+6. **CE-F-16:** the CAS session from 15:15 to 15:35, with the visible sub-periods.
+   - Proposed as current as of 2026-08-12. The first rows are not captured.
+7. **CE-F-17:** pre-open and CAS are separate from continuous trading.
+8. **CE-F-19:** the clocks in 75479 are mock-only, and 2026-08-01 is not a live session.
+
+**Separately, a policy for owner decision rather than a verified fact:** CE-F-14, extended to pre-open (CE-F-03). Only continuous trading phases enter the 5-minute grid. Pre-open, CAS, the transition periods, post-close, block deals and call auctions are excluded.
+
+### 14.10 Documents still missing
+
+1. **NSE/CMTR/74466** (2026-05-29), on the CAS trading modalities. This is the most likely dated source for CE-F-12 and for the clocks in force from 2026-08-03. It would also resolve CE-C-08.
+2. **NSE/CMTR/73845** (2026-04-22), on security master changes for CAS. It is the first place to check whether eligibility is published per security (checklist item H).
+3. **NSE/CMTR/73362** (2026-03-18), the CAS operating guidelines.
+4. **A complete capture of CE-S-03** that shows the CAS rows from 15:15 to 15:25 and the full circulars list, for example a full-page screenshot.
+5. **The CM circular on pre-open changes from 2026-09-07,** if one exists (CE-F-04). Candidate: CE-S-14, 74969.
+6. **A dated CM circular establishing the regime before CAS, with its start date.** Needed only if CE-D7 covers dates before 2026-08-03.
+7. **A review of the 2026 CM circular list for holiday amendments** (CE-F-22).
+8. **Optional:**
+   - CE-S-05 (CAS FAQs);
+   - CE-S-04 (pre-open page);
+   - CE-S-10 (72394), whose relevance is unconfirmed;
+   - CE-S-31 (the F&O Muhurat counterpart), for the separate Futures follow-up.
+
+### 14.11 EI-1C-2 readiness
+
+- **The gate adapter (section 12)** can be built and tested with labelled test evidence once CE-D1 to CE-D3 are decided. This is unchanged.
+- **Real data that could load after acceptance:**
+  - the 2026 closed dates (CE-F-20 and 21);
+  - the 2026-11-08 special session (CE-F-30 and 31).
+- **Normal trading days:** **not ready.**
+  - There is no verified continuous phase for all EQ securities on a normal day, because the open and close for CAS securities are not explicit (CE-F-01, CE-F-12).
+  - Special pre-open stocks have their own hours as well.
+  - The regime before CAS is undated (CE-F-02).
+  - A resolver loaded with only the accepted facts above could report holidays and the Muhurat date. Every ordinary weekday would still raise. That is correct fail-closed behaviour, but it is not useful for V1.
+- **CE-D5 and CE-D6** remain prerequisites for any session after 2026-08-03.
 
 ---
 
