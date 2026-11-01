@@ -30,7 +30,7 @@ Foundation is now feature-complete and approved for platform-wide reuse.
 
 ## Engineering References
 
-- Symbol v1.0
+- Symbol v1.1 ([ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md))
 - Quantity v1.0
 - Price v1.0
 
