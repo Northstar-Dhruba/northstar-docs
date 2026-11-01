@@ -15,7 +15,7 @@ Future Foundation temporal concepts MUST follow these approved reference impleme
 
 | Component    | Status   | Version |
 | ------------ | -------- | ------- |
-| Symbol       | Approved | v1.0    |
+| Symbol       | Approved | v1.1    |
 | ExchangeCode | Approved | v1.0    |
 | Quantity     | Approved | v1.0    |
 | Percentage   | Approved | v1.0    |
@@ -85,7 +85,7 @@ The Registry remains authoritative.
 
 | Field         | Value                    |
 | ------------- | ------------------------ |
-| Version       | v1.0                     |
+| Version       | v1.1                     |
 | Component     | Symbol                   |
 | Category      | Foundation Value Object  |
 | Status        | Approved                 |
@@ -120,6 +120,13 @@ Approved — The implementation conforms to ES-001. It uses `@dataclass(frozen=T
 **Reference Contract Test Suite**
 
 Approved — `tests/foundation/value_objects/test_symbol.py` establishes the Northstar Value Object Testing Standard v1.0. The suite is organized into eight sections: Construction, Validation, Normalization, Equality, Hashing, Ordering, Representation, and Edge Cases.
+
+**Version History**
+
+| Version | Basis | Change |
+| ------- | ----- | ------ |
+| v1.0 | Approval, 2026-08-10 | Initial reference implementation. |
+| v1.1 | [ADR-019](../../adr/ADR-019-Symbol-Ampersand-Extension.md), 2026-11-01 | The character set allows `&`: the pattern is `^[A-Z0-9._&-]{1,32}$`. Uppercase normalization, trimming, whitespace refusal, the 1–32 length limit, immutability, equality, hashing, ordering, exceptions and exports are unchanged. The reference test suite gains an ampersand section. |
 
 ---
 

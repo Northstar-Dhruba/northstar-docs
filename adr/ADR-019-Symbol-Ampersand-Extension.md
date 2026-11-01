@@ -129,8 +129,8 @@ Provider instrument identifiers stay outside `Symbol`.
 
 ## Reference Implementation Versioning
 
-- **When the Core change lands,** RVO-001 becomes **v1.1** in the Reference Implementation Registry, with this ADR as its basis.
-- **Until then,** the registry continues to state v1.0.
+- The Core change has landed in northstar-core. RVO-001 is recorded as **v1.1** in the Reference Implementation Registry, with this ADR as its basis.
+- Reference implementations approved against Symbol v1.0 keep that historical reference.
 
 ## Scope
 
