@@ -19,6 +19,13 @@ Status: **evidence register; no fact is verified or accepted.**
 > - **Verified facts: 10**, all awaiting owner acceptance. **Accepted facts: 0.** Production session reference data: **none**.
 > - Normal-day continuous hours for CAS-eligible securities are still **not** verified (CE-F-12). No normal trading day can yet be resolved from verified facts.
 
+> **Note, 2026-11-02 (EI-1C, CAS timings and eligibility).** This note supersedes the status lines above. Details are in section 15.
+> - The owner supplied NSE/CMTR/74466, 73845 and 73362, with their annexures: the security-master layout workbook and the CAS FAQ. Each was inspected and fingerprinted.
+> - **CE-F-12 is now VERIFIED FROM SOURCE.** From 2026-08-03, continuous trading for CAS-applicable securities ends at 15:15 IST on all trading days (NSE/CMTR/74466).
+> - **Verified facts: 15. Accepted facts: 0.** CE-D1 to CE-D10 remain PENDING.
+> - The CAS flag in the security master is specified. It reuses a field that meant something else before 2026-08-03 (CE-F-51). Historical CAS eligibility is **not** shown to be reconstructible.
+> - The continuous **open** for CAS securities on a normal day is still not stated by any inspected source (CE-F-01).
+
 This register records what Northstar needs to know before an evidence-backed NSE cash-equity session resolver can exist:
 
 - where the authoritative NSE material is believed to be;
@@ -300,6 +307,8 @@ Neither "every equity trades continuously until 15:30" nor "every equity stops a
 > - **CE-C-05:** unchanged. The correction to EI-0 section 6.1 is now confirmed as needed.
 > - **CE-C-06:** unchanged. The CAS page also gives the derivatives segment 09:15 to 15:40, which is consistent with CE-X-01 and is still never a cash fact.
 > - New conflicts **CE-C-07 to CE-C-09** are in section 14.7.
+
+> **Note, 2026-11-02 (EI-1C, CAS timings and eligibility).** CE-C-08 is resolved, and CE-C-10 and CE-C-11 are added. See section 15.7.
 
 ## 9. Unresolved decisions
 
@@ -701,6 +710,220 @@ The owner may accept, reject or defer each fact. Acceptance would be for the cas
   - The regime before CAS is undated (CE-F-02).
   - A resolver loaded with only the accepted facts above could report holidays and the Muhurat date. Every ordinary weekday would still raise. That is correct fail-closed behaviour, but it is not useful for V1.
 - **CE-D5 and CE-D6** remain prerequisites for any session after 2026-08-03.
+
+## 15. EI-1C CAS timings and eligibility inspection (2026-11-02)
+
+The owner supplied three more CAS circulars with their annexures, in the same owner folder outside every repository.
+
+- No NSE host or provider was contacted.
+- No script or executable was present, and none was run. The annexure workbook was read as XML from a temporary copy. It contains no macro part.
+- Nothing is quoted, and no copy is committed.
+
+Section 14's facts and states are preserved. Where a fact gains evidence here, that is recorded below without editing section 14.
+
+### 15.1 Files inspected
+
+| Source | Supplied file | Bytes | SHA-256 | Pages | Notes |
+|---|---|---|---|---|---|
+| CE-S-11, NSE/CMTR/73362 | `CMTR73362.pdf` | 210527 | `c7da4fb3a74954903d9ac2106e16f22679654405774df7abe602f369fd1e8377` | 4 | Metadata creation time 2026-03-18 18:52 IST |
+| CE-S-12, NSE/CMTR/73845 | `CMTR73845/CMTR73845.pdf` | 126798 | `aef6e11c636ce079ec105307a55772a79d3c1be3218147f8b3fd97970312e65d` | 1 | Metadata creation time 2026-04-22 15:47 IST |
+| CE-S-12A, Annexure A (security-master layout changes) | `CMTR73845/Annexure A.xlsx` and `CMTR74466/Annexure A.xlsx` | 11091 | `da1dad1077b0fe70c14a068a1c4f6a665a80f35af81b6d454ba7271d2969efae` | 1 sheet | The two copies are byte-identical. Workbook created 2026-04-21 and modified 2026-04-22. |
+| CE-S-13, NSE/CMTR/74466 | `CMTR74466/CMTR74466.pdf` | 209158 | `50778523b491d582a7b367c7c7d64aabaefe0bc43eefba16b89364295c71fdbe` | 6 | Metadata creation time 2026-05-29 18:06 IST |
+| CE-S-13B, Annexure B (CAS FAQ, version 1.0) | `CMTR74466/Annexure B_FAQs on Closing Auction Session (CAS) in the Equity segment and changes in Equity Derivatives Segment.pdf` | 231846 | `06648b68cfe39f0ec2348e9124833963a7970dbd7000e6a0347edac34308b45f` | 10 | Updated 2026-05-29. Metadata creation time 2026-05-29 16:24 IST. |
+
+**Notes on provenance and authority:**
+
+- **The FAQ is not binding.** Its own disclaimer says it is general information, makes no representation of accuracy, and does not bind NSE. In this register it **corroborates** circular facts and never establishes one alone (proposed CE-D11).
+- **Annexure A.** Both 73845 and 74466 refer to an attached Annexure A for the same layout changes. The two supplied copies are identical, so one evidence item, CE-S-12A, serves both. The sheet does not name a circular.
+
+### 15.2 Source identities
+
+| Source | Department | Download reference | Circular reference | Date | Subject (paraphrased) | Effective date stated |
+|---|---|---|---|---|---|---|
+| CE-S-11 | Capital Market | NSE/CMTR/73362 | 38/2026 | 2026-03-18 | CAS operating guidelines and SOP: applicability, reference price, price bands, order types, closing price, dissemination | None stated |
+| CE-S-12 | Capital Market | NSE/CMTR/73845 | 54/2026 | 2026-04-22 | Security-master file changes for CAS | 2026-08-03 (p. 1) |
+| CE-S-13 | Capital Market | NSE/CMTR/74466 | 71/2026 | 2026-05-29 | CAS trading modalities in the equity cash segment | CAS trading from 2026-08-03 (p. 6) |
+
+**Amendments and the citation chain:**
+
+- 73362 builds on the SEBI CAS circular dated 2026-01-16 and on NSE/CMTR/72394 (2026-01-19). It says further guidelines will follow in separate circulars.
+- 73845 cites the same SEBI circular, 72394 and 73362. It partially modifies Part D (the file layouts) of the consolidated CM circular NSE/CMTR/67774 (2025-04-30).
+- 74466 cites 73845, 73362 and 72394. It refers to 73927 (2026-04-28) for the closing price of non-CAS securities and for self-trade prevention, and says the mock sessions will have their own circular. That circular is 75479, inspected in section 14.
+- None of the three says it is superseded.
+
+**Newly located identifiers** (SOURCE LOCATED; not retrieved):
+
+| ID | Reference | Cited by | Relevance |
+|---|---|---|---|
+| CE-S-32 (now identified) | SEBI/HO/47/11/11(3)2025-MRD-POD2/I/2765/2026, 2026-01-16 | 73362 p. 1; 73845 p. 1 | Regulatory framework for CAS |
+| CE-S-22 | NSE/CMTR/67774 (2025-04-30), consolidated CM circular | 73845 p. 1 (Part D); 73362 p. 3 (point 3.4) | File layouts. **A candidate source for the normal-market hours before CAS** (CE-F-01, CE-F-02), by citation only. |
+| CE-S-20 (already listed) | NSE/CMTR/73927 (2026-04-28) | 74466 p. 2 (point 3.4) and p. 5 (point 4.8) | Cited for the same point 3.4 closing-price rule that 73362 attributes to 67774. **Whether it replaces 67774 is not inferred.** A candidate source for current normal-market hours. |
+| CE-S-33A | NSE/FAOP/73928 | FAQ question 56 | F&O closing price. Cross-segment only. |
+
+### 15.3 New and updated verified facts
+
+For every fact below:
+
+- the state is **VERIFIED FROM SOURCE**;
+- owner acceptance is **PENDING**;
+- nothing is ACCEPTED;
+- the segment is NSE Capital Market (equity cash).
+
+| Fact | Verified content (original summary) | Affected securities | Effective | Evidence | Limitations |
+|---|---|---|---|---|---|
+| **CE-F-12** (promoted from DISCOVERED) | Continuous trading (CTS) for CAS-applicable securities ends at **15:15 IST**. CAS runs as a separate session from 15:15 to 15:35 on all trading days. The circular names the CTS as running until 15:15 in its section on CTS orders carried into CAS. It defines a separate end-of-CTS event for securities applicable for CAS, at which the normal market closes for them. | CAS-applicable securities (CE-F-15), except on the days in CE-F-18 | From 2026-08-03, until superseded | CE-S-13: section B (p. 1), section E (p. 3), section L (p. 5), effective date (p. 6). Corroborated by: CE-S-11 point 3.2.1.1 (p. 2), which treats 14:45 to 15:15 as the last half hour of CTS for the purpose of price bands; CE-S-13B questions 16 and 31. | Normal live days only. **Mock clocks (CE-F-19) are not used.** The Muhurat circular (CE-F-31) is not relied on. The 15:15 open of CAS is a session boundary, not inferred from the reference-price window. |
+| CE-F-15 (more evidence) | Initially, CAS covers stocks on which derivative contracts are available **on any exchange**. CAS is introduced in phases. | Instrument level | From 2026-08-03 | CE-S-13 section A (p. 1); CE-S-11 point 1.1 (p. 1) | It is a criterion, not a list. It contradicts the secondary claim in CE-F-11 that derivatives on both NSE and BSE are needed. |
+| CE-F-16 (more evidence) | The full CAS timetable, IST: 15:15 to 15:20, reference-price calculation and transition from CTS (no order entry); 15:20 to 15:25, order entry for limit and market orders; 15:25 to 15:30, limit orders only, closing at a random time in the last 2 minutes; 15:30 to 15:35, order matching and trade confirmation; 15:35 to 15:50, transition to post-close; 15:50 to 16:00, post-close session. | CAS-applicable securities | **From 2026-08-03.** This closes section 14's gap on the effective date and on the timetable rows lost from the capture. | CE-S-13 section B (pp. 1-2) and p. 6. No order entry during the transition is corroborated by FAQ question 16. | None beyond CE-F-18 |
+| **CE-F-18** (new) | CAS does not apply to a derivative-eligible stock in two cases. **(a)** On the ex-date of a scheme of arrangement, if the stock's price is not discovered in the special pre-open session. **(b)** When an index circuit breaker halts the market for the rest of the day. In that case no CAS is held for any security, and closing prices use the existing method. | Instrument and date level | From 2026-08-03 | CE-S-13 section A (p. 1) and section C point 3 (p. 3) | Both are day-of events that a reference cannot know in advance (section 7.3). |
+| **CE-F-50** (new) | **The CAS flag in the security master.** In `security.txt` and `nnf_security.dat`, field 13 is redefined as eligibility for CAS, with 0 meaning not eligible and 1 meaning eligible. Field 12 becomes a filler. In the MII security file `NSE_CM_security_ddmmyyyy.csv.gz`, field 24 is redefined the same way and its ISO tag changes from `ElgbltyRETDBTMkt` to `ElgbltyClsgAuctnSsn`. Field 23 becomes a filler. Field 59, a filler, has its ISO tag changed from `Rsvd01` to `XchgExclsv`. No other field or format changes. | All CM securities in the security master | From 2026-08-03 | CE-S-12 p. 1; CE-S-12A (rows for Part D annexures 1 and 10); CE-S-13 section I (p. 4); FAQ question 27 | The annexure gives values but **no data type or length**. No actual file was inspected. |
+| **CE-F-51** (new) | **The same field positions meant something else before.** Until the change, field 13 (`security.txt`, `nnf_security.dat`) and field 24 (MII file) carried eligibility for the **RETDEBT** market, also coded 0 and 1. Fields 12 and 23 carried the security's status in the RETDEBT market. | Files dated before 2026-08-03 | Before 2026-08-03 | CE-S-12A, the "current" columns | **A file dated before 2026-08-03 must never be read as CAS data.** A value of 1 there means RETDEBT eligibility. |
+| **CE-F-52** (new) | **Distribution.** Members load the updated `security.gz` and `NSE_CM_security_ddmmyyyy.csv.gz` from the extranet directory `cmftp/common/ntneat` before trading from the effective date. The MII file is also available on the NSE website's all-reports path. The file name carries a date. | — | From 2026-08-03 | CE-S-13 p. 6 | **Not stated:** how often the file is published, how long it is kept, whether earlier dates stay available, or whether the flag changes within a day. CE-S-15 (p. 4) shows that files for a given trading day were generated after the previous day's end-of-day processing, for that one occasion only. |
+
+**Inspected but not promoted:**
+
+| Fact | Finding | State |
+|---|---|---|
+| CE-F-01 | No newly inspected source states the normal-day continuous **open** for CAS securities. 73362 point 3.2.2.1 mentions 09:00 to 15:40 as trading hours, but only for options price bands in the F&O segment, which is not cash evidence. Candidate sources are CE-S-20 and CE-S-22. | DISCOVERED |
+| CE-F-04 | Only the FAQ (question 2) says the pre-open framework is aligned with CAS on 2026-09-07, and the FAQ is non-binding. 73362 mentions pre-open modifications without a date. | DISCOVERED (FAQ support only) |
+| CE-F-11 | The criterion is now fully covered by CE-F-15. The "both NSE and BSE" claim is **contradicted** by CE-S-13 section A. The figure of about 220 stocks appears in no inspected source and is not needed. | DISCOVERED; not to be used |
+| CE-F-13 | Nothing new in a circular. FAQ question 26 says CTS for non-F&O securities continues until 15:30. That supports the 15:30 close from go-live, but only as an FAQ. | VERIFIED (section 14), unchanged |
+| **CE-F-53** (new) | **Eligibility upkeep, from the FAQ only:** eligibility is the same on every exchange; a stock stays eligible while it is in the derivatives segment of any exchange, and stops when it leaves the segment on both; further phases will follow SEBI guidance. | DISCOVERED (FAQ support only; CE-D11) |
+
+### 15.4 Normal-day continuous trading after 2026-08-03
+
+| Group | Open | Close | State |
+|---|---|---|---|
+| CAS-applicable securities | **Not stated** (CE-F-01) | 15:15 IST (CE-F-12) | Close verified; open not |
+| Non-CAS securities | 09:15 IST (CE-F-13) | 15:30 IST (CE-F-13) | Verified as current at 2026-08-12. From 2026-08-03 only with FAQ support. |
+| Derivative-eligible stocks on a CE-F-18 day | — | Not in CAS that day | Day-of event |
+| IPO and relisted securities in a special pre-open session | Not established for normal days | Not established | No inspected source; CE-S-02's figures are stale |
+
+**Mock versus live:**
+
+- None of the three new circulars contains a mock timetable. 74466 defers mock sessions to a separate circular, which is 75479.
+- No mock clock enters any fact above.
+
+### 15.5 Effective-date chain for CAS
+
+| Date | Source | Effect | Inspected |
+|---|---|---|---|
+| 2026-01-16 | SEBI CAS circular (CE-S-32) | Framework | No |
+| 2026-01-19 | 72394 (CE-S-10) | CAS introduced, with certain pre-open changes, per 73362's description | No |
+| 2026-03-18 | 73362 | Operating guidelines; no effective date | Yes |
+| 2026-04-22 | 73845 | Security-master flag, effective 2026-08-03 | Yes |
+| 2026-05-29 | 74466 and the FAQ | Trading modalities; CAS trading from 2026-08-03 | Yes |
+| 2026-07-30 | 75479 | Live from 2026-08-03; mock session on 2026-08-01 | Yes (section 14) |
+| 2026-08-03 | — | **CAS live** | — |
+| 2026-08-12 | CE-S-03 page update | Current applicability and timings | Yes (section 14) |
+| 2026-09-07 | FAQ only | Pre-open aligned with CAS | Non-binding |
+
+- **Before 2026-08-03,** no inspected source puts any security in CAS.
+- **Transition rules:**
+  - From 15:15 to 15:20 no orders are accepted.
+  - Outstanding CTS limit orders within the CAS price band carry into CAS with their original time priority. Stop-loss, iceberg and out-of-band orders do not carry.
+  - Orders left unexecuted after CAS matching are cancelled.
+  - On a day with a circuit-breaker halt, no CAS is held (CE-F-18).
+
+### 15.6 Can historical CAS eligibility be reconstructed?
+
+| Level | Question | Finding |
+|---|---|---|
+| 1. Field specification | Is there a documented eligibility field? | **Yes**: CE-F-50, from 2026-08-03. Values 0 and 1; type and length not stated. |
+| 2. A dated file | Has an actual file with eligibility records been inspected? | **No.** No `NSE_CM_security_ddmmyyyy.csv.gz` or `security.txt` was supplied. |
+| 3. An archived series | Is a series of dated files retrievable for past dates? | **Not established.** CE-F-52 gives distribution paths for the current file only. Retention, back-dated availability and permitted use are unknown. Collection would be manual only (section 2, rule 5). |
+
+**Conclusion: historical CAS eligibility is NOT shown to be reconstructible.**
+
+- **Before 2026-08-03** there is no CAS (CE-F-10, CE-S-13 p. 6). The repurposed field must not be read as CAS (CE-F-51).
+- **From 2026-08-03,** reconstruction needs level 2 and level 3 evidence.
+- **Deriving eligibility from derivative membership is not accepted as a substitute.** The rule (CE-F-15, CE-F-53) would need dated F&O lists from **every** exchange, and the CE-F-18 exceptions are day-of events that such lists cannot capture. Today's F&O universe is never projected backward.
+
+**IPO and relisted securities:** no inspected source says how the flag treats a security in a special pre-open session. CE-F-18 covers only a scheme-of-arrangement ex-date. This is unresolved.
+
+### 15.7 Conflicts
+
+| ID | Conflict | Treatment |
+|---|---|---|
+| CE-C-08 | **Resolved.** 74466's own header shows it is the Capital Market trading-modalities circular, which agrees with CE-S-03. CE-S-15's derivatives-segment subject for it was a mislabel. | Closed |
+| CE-C-10 | **Eligibility scope across exchanges.** CE-S-03 says derivatives "available". 74466 says on any exchange. A secondary source said both NSE and BSE. | The circular governs: any exchange. The secondary claim is rejected. |
+| CE-C-11 | **One annexure under two circulars.** A byte-identical Annexure A sits in both supplied folders, and neither copy names its circular. | Not a content conflict, since both circulars describe the same layout change. Recorded as provenance. |
+
+### 15.8 Assessment of the EI-1A architecture
+
+| Need | EI-1A today | Smallest safe design |
+|---|---|---|
+| A. Venue and date: whether a session exists, holidays, special sessions | `EquityTradingSessionResolver.resolve(exchange_code, trading_date)` and `EquityTradingSession`, NORMAL or SPECIAL | **No change.** An evidence-gated Infrastructure adapter (section 12). Its phases are the exchange's phases for securities **without** an instrument-level exception, meaning the non-CAS regime (CE-F-13). |
+| B. Instrument and date: CAS eligibility | Not representable. `EquityTradingSession` carries no instrument identity by contract. | A **separate Application port**, deferred to EI-1C-3. It answers, for a listing and session date, `CAS_ELIGIBLE`, `NOT_CAS_ELIGIBLE` or `UNKNOWN`, with its evidence reference. Its only admissible source is a dated security-master record (CE-F-50) for that date. No inference from F&O membership. |
+| C. Effective-dated continuous phases | Each session carries its own phases; the synthetic reference is not dated | **Two separate dated facts.** The venue regime belongs to the adapter. The CAS end of CTS (15:15 from 2026-08-03) is a **venue and date** fact, not an instrument fact, so it belongs in the same evidence-gated reference as a dated closing-auction schedule, with "none" before 2026-08-03. A pure Application rule derives a listing's phases by trimming the last phase to that end when the listing is CAS-eligible. The derived value is an ordinary `EquityTradingSession`, so **`EquitySessionIntervalGrid` is unchanged**. |
+| D. Special-session overrides | Supported, timed and untimed | No change. A special session states its own CAS end, as on 2026-11-08. |
+| E. Unknown or unavailable evidence | Unloaded, unstated or untimed sessions raise | No change for the venue. When eligibility is `UNKNOWN`, the listing and date fail closed **unless** the owner chooses the common-boundary policy (CE-D6). A CE-F-18 day-of event is handled as a session revision (section 7.3). |
+
+**No change to the EI-1A port, the session value or the grid is shown to be necessary.** The one new piece of venue data, the dated CAS end of CTS, needs a place to live. It could be a small additional venue-level port or an adapter-internal structure feeding the derivation rule. That is part of CE-D5 and is not decided here.
+
+**The common boundary is now nearly available.** EI-0's proposed V1 cutoffs (signal 14:25, entry 14:30, planned exit 15:00) all fall before 15:15. A V1 window ending at 15:15 for **every** EQ listing would therefore need no eligibility data at all. Its remaining prerequisites are:
+
+- the normal-day open for CAS securities (CE-F-01);
+- the exclusion of special-pre-open listing days (CE-D13).
+
+### 15.9 Smallest EI-1C-2 design
+
+This is unchanged from section 12, with the scope sharpened:
+
+1. **An evidence-gated, versioned NSE cash-equity venue reference**, holding:
+   - effective-dated regimes;
+   - closed dates;
+   - timed and untimed special sessions;
+   - a dated closing-auction schedule: from 2026-08-03 the CTS ends at 15:15 for eligible listings, and none before.
+
+   It sits in Infrastructure, its production registry is empty until facts are accepted, and it has labelled test evidence.
+2. **An `EquityTradingSessionResolver` implementation** that returns the non-CAS phases. Every NSE date raises until the relevant facts are ACCEPTED.
+3. **No eligibility lookup and no Application change** in this slice. Both belong to EI-1C-3, after CE-D5, CE-D6, CE-D11 and CE-D14.
+
+**Loadable after acceptance:**
+
+- the 2026 closed dates;
+- 2026-11-08;
+- non-CAS normal days from 2026-08-03, if the owner accepts CE-F-13 with an effective date of 2026-08-03 (CE-D15);
+- the CAS end of CTS (CE-F-12).
+
+**Not loadable:**
+
+- any date before 2026-08-03 (CE-F-02);
+- a common-boundary window, until CE-F-01 is verified.
+
+### 15.10 New owner decisions
+
+These are **PENDING** and are added to CE-D1 to CE-D10, which are unchanged and still PENDING.
+
+| ID | Decision | Recommendation |
+|---|---|---|
+| CE-D11 | Whether NSE FAQ annexures, which describe themselves as non-binding, may establish a fact or only corroborate one | Corroborate only |
+| CE-D12 | CE-D5, refined: model the CAS end of CTS as a dated **venue** fact, and eligibility as a separate **instrument** lookup; derive per-listing phases in Application without changing EI-1A | Accept |
+| CE-D13 | Fail closed for a listing on a day it is in a special pre-open session (IPO, relisting, scheme-of-arrangement ex-date) | Accept |
+| CE-D14 | Historical eligibility: admit only dated security-master records obtained manually, never derivation from F&O membership; or defer per-listing eligibility and rely on CE-D6's common boundary for V1 | Rely on the common boundary for V1; admit security-master records later |
+| CE-D15 | Whether CE-F-13 (non-CAS 09:15 to 15:30) may be accepted from 2026-08-03, given the CAS page update on 2026-08-12 and corroboration by FAQ question 26 | Accept only if CE-D11 permits FAQ corroboration; otherwise from 2026-08-12 |
+
+**CE-D6, refined recommendation:** adopt the common boundary, a continuous window ending 15:15 from 2026-08-03, for V1 once CE-F-01 is verified. Until then, fail closed.
+
+### 15.11 Totals after this task
+
+There are 27 facts: the 22 in section 14.8, plus CE-F-18, 50, 51, 52 and 53.
+
+| State | Facts |
+|---|---|
+| DISCOVERED | 12: CE-F-01 to 04, 11, 14 (policy), 22, 32, 40 to 42, 53 |
+| VERIFIED FROM SOURCE, owner acceptance pending | 15: CE-F-10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 30, 31, 50, 51, 52 |
+| PENDING ACCEPTANCE (owner review opened) | 0 |
+| ACCEPTED | 0 |
+
+### 15.12 Documents still missing
+
+1. **The current normal-market hours for all CM securities, from a dated circular:** CE-S-20 (73927) or CE-S-22 (67774). Needed for CE-F-01 and CE-F-02.
+2. **One actual dated `NSE_CM_security_ddmmyyyy.csv.gz`** from on or after 2026-08-03. This is the level 2 evidence for the CAS flag, and would also show the field's real type.
+3. **Evidence on how long security-master files are kept and whether past dates can be retrieved** (level 3).
+4. **NSE/CMTR/72394** (CE-S-10), on the CAS and pre-open changes.
+5. **The CM circular implementing the pre-open alignment from 2026-09-07** (CE-F-04).
+6. **Carried over from section 14.10:** CE-F-22 (holiday amendments); CE-S-31 for the Futures follow-up.
 
 ---
 
