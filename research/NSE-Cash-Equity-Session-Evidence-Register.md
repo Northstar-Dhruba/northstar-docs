@@ -26,6 +26,17 @@ Status: **evidence register; no fact is verified or accepted.**
 > - The CAS flag in the security master is specified. It reuses a field that meant something else before 2026-08-03 (CE-F-51). Historical CAS eligibility is **not** shown to be reconstructible.
 > - The continuous **open** for CAS securities on a normal day is still not stated by any inspected source (CE-F-01).
 
+> **Note, 2026-11-02 (EI-1C, normal-session opening time).** This note supersedes the status lines above. Details are in section 16.
+> - The owner supplied the CM consolidated circular NSE/CMTR/73927 (2026-04-28) with its Parts D, E and F.
+> - **CE-F-01, CE-F-02 and CE-F-03 are now VERIFIED FROM SOURCE,** within the explicit date boundaries in section 16.3. CE-F-54 (special pre-open securities) is new.
+> - **Verified facts: 19. Accepted facts: 0.** All decisions remain PENDING.
+> - Opening-time coverage from **2026-09-07** (the pre-open realignment) is **not** inspected. The pre-open page named by the owner as a lead was not supplied.
+
+> **Note, 2026-11-04 (EI-1C, NSE/CMTR/74969).** This note supersedes the status lines above. Details are in section 17.
+> - The owner supplied NSE/CMTR/74969 (2026-07-01), which changes the pre-open from 2026-09-07, with its FAQ annexure. It was inspected and fingerprinted.
+> - **CE-F-04 is VERIFIED.** The 09:15 continuous open is unchanged from 2026-09-07, so CE-F-01's inspected coverage extends past 2026-09-06. CE-F-55 is new.
+> - **Verified facts: 21. Accepted facts: 0.** All decisions remain PENDING.
+
 This register records what Northstar needs to know before an evidence-backed NSE cash-equity session resolver can exist:
 
 - where the authoritative NSE material is believed to be;
@@ -309,6 +320,8 @@ Neither "every equity trades continuously until 15:30" nor "every equity stops a
 > - New conflicts **CE-C-07 to CE-C-09** are in section 14.7.
 
 > **Note, 2026-11-02 (EI-1C, CAS timings and eligibility).** CE-C-08 is resolved, and CE-C-10 and CE-C-11 are added. See section 15.7.
+
+> **Note, 2026-11-02 (EI-1C, normal-session opening time).** CE-C-12 and CE-C-13 are added. See section 16.6.
 
 ## 9. Unresolved decisions
 
@@ -924,6 +937,269 @@ There are 27 facts: the 22 in section 14.8, plus CE-F-18, 50, 51, 52 and 53.
 4. **NSE/CMTR/72394** (CE-S-10), on the CAS and pre-open changes.
 5. **The CM circular implementing the pre-open alignment from 2026-09-07** (CE-F-04).
 6. **Carried over from section 14.10:** CE-F-22 (holiday amendments); CE-S-31 for the Futures follow-up.
+
+## 16. EI-1C normal-session opening-time verification (2026-11-02)
+
+The owner supplied the CM consolidated circular with its parts, in the same owner folder outside every repository.
+
+- No NSE host, broker or provider was contacted.
+- The PDF text was extracted to a scratch folder outside every repository. The Office parts were read as XML from temporary copies. None contains a macro part, and nothing was executed.
+- Nothing is quoted, and no copy is committed.
+
+### 16.1 Files inspected
+
+| Source | Supplied file | Bytes | SHA-256 | Notes |
+|---|---|---|---|---|
+| CE-S-20, NSE/CMTR/73927 | `CMTR73927/CMTR73927.pdf` | 1546968 | `f5e04e3cc7fa33a995ddc2603b62fce3b2e1e4f230848d211567b855db5ff89e` | 101 pages. Metadata creation time 2026-04-28 12:08 IST. |
+| CE-S-20D, Part D (report and file formats) | `CMTR73927/PART-D.xlsx` | 128798 | `30a4e37956ba5ab1acdda177411beca0146ebab0bcb155f1cd4f12576d195798` | Index sheet and Annexures 1 to 13. Used only to corroborate CE-F-51. |
+| CE-S-20E, Part E (contingency pool format) | `CMTR73927/PART E.docx` | 25242 | `3f9069bf811ef9f08f28f95b0c79993bdca461d896834b42b93e68c640c24e0a` | Not relevant to sessions |
+| CE-S-20F, Part F (proprietary undertaking) | `CMTR73927/PART F.docx` | 26322 | `c10c83cc5166a495bf7005b10562e5396d8b2d09a6ad707b8b476f8cd4d8281b` | Not relevant to sessions |
+
+**Leads named by the owner and not supplied:**
+
+- the NSE pre-open session page, reported as updated 2026-09-04;
+- the current market-timings page.
+
+They are **not** evidence here. CE-S-02 (section 14) is the stale 2025-08-04 capture.
+
+### 16.2 Source identity
+
+**What it is.** NSE/CMTR/73927 is a Capital Market circular, reference 56/2026, dated 2026-04-28, titled "Capital Market Consolidated Circular".
+
+**Scope.**
+- It replaces the earlier consolidated circular NSE/CMTR/67774 (2025-04-30).
+- Part A lists important circulars from 2025-04-01 to 2026-03-31.
+- Part B lists no rescissions.
+- Part C holds the consolidated content.
+- **It states no single effective date.** It gives the consolidated position as at issue, with each topic's "relevant circulars". For trading hours those run from NSE/CMTR/1229 (1999-10-07) to NSE/CMTR/63747 (2024-09-04).
+
+### 16.3 Verified facts
+
+For every fact below:
+
+- the state is **VERIFIED FROM SOURCE**;
+- owner acceptance is **PENDING**;
+- nothing is ACCEPTED;
+- the segment is NSE Capital Market, normal market.
+
+**Date boundaries.** "From 2026-04-28" means in force on the circular's date, which is the earliest date this source proves. "Inspected coverage" is the last date up to which inspected sources show no superseding rule.
+
+| Fact | Verified content (original summary) | Affected securities | Effective boundaries | Evidence | Limitations |
+|---|---|---|---|---|---|
+| **CE-F-01** (promoted) | The normal (and odd-lot) market opens at **09:15 IST**. The regular pre-open call auction from 09:00 to 09:15 precedes it, and its buffer period ends with the transition to continuous trading. | All securities in the CM normal market, CAS and non-CAS alike, **except** special pre-open securities on their special pre-open day (CE-F-54) | **From 2026-04-28, until superseded. Inspected coverage: up to 2026-09-06.** | CE-S-20: section 2.2, trading-hours table (p. 46); section 1.1, pre-open schedule (pp. 5-6); SME continuous market 09:15 to 15:30 (section 1.12, p. 28). Restated for non-CAS securities at 2026-08-12 by CE-S-03 (CE-F-13). | **Across 2026-08-03 for CAS securities**, the rule continues because none of the four inspected CAS circulars (73362, 73845, 74466, 75479) amends the open. Each addresses only the close and the auction. No source restates the open for CAS securities. That continuity reasoning is owner decision CE-D16. **From 2026-09-07** the pre-open framework is realigned (FAQ question 2, non-binding), and the governing circular or page is not inspected, so this source's coverage stops at 2026-09-06. **Before 2026-04-28** it is not established by this source. |
+| **CE-F-02** (promoted, narrowed) | The normal (and odd-lot) market closes at **15:30 IST** for all normal-market securities. | All CM normal-market securities | **From 2026-04-28 to 2026-08-02.** From 2026-08-03, CE-F-12 supersedes it for CAS securities. CE-F-13 continues it for non-CAS securities. | CE-S-20 section 2.2 (p. 46) | Not established before 2026-04-28. The candidate's wording "before 2026-08-03" is narrowed to the inspected window. |
+| **CE-F-03** (promoted) | The regular pre-open is a call auction from 09:00 to 09:15 IST: order entry 09:00 to 09:08, closing at a random time between the 7th and 8th minutes; matching and trade confirmation to 09:12; buffer 09:12 to 09:15. Its equilibrium price is the day's open price. It applies to all equity-market securities, including SME securities, partly paid-up securities, InvITs and REITs. | As stated | **From 2026-04-28. Inspected coverage: up to 2026-09-06.** | CE-S-20 section 1.1 (pp. 5-7); section 2.2 (pp. 46-47) | Northstar's exclusion of pre-open from the grid stays policy (CE-F-14). The 2026-09-07 realignment may change the phases (CE-F-04). |
+| **CE-F-54** (new) | **Special pre-open session (SPOS).** It applies on the relevant day to: IPOs and re-listed securities on their first or recommencement day; SME IPOs; stocks **with derivatives** on the ex-date after a scheme of arrangement or corporate restructuring; securities admitted from another exchange; securities whose suspension is revoked after more than one year; and investment companies and investment holding companies. The SPOS runs 09:00 to 10:00 IST: order entry to 09:45, closing at a random time between the 35th and 45th minutes; matching to 09:55; buffer to 10:00. These securities move to the normal market **only after 10:00**, subject to conditions such as successful price discovery. Other securities trade in the normal market at the same time. | Instrument and day level | From 2026-04-28, until superseded | CE-S-20 section 1.2, parts A, B, D and E (pp. 9-11); section 2.2 (p. 47) | The affected listing-days need an instrument-event source (CE-D18). Normal-day SPOS stocks are never inside a 09:15 window. |
+
+**Corroboration, not promoted:**
+
+- **CE-F-51:** Part D (CE-S-20D, Annexure 1) still shows the pre-CAS security-file layout, with RETDEBT eligibility and status fields.
+- **CE-F-42:** section 1.13 (p. 35) describes daily periodic call auctions for illiquid scrips: six one-hour sessions from 09:30 to 15:30, with classification criteria. It does not state in so many words that such scrips are excluded from continuous trading, so CE-F-42 stays DISCOVERED.
+- **T+0:** section 2.2 lists a separate T+0 market (series T0) from 09:15 to 13:30. It is not the EQ normal market and is out of scope.
+
+### 16.4 Normal-day continuous windows by date range
+
+| Date range | CAS securities | Non-CAS securities | Basis |
+|---|---|---|---|
+| Before 2026-04-28 | Not established | Not established | No inspected source. 67774 (2025-04-30) is a candidate (CE-D7). |
+| 2026-04-28 to 2026-08-02 | — (no CAS) | 09:15 to 15:30 (all securities) | CE-F-01, CE-F-02 |
+| 2026-08-03 to 2026-09-06 | 09:15 to 15:15 | 09:15 to 15:30 | CE-F-01 (with CE-D16), CE-F-12, CE-F-13 |
+| From 2026-09-07 | Close 15:15; **open not inspected** | Close 15:30; **open not inspected** | The pre-open realignment source is missing |
+
+**In every range, these are excluded or fail closed:**
+
+- special pre-open securities on their SPOS day (CE-F-54);
+- day-of exceptions (CE-F-18) and circuit halts;
+- special sessions;
+- holidays.
+
+**Mock clocks:** none are used (CE-F-19).
+
+### 16.5 The common window and the V1 research window
+
+1. **Common 09:15 to 15:15 continuous window:**
+   - **2026-04-28 to 2026-09-06:** evidence-supported for normal-market securities without a special pre-open or day-of exception. It is the intersection of verified phases, and needs CE-D16 for CAS securities after 2026-08-03.
+   - **From 2026-09-07:** not supported yet.
+   - **Before 2026-04-28:** not supported.
+2. **Narrower 09:15 to 15:00 V1 research window:**
+   - It is **independent of CAS membership** in every verified range, because 15:00 falls before both continuous closes (15:15 and 15:30).
+   - It needs no historical eligibility data, and it covers EI-0's proposed cutoffs (signal 14:25, entry 14:30, exit 15:00).
+   - Its date coverage is the same as item 1.
+   - **It is a Northstar policy, not an exchange fact.** It can be approved only by the owner (CE-D17). The evidence shows it lies inside the exchange's continuous phases. It does not make it part of them.
+
+### 16.6 Conflicts
+
+| ID | Conflict | Treatment |
+|---|---|---|
+| CE-C-12 | **Period of 73927.** The cover says it compiles circulars issued until 2025-03-31. Part A covers 2025-04-01 to 2026-03-31. | Read as a drafting inconsistency. No fact depends on it beyond the "from 2026-04-28" bound, which rests on the circular's own date. |
+| CE-C-13 | **The consolidated circular is incomplete.** Its 2026 holiday table (section 2.1, pp. 45-46) omits the 2026-01-15 holiday added by 72260 (2026-01-12, CE-F-21), and Part A does not list 72260. | Dated amending circulars govern, and CE-F-20 and 21 are unchanged. **This is why continuity through silence (CE-F-01) is an owner decision (CE-D16), not an automatic inference.** |
+
+### 16.7 Architecture recommendation
+
+Keep three things distinct:
+
+| Concept | What it is | Where it lives |
+|---|---|---|
+| **Exchange trading session** | The venue's continuous phases for a date, for securities without an instrument-level exception: from 2026-08-03, the non-CAS phases | `EquityTradingSessionResolver` and `EquityTradingSession`, **unchanged**. An evidence-gated adapter (EI-1C-2). |
+| **Security-specific applicability** | CAS end of CTS (venue fact, dated), CAS eligibility, special pre-open days, day-of exceptions | Separate lookups, outside the session port (CE-D12, CE-D18). Deferred. |
+| **Northstar research window** | An owner-approved policy: a local-time range (proposed 09:15 to 15:00 IST), a version, effective dates and its decision ID | A **separate Application policy value**, never an `EquityTradingSession`. |
+
+**How the window applies:**
+
+- A pure Application rule builds the grid from the **exchange** session as today, then keeps only the intervals that fall wholly inside the research window. It does not trim the session into a new session that looks like an exchange session, so the exchange session is never misrepresented.
+- The rule **fails closed** unless the window lies inside the session's continuous phases for that date. If the CAS end of CTS applies, the window must also end at or before it.
+- **Fail-closed cases:**
+  - an unknown or unaccepted session date;
+  - no accepted opening rule for the date's regime, including every date from 2026-09-07 until its source is verified;
+  - a special session, such as 2026-11-08;
+  - a listing on a special pre-open day, or with unknown pre-open status;
+  - a CE-F-18 or circuit-halt day once known;
+  - any window that falls outside the phases.
+
+**No EI-1A contract limitation is shown.** The port, the session value and `EquitySessionIntervalGrid` stay unchanged. The window filter and policy value are additions, not changes.
+
+### 16.8 Smallest EI-1C-2 scope
+
+**In scope:** an Infrastructure-only, evidence-gated, versioned NSE cash-equity venue reference, as in sections 12 and 15.9.
+
+1. **Regimes:**
+   - from 2026-04-28 to 2026-08-02, 09:15 to 15:30;
+   - from 2026-08-03 to 2026-09-06, 09:15 to 15:30 as the venue phases, with a dated CAS end of CTS at 15:15.
+
+   **No regime from 2026-09-07** until its source is verified, so those dates raise.
+2. **Closed dates and special sessions,** with 2026-11-08 timed.
+3. **An empty production registry.** Every date raises until its facts are ACCEPTED. Tests use labelled test evidence.
+
+**Out of scope:**
+
+- Application changes, the research-window policy (EI-1C-3, after CE-D17), eligibility, and special pre-open detection;
+- EI-2.
+
+### 16.9 New owner decisions
+
+These are **PENDING**. CE-D1 to CE-D15 are unchanged and still PENDING.
+
+| ID | Decision | Recommendation |
+|---|---|---|
+| CE-D16 | A rule in a dated consolidated circular continues **until superseded** when no inspected later circular amends it. This is bounded by the inspected coverage and recorded per fact. It is needed for CE-F-01 for CAS securities from 2026-08-03. | Accept, bounded by inspected coverage |
+| CE-D17 | Approve a Northstar V1 **research window** of 09:15 to 15:00 IST on normal sessions, as a versioned policy separate from the exchange session, effective only on dates whose session facts are accepted | Accept |
+| CE-D18 | How special pre-open listing-days are detected: an instrument-event reference (listing, relisting, scheme ex-date, suspension revocation); unknown means fail closed; EI-2 completeness (a missing opening interval) is the backstop | Accept |
+
+**CE-D7, refined recommendation:** start the first production reference at **2026-04-28**. Extend it earlier only after 67774 or other dated circulars are inspected.
+
+### 16.10 Totals after this task
+
+There are 28 facts: the 27 in section 15.11, plus CE-F-54.
+
+| State | Facts |
+|---|---|
+| DISCOVERED | 9: CE-F-04, 11, 14 (policy), 22, 32, 40 to 42, 53 |
+| VERIFIED FROM SOURCE, owner acceptance pending | 19: CE-F-01, 02, 03, 10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 30, 31, 50, 51, 52, 54 |
+| PENDING ACCEPTANCE (owner review opened) | 0 |
+| ACCEPTED | 0 |
+
+### 16.11 Still missing
+
+1. **The source for the pre-open realignment from 2026-09-07:** the CM circular, or a full capture of the pre-open page reported as updated 2026-09-04. This would extend CE-F-01 and CE-F-03 past 2026-09-06.
+2. **NSE/CMTR/67774,** only if CE-D7 extends coverage before 2026-04-28.
+3. **NSE/CMTR/72394,** on the CAS and pre-open changes.
+4. Carried over: one dated security-master file and evidence of its archive (section 15.12), and CE-F-22.
+
+## 17. EI-1C verification of NSE/CMTR/74969 (2026-11-04)
+
+The owner reported that NSE listed the circular under two departments, Emerge and Capital Market (Equities) Trade, and that both ZIP archives were downloaded manually.
+
+- **No ZIP archive was present.** The supplied folder holds one set of already-extracted files. A search of the owner's source folder and Downloads folder found no archive for this circular.
+- **The two archives could therefore not be compared,** and whether they are identical is **not established**.
+- The circular's own header names only the **Capital Market Segment** department.
+- No NSE host was contacted, nothing was executed, nothing is quoted, and no copy is committed.
+
+### 17.1 Files inspected
+
+| Source | Supplied file | Bytes | SHA-256 | Pages | Notes |
+|---|---|---|---|---|---|
+| CE-S-14, NSE/CMTR/74969 | `CMTR74969/CMTR74969.pdf` | 211956 | `b6bfea1a5acad4a33019ff722ae04d280cf8af11dfa98e423f75d870969ffebc` | 4 | Circular |
+| CE-S-14A, Annexure (pre-open FAQ, version 1.0) | `CMTR74969/Annexure_Faq on Pre-open Session in Equity (CM) Segment.pdf` | 399834 | `c3750bc4e69cd5436803982351afb90a8428afe8c0e1df21829e2b6b2a7b97c6` | 7 | Updated 2026-07-01, applicable from 2026-09-07. **It is non-binding,** and its disclaimer says the circulars prevail where they differ. It corroborates only (CE-D11). |
+
+### 17.2 Source identity
+
+| Field | Value |
+|---|---|
+| Download reference | NSE/CMTR/74969 |
+| Circular reference | 91/2026 |
+| Department | Capital Market Segment |
+| Date | 2026-07-01 |
+| Subject (paraphrased) | Modifications in the pre-open call auction framework |
+| Basis | The SEBI CAS circular of 2026-01-16 (CE-S-32), which also covers pre-open modifications |
+| Amends | **Partially modifies only chapter 1.1, "Pre-open session (Regular)", of the consolidated circular 73927** (p. 1). Section E (p. 3) says every other feature of chapter 1.1 is unchanged. |
+| Effective | **2026-09-07** (p. 3). The functional changes were testable in mock sessions under a separate circular. |
+
+This confirms CE-S-14's candidate identity (section 3.2), located earlier from secondary material.
+
+### 17.3 Verified facts
+
+For every fact below:
+
+- the state is **VERIFIED FROM SOURCE**;
+- owner acceptance is **PENDING**;
+- nothing is ACCEPTED;
+- the segment is the NSE CM normal market.
+
+| Fact | Verified content (original summary) | Affected securities | Effective | Evidence | Limitations |
+|---|---|---|---|---|---|
+| **CE-F-04** (promoted) | The regular pre-open stays a 15-minute call auction from 09:00 to 09:15 IST. Its phases change: order entry for limit and market orders from 09:00 to 09:05; then limit orders only from 09:05 to 09:10, closing at a random time in the last 2 minutes; order matching and opening-price determination from about 09:10 to 09:12; buffer from 09:12 to 09:15, **unchanged**, ending with the transition to the continuous trading session. Before the change, order entry ran 09:00 to 09:08 (random closure) and matching 09:08 to 09:12. | All equity-market securities in the regular pre-open, including SME securities, partly paid-up securities, InvITs and REITs (73927 section 1.1, which 74969 leaves unchanged) | **From 2026-09-07**, until superseded. It **supersedes CE-F-03's phases** from that date, so CE-F-03 applies from 2026-04-28 to 2026-09-06. | CE-S-14 section A, table A (pp. 1-2); effective date (p. 3). Corroborated by CE-S-14A questions 1 and 2. | Market orders are restricted after 09:05. Pre-open stays outside the grid (CE-F-14 policy). |
+| **CE-F-01** (more evidence; inspected coverage extended) | The continuous trading session still begins at **09:15 IST**. 74969 lists the buffer that ends at 09:15 as unchanged and as the transition into continuous trading. It modifies chapter 1.1 only, so 73927 section 2.2 (normal market open 09:15) is not amended. | All normal-market securities, **CAS and non-CAS alike**. The circular draws no CAS distinction. Excludes special pre-open securities on their special pre-open day (CE-F-54). | **From 2026-04-28, until superseded.** No inspected source supersedes it. The latest inspected CM circular is 76941 (2026-10-19). | CE-S-20 section 2.2 (p. 46); CE-S-14 table A (p. 2) and section E (p. 3) | **Across CAS go-live:** 74969 is dated 2026-07-01, after the CAS SOP (73362). Its "current" column states the regime in force up to 2026-09-07: a buffer from 09:12 to 09:15 into continuous trading. So the continuity across 2026-08-03 no longer depends on CE-D16 alone: a dated circular states it directly. |
+| **CE-F-55** (new) | After an index-based market-wide circuit breaker breach or any outage that stops trading, the market reopens **with a pre-open session whose timings are notified on that day**. | All securities | From 2026-09-07 | CE-S-14 note under table A (p. 2); CE-S-14A question 2 | A day-of event. The reference cannot know it in advance, so it is handled as a session revision or incomplete evidence (section 7.3). |
+
+**Unchanged by 74969:**
+
+- **Closing times.** The circular addresses only the pre-open. CAS securities still end continuous trading at 15:15 (CE-F-12), and non-CAS securities at 15:30 (CE-F-13). No inspected source after 2026-05-29 changes either.
+- **Special pre-open session (CE-F-54).** 74969 modifies only chapter 1.1, the regular pre-open, so chapter 1.2 is not amended. Special pre-open securities still move to the normal market only after 10:00. Treating chapter 1.2 as still in force rests on the amending circular's own limited scope, under CE-D16.
+
+**FAQ-only lead, not promoted:** CE-S-14A question 4 lists security-file fields for normal-market status, including a "price discovery" status for pre-open securities, and normal-market eligibility. These are possible instrument-level signals for CE-D18, but no binding source or actual file is inspected.
+
+### 17.4 Normal-day continuous windows by date range (supersedes the table in 16.4)
+
+| Date range | CAS securities | Non-CAS securities | Basis |
+|---|---|---|---|
+| Before 2026-04-28 | Not established | Not established | — |
+| 2026-04-28 to 2026-08-02 | — (no CAS) | 09:15 to 15:30 | CE-F-01, CE-F-02, CE-F-03 |
+| 2026-08-03 to 2026-09-06 | 09:15 to 15:15 | 09:15 to 15:30 | CE-F-01, CE-F-03, CE-F-12, CE-F-13 |
+| From 2026-09-07 | 09:15 to 15:15 | 09:15 to 15:30 | CE-F-01, CE-F-04, CE-F-12, CE-F-13 |
+
+**In every range, these are excluded or fail closed:**
+
+- special pre-open securities on their special pre-open day (CE-F-54);
+- the CE-F-18 and CE-F-55 day-of events, and circuit halts;
+- special sessions;
+- holidays.
+
+**The proposed V1 research window, 09:15 to 15:00 IST,** now lies inside the verified continuous phases of every normal-market security without an exception, **from 2026-04-28 with no gap**, including from 2026-09-07. It still needs no CAS membership data, and it is still a policy that only the owner can approve (CE-D17).
+
+### 17.5 Effect on decisions
+
+No decision changes status. CE-D1 to CE-D18 remain **PENDING**.
+
+- **CE-D16** is no longer needed for CE-F-01. It is still needed for CE-F-54 across later partial amendments, and as a general rule.
+- **CE-D17** (the research window) now has supporting evidence for every date from 2026-04-28.
+
+### 17.6 Totals after this task
+
+There are 29 facts: the 28 in section 16.10, plus CE-F-55.
+
+| State | Facts |
+|---|---|
+| DISCOVERED | 8: CE-F-11, 14 (policy), 22, 32, 40 to 42, 53 |
+| VERIFIED FROM SOURCE, owner acceptance pending | 21: CE-F-01, 02, 03, 04, 10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 30, 31, 50, 51, 52, 54, 55 |
+| PENDING ACCEPTANCE (owner review opened) | 0 |
+| ACCEPTED | 0 |
+
+### 17.7 Still missing
+
+1. **Both ZIP archives,** if the owner wants the Emerge and Capital Market listings compared.
+2. **NSE/CMTR/67774,** only for coverage before 2026-04-28 (CE-D7).
+3. **NSE/CMTR/72394.**
+4. Carried over: one dated security-master file and evidence of its archive; CE-F-22 (holiday amendments); CE-F-32 (other special sessions).
 
 ---
 
