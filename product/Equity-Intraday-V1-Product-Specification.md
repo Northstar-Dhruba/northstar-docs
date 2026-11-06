@@ -361,6 +361,8 @@ Bars after 15:00 are never used to resolve the recommendation.
 > - Under EI3-D1 (approved 2026-11-05), a research decision is made at its evidence snapshot's `as_of` instant, which is strictly after the decision bar's interval end, because finality evidence must be received first. A decision on the bar ending 14:25 is therefore made after 14:25, and no complete bar then both opens after the decision and ends by the 14:30 entry cutoff.
 > - How the signal cutoff relates to finality latency and to the entry cutoff is EI3-D6, which is **PENDING**. This section is not corrected until EI3-D6 and EI0-D7 are decided. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md), sections 5.1 and 6.1.
 
+> **Note, 2026-11-06 (EI-3B, owner approval).** EI3-D6 is now **APPROVED** (owner, 2026-11-06) as research-only scheduling: research uses the approved window, the latest signal candle ends at 15:00 IST, and no entry-dependent cutoff is enforced. EI0-D7, this section's schedule, stays **PROPOSED** and is deferred to execution and risk design. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md#10-ei-3b-owner-approval-record-2026-11-06).
+
 ---
 
 ## 7. Signal and Strategy
@@ -779,6 +781,8 @@ Evidence is recorded in a register following the [Upstox Finality Evidence](../o
 Only EI0-D4 is approved. Every other decision remains PROPOSED or PENDING.
 
 > **Note, 2026-11-05 (EI-3A governance, owner approval).** The sentence above describes the register as of 2026-11-01. EI0-D3 and EI0-D6 are now **APPROVED** (owner, 2026-11-05), as shown in the table. Decisions EI3-D1 to EI3-D8 are recorded only in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md): EI3-D1 to EI3-D5 and EI3-D8 are approved, and EI3-D6 and EI3-D7 are **PENDING**. None of them is listed in the table below. Every other status below is unchanged.
+
+> **Note, 2026-11-06 (EI-3B, owner approval).** EI3-D6, EI3-D7 and EI3-D9 are now **APPROVED** (owner, 2026-11-06), and EI3-D10 is recorded as **PENDING**, all in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md#10-ei-3b-owner-approval-record-2026-11-06). The statuses in the table below are unchanged; EI0-D7 stays **PROPOSED**.
 
 | ID | Decision | Proposal | Status |
 | --- | --- | --- | --- |

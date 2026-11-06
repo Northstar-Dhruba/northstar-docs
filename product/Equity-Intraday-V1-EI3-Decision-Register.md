@@ -9,6 +9,8 @@
 - Nothing here authorizes production use, real market data, a real data provider, broker execution, paper fills or a trade recommendation.
 - This record has not been through Architecture Review or Engineering Review.
 
+> **Note, 2026-11-06 (EI-3B, owner approval).** The owner **APPROVED** EI3-D6 (research-only scheduling), EI3-D7 (candidate frequency) and EI3-D9 (conflicting evidence and watermark regression) on 2026-11-06, for synthetic-only EI-3B. They are recorded in [section 10](#10-ei-3b-owner-approval-record-2026-11-06). Every approval dated 2026-11-05 is unchanged. EI0-D7 and the newly recorded EI3-D10 stay pending. Nothing here authorizes execution or production use.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern the first Equity Intraday V1 research implementation, EI-3A, before any EI-3A code is written.
@@ -158,6 +160,8 @@ These decisions are **not** approved by this record. Each keeps its existing sta
 
 EI3-D6 and EI3-D7 are first recorded here. EI3-D8 is approved above; there is no EI3-D9 or later.
 
+> **Note, 2026-11-06 (EI-3B, owner approval).** The table and sentence above describe 2026-11-05. EI3-D6 and EI3-D7 are now **APPROVED** (owner, 2026-11-06), EI3-D9 is recorded and **APPROVED** on the same date, and EI3-D10 is recorded as **PENDING**. See [section 10](#10-ei-3b-owner-approval-record-2026-11-06).
+
 ### 5.2 EI-0 decisions still pending or proposed
 
 Listed with the status recorded in the [product specification, section 14](Equity-Intraday-V1-Product-Specification.md#14-owner-decision-register):
@@ -238,3 +242,97 @@ Nothing in this record moves Equity Intraday V1 toward production use. Productio
 - [ADR-018 Futures V1 Research-to-Recommendation Generation Policy](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md)
 - [ADR-019 Symbol Ampersand Extension](../adr/ADR-019-Symbol-Ampersand-Extension.md)
 - [Reference Implementation Registry](../engineering/registry/Reference-Implementations.md), RVO-001 `Symbol` v1.1
+
+## 10. EI-3B owner approval record (2026-11-06)
+
+**Scope: synthetic-only EI-3B, research decision scheduling.** This section records approvals given on **2026-11-06**. It does not rewrite sections 1 to 9: where they say a decision is pending, they describe the state on 2026-11-05.
+
+### 10.1 Approved decisions
+
+Each decision below is **APPROVED BY OWNER, 2026-11-06**, for synthetic-only EI-3B.
+
+#### EI3-D6 — Research-only scheduling
+
+**Approved rule.**
+
+- EI-3B schedules research evaluations within the approved NSE cash-equity research window of 09:15 to 15:00 IST (CE-D17).
+- The latest permitted signal candle is the one ending at **15:00 IST**. No signal candle ending after 15:00 IST may contribute.
+- The research decision instant remains the immutable snapshot's `as_of` (EI3-D1).
+- A snapshot may become evaluable after 15:00 IST, once the finality evidence for its candles arrives. A research decision made after the window is **not** an actionable intraday execution signal.
+- EI-3B enforces no entry-dependent signal cutoff.
+- No maximum provider finality latency is assumed.
+- EI0-D7, the proposed execution schedule, stays **PROPOSED** and is deferred to later execution and risk design.
+
+**Rationale.** A signal cutoff has meaning only together with an entry rule. A decision is made only after its signal candle's finality is received; and only bars that open at or after the decision can evidence an entry. So whether a 14:25 signal leaves any entry opportunity before 14:30 depends on the finality latency and on the entry rule, neither of which EI-3B decides.
+
+#### EI3-D7 — Candidate frequency
+
+**Approved rule.** For each unique combination of strategy identity, `ListingReference` and trading date:
+
+- only the first qualifying `LONG_CANDIDATE`, ordered by the immutable snapshot's decision instant, may be labelled `CANDIDATE`;
+- every later qualifying evaluation is labelled `REPEAT_QUALIFYING`, and keeps its full underlying research decision and evidence;
+- `NO_SIGNAL` and `REJECTED` evaluations stay distinguishable from each other and from candidates;
+- the versioned synthetic strategy configuration stays fixed for the whole session timeline. A configuration change within a timeline is rejected. It is never permission for a second candidate;
+- EI-3B never withdraws an earlier candidate because of a later candle correction. Correction materiality and withdrawal stay deferred (EI0-D21).
+
+**Rationale.** Once a breakout has occurred, most later snapshots also qualify. Labelling each of them a candidate would make the number of candidates depend on how often snapshots are issued, not on the market.
+
+#### EI3-D9 — Conflicting evidence and watermark regression
+
+**Approved rule.** EI-3B fails closed, and records no decision, when:
+
+- distinct evidence manifests claim the same decision instant;
+- a later decision instant carries a journal watermark lower than the previous timeline entry's;
+- an out-of-order historical input would modify a decision already established at an earlier instant.
+
+No winning snapshot is chosen by earlier issuance, higher watermark, input order, snapshot identity or any other implicit preference.
+
+- An exactly repeated snapshot identity may be treated as an idempotent duplicate.
+- Re-issued identical evidence at the same decision instant may also be treated as a duplicate, when the manifests are demonstrably identical, meaning their manifest fingerprints are equal.
+- A conflicting same-instant manifest is refused explicitly.
+- Existing timeline history is never overwritten.
+
+**Rationale.** This keeps the EI-2A and EI-2B principle that no source revision, evidence set or snapshot is ever silently preferred.
+
+### 10.2 Decisions still pending
+
+These are **not** approved by this record:
+
+| ID | Question | Status |
+| --- | --- | --- |
+| EI0-D7 | The 14:25 / 14:30 / 15:00 IST signal, entry and exit schedule | PROPOSED, deferred to later execution and risk design |
+| EI3-D10 | When the latest ended candle is not yet final at the decision instant: reject the evaluation, as EI-3A does, or treat that candle as not yet required | PENDING |
+| EI0-D8 | The initial strategy and its research control, beyond EI3-D4's synthetic approval | PENDING |
+
+- EI3-D10 is first recorded here. EI-3B keeps EI-3A's strict evidence-completeness behaviour (EI3-D2). That EI-3A already rejects such evaluations is implementation, not an approval of EI3-D10.
+- Under the strict behaviour, sustained finality latency of five minutes or more can prevent evaluations during the active research session: while candles keep ending, the latest ended candle is not yet final at any decision instant. After the window closes no further candle ends, so a post-window evaluation may still become possible once every required candle through 15:00 IST is final (EI3-D6). Such an evaluation is not an actionable intraday signal. This does not affect synthetic fixtures. EI3-D10 must be decided before real-data readiness.
+- Every other decision listed as pending or proposed in section 5.2, and CE-D8, CE-D9, CE-D10 and CE-D15 (section 5.3), keeps its status.
+
+### 10.3 Earlier approvals unchanged
+
+- EI3-D1, EI3-D2, EI3-D3, EI3-D4, EI3-D5, EI3-D8, EI0-D3 and EI0-D6 stay **APPROVED** as recorded on 2026-11-05 (section 3).
+- EI0-D4 (2026-11-01, [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md)) and the NSE session-evidence decisions and accepted facts approved on 2026-11-04 ([NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md), section 18) are unchanged.
+
+### 10.4 Approved EI-3B scope
+
+The EI-3B implementation is expected to:
+
+- be **Application-only**, with no Core, Infrastructure, database, API or Web change;
+- keep one immutable timeline per strategy identity, listing and trading date;
+- reuse the EI-3A research evaluator and research decisions unchanged, over immutable EI-2B evidence snapshots;
+- order evaluations deterministically by decision instant, with the EI3-D9 refusals;
+- keep the synthetic configuration fixed throughout a timeline;
+- label at most one `CANDIDATE` per timeline (EI3-D7);
+- report duplicates and refusals as explicit outcomes;
+- make every timeline entry immutable and fingerprinted;
+- read no system clock;
+- persist nothing;
+- perform no broker execution, and model no entry, stop, target or exit.
+
+**Timeline completeness.** The caller supplies the prior timeline. EI-3B cannot prove that a supplied timeline is complete, and the absence of a supplied timeline is never evidence that no earlier candidate exists. Authoritative persistence and completeness guarantees belong to EI-3C.
+
+### 10.5 Restrictions unchanged
+
+- Nothing here authorizes execution, a recommendation, a paper fill, production use, real market data or a real data provider.
+- A `CANDIDATE` is a research label. It is not a recommendation, an order or a trade.
+- The production-readiness restrictions in [section 8](#8-production-readiness-restrictions) all still apply.
