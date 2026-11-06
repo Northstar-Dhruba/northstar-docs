@@ -11,6 +11,12 @@ This document proposes the smallest product definition for Northstar's first act
 - No strategy, parameter, threshold or cost rate is approved for production.
 - This document changes no ADR status and no existing contract. Where an implementation milestone needs a binding policy, it will be recorded in its own ADR. The Futures precedent is [ADR-018](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md).
 
+> **Note, 2026-11-05 (EI-3A governance, owner approval).** This note supersedes the status lines above, which describe the draft as of 2026-11-01. Details are in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md).
+> - The owner **APPROVED** EI0-D3 (LONG only) and EI0-D6 (interval-end UTC candle timestamps) on 2026-11-05. EI0-D4 stays approved (2026-11-01).
+> - The owner also **APPROVED**, on 2026-11-05 and for synthetic-only EI-3A research, EI3-D1 (decision instant), EI3-D2 (evidence completeness), EI3-D3 (research outcome vocabulary), EI3-D4 (initial research strategy), EI3-D5 (synthetic calibration governance) and EI3-D8 (volume baseline). They are recorded only in that register.
+> - Every other decision in this document keeps its status. In particular, EI0-D7 (the 14:25 / 14:30 / 15:00 IST schedule) and EI0-D8 (initial strategy and control) are **not** approved.
+> - No strategy, parameter, threshold or cost rate is approved for production. The rest of this document remains a draft.
+
 Statements about NSE market structure use three labels:
 
 | Label | Meaning |
@@ -64,6 +70,8 @@ The optimized **Equity Intraday Master Roadmap** is not present in the developme
 
 - [ADR-002 Architecture Constitution](../adr/ADR-002-Architecture-Constitution.md)
 - [ADR-019 Symbol Ampersand Extension](../adr/ADR-019-Symbol-Ampersand-Extension.md)
+- [Equity Intraday V1 EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md) (added 2026-11-05)
+- [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md) (added 2026-11-05)
 - [ADR-007 PointInTime Foundation Extension](../adr/ADR-007-PointInTime-Foundation-Extension.md)
 - [ADR-017 Repository Layering and Futures Recommendation Domain Boundary](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md) (Proposed)
 - [ADR-018 Futures V1 Research-to-Recommendation Generation Policy](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md) (Proposed)
@@ -111,6 +119,8 @@ Futures types are bound to `FuturesContract`, `FuturesOHLCVBar` and `FuturesProd
 - **The `/analyze` and `/watchlist/refresh` API surfaces and the web watchlist** are current-state analysis. They are not recommendation surfaces, and they may analyse an unfinished bar.
 - **`Symbol`** uses `^[A-Z0-9._-]{1,32}$` and rejects `&`, so NSE symbols such as `M&M` cannot be represented at this baseline. [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md) approves extending it to `^[A-Z0-9._&-]{1,32}$`.
 
+> **Note, 2026-11-05 (correction).** The `Symbol` bullet above describes the drafting baseline only and is obsolete. EI-1B implemented [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md): `Symbol` now accepts `^[A-Z0-9._&-]{1,32}$`, and `M&M` is a valid symbol. The reference implementation is RVO-001 `Symbol` v1.1 in the [Reference Implementation Registry](../engineering/registry/Reference-Implementations.md). No decision changes.
+
 ---
 
 ## 4. V1 Product Definition (Summary)
@@ -130,6 +140,8 @@ Futures types are bound to `FuturesContract`, `FuturesOHLCVBar` and `FuturesProd
 | Engineering data | Invented synthetic candles | PROPOSED |
 | Real data | Deferred to EI-9, behind a data-rights gate | PROPOSED |
 | Evidence | Immutable recommendation, lifecycle events and evidence references; all-call performance | PROPOSED |
+
+> **Note, 2026-11-05 (EI-3A governance, owner approval).** In the table above, **Direction** (EI0-D3) is now **APPROVED** (owner, 2026-11-05): LONG only, and a bearish signal is never converted into a short. **Strategy** remains PENDING (EI0-D8). For synthetic EI-3A research only, the owner approved the opening-range breakout with a session VWAP approximation and volume confirmation (EI3-D4). Every other row keeps its status. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md).
 
 ### 4.1 Challenges to the supplied proposals
 
@@ -231,6 +243,14 @@ These must be confirmed against official NSE circulars for every reference year 
 | Instrument-specific phases (e.g. call-auction-only securities, special pre-open for IPO listing or relisting days) | Exist for some securities and days | AWAITING OFFICIAL VALIDATION |
 | UTC offset of IST | +05:30, no daylight saving | Handled through the `Asia/Kolkata` zone, as in `nse_futures_session.py` |
 
+> **Note, 2026-11-05 (correction, CE-C-05).** The single "09:15 to 15:30 IST" continuous market in the table above is obsolete. The owner accepted the following facts on 2026-11-04, and they govern: see the [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md), section 18.3, for every source, boundary and limitation.
+> - **Open.** The normal market opens at 09:15 IST from 2026-04-28 (CE-F-01).
+> - **Before 2026-08-03.** The normal market closes at 15:30 IST for all normal-market securities, from 2026-04-28 to 2026-08-02 (CE-F-02).
+> - **From 2026-08-03, CAS-applicable securities.** Continuous trading ends at 15:15 IST, and the Closing Auction Session runs separately from 15:15 to 15:35 (CE-F-10, CE-F-12, CE-F-16). The auction is not continuous trading.
+> - **Non-CAS securities.** Continuous trading runs from 09:15 to 15:30 IST as the current rule from the page update on 2026-08-12 (CE-F-13). Whether that applies from 2026-08-03 to 2026-08-11 is CE-D15, which is **PENDING**; this note does not resolve it.
+> - **Pre-open** is 09:00 to 09:15 IST, with timings that change from 2026-09-07 (CE-F-03, CE-F-04). It is not continuous trading.
+> - **CAS eligibility.** Historical CAS membership is never inferred (CE-D14). V1 relies on the common boundary (CE-D6) and on the approved 09:15 to 15:00 IST research window (CE-D17), which is a Northstar policy and not the NSE trading session.
+
 Broker intraday auto square-off times are broker product rules, not exchange facts. V1 does not use them.
 
 ### 6.2 Session model
@@ -261,6 +281,8 @@ Broker intraday auto square-off times are broker product rules, not exchange fac
 - **Bar timestamps.** A bar's `point_in_time` is the interval's **end**, its completion instant. This is PROPOSED, and consistent with daily bars, where the point in time is the session close.
   - Example: the 09:15 to 09:20 IST bar is stamped 09:20 IST, which is 03:50Z.
   - Providers that stamp the interval start must be normalized by the adapter. This must be proven with evidence in EI-9.
+
+> **Note, 2026-11-05 (EI-3A governance, owner approval).** EI0-D6 is **APPROVED** (owner, 2026-11-05): a five-minute candle is identified by its canonical UTC interval-end timestamp, UTC storage stays distinct from IST session interpretation, and a bar-start timestamp is never a canonical candle identity. The bullet above that calls this PROPOSED is superseded. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md).
 - **No host time.** Nothing reads the host timezone or host clock for market semantics. "Now" is always a supplied instant.
 
 ### 6.5 Completed-bar eligibility
@@ -335,6 +357,10 @@ Bars after 15:00 are never used to resolve the recommendation.
 - On a special or shortened session, the cutoffs do not apply automatically: V1 does not trade that session. PROPOSED.
 - The cutoffs leave a buffer before the normal close, as commonly published. That buffer is a product choice, not an exchange requirement.
 
+> **Note, 2026-11-05 (EI-3A governance).** EI0-D7, the schedule in this section, remains **PROPOSED** and is **not** approved.
+> - Under EI3-D1 (approved 2026-11-05), a research decision is made at its evidence snapshot's `as_of` instant, which is strictly after the decision bar's interval end, because finality evidence must be received first. A decision on the bar ending 14:25 is therefore made after 14:25, and no complete bar then both opens after the decision and ends by the 14:30 entry cutoff.
+> - How the signal cutoff relates to finality latency and to the entry cutoff is EI3-D6, which is **PENDING**. This section is not corrected until EI3-D6 and EI0-D7 are decided. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md), sections 5.1 and 6.1.
+
 ---
 
 ## 7. Signal and Strategy
@@ -363,6 +389,13 @@ Bars after 15:00 are never used to resolve the recommendation.
 - A test must show that appending later, divergent bars leaves earlier decisions unchanged. S-1A has this test for daily bars.
 - Indicators are computed only from the frozen evidence. Nothing recomputes them later from a mutable store.
 
+> **Note, 2026-11-05 (EI-3A governance, owner approval).** For synthetic EI-3A research, the owner approved (2026-11-05):
+> - **EI3-D1:** the decision instant is the `as_of` instant of the immutable EI-2B evidence snapshot. Only evidence visible and valid at that instant contributes.
+> - **EI3-D2:** a missing observation, an unfinalized candle, conflicting values or an unresolved source revision in a required interval rejects the evaluation. Nothing is interpolated, carried forward or chosen.
+> - **EI3-D3:** the outcomes are `LONG_CANDIDATE`, `NO_SIGNAL` or an explicit rejection with a reason. `BUY`, `HOLD` and `SELL` are not reused as executable outcomes.
+>
+> The replay discipline in section 7.2 is met through EI-2B evidence snapshots, not the generic replay snapshot. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md).
+
 ### 7.3 Indicator configuration
 
 - Every parameter belongs to the strategy configuration version: look-back lengths, thresholds, opening-range length and volume ratio.
@@ -387,6 +420,11 @@ Why this candidate is proposed:
 - it has a natural time structure that suits the entry and exit cutoffs.
 
 "Session VWAP" here means an approximation from 5-minute bars, the sum of typical price × volume over the sum of volume. It must be named as such, because it is not the exchange's traded VWAP.
+
+> **Note, 2026-11-05 (EI-3A governance, owner approval).** For synthetic EI-3A research only, the owner approved the candidate strategy above, the opening-range breakout with a session VWAP approximation and volume confirmation (EI3-D4), with explicit, versioned, visibly synthetic calibration (EI3-D5). The volume comparison excludes the breakout candle from its own mean and never uses a future bar (EI3-D8).
+> - EI0-D8 stays **PENDING**: the research control, real-data research and recommendation generation are not approved.
+> - The proposed `n = 3` and any value of `v` are **not** approved parameter values.
+> - Nothing here approves an entry, exit, stop, target, sizing, brokerage or slippage rule, or supports any claim of profitability or significance. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md).
 
 ### 7.5 Candidate screening and rejection reasons
 
@@ -449,6 +487,8 @@ The proposed contract is `EquityTradeRecommendation`, in a new `northstar_core.r
 
 - A recommendation never carries an order identifier, fill price, fill quantity, broker account or P&L.
 - **Price increment.** The NSE price increment for each stock is AWAITING OFFICIAL VALIDATION, and it is supplied as a policy input, as in ADR-018. V1 should support a single configured increment per universe version, and fail closed if a stock's increment is unknown. PENDING.
+
+> **Note, 2026-11-05 (EI-3A governance).** The `issued_at` row above says the decision instant is "the completion instant of the last cited bar". For **research decisions**, that is superseded by EI3-D1 (approved 2026-11-05): the decision instant is the `as_of` instant of the EI-2B evidence snapshot, and a bar's interval end never by itself makes a candle final or a decision available. For **recommendations**, `issued_at` and `eligible_from` (section 8.2) are **not** decided by EI3-D1. They remain open for EI-4 and EI-5, to be settled consistently with EI3-D1, EI3-D6 and EI0-D7. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md), section 6.1.
 
 ### 8.2 Lifecycle states
 
@@ -738,14 +778,16 @@ Evidence is recorded in a register following the [Upstox Finality Evidence](../o
 
 Only EI0-D4 is approved. Every other decision remains PROPOSED or PENDING.
 
+> **Note, 2026-11-05 (EI-3A governance, owner approval).** The sentence above describes the register as of 2026-11-01. EI0-D3 and EI0-D6 are now **APPROVED** (owner, 2026-11-05), as shown in the table. Decisions EI3-D1 to EI3-D8 are recorded only in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md): EI3-D1 to EI3-D5 and EI3-D8 are approved, and EI3-D6 and EI3-D7 are **PENDING**. None of them is listed in the table below. Every other status below is unchanged.
+
 | ID | Decision | Proposal | Status |
 | --- | --- | --- | --- |
 | EI0-D1 | Market and currency | NSE cash equities, INR | PROPOSED |
 | EI0-D2 | Series | `EQ` only | PROPOSED |
-| EI0-D3 | Direction | LONG only. Research SELL is rejected, never mapped to SHORT. | PROPOSED |
+| EI0-D3 | Direction | LONG only. Research SELL is rejected, never mapped to SHORT. | APPROVED (owner, 2026-11-05, [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md)) |
 | EI0-D4 | `Symbol` `&` support | Extend the `Symbol` pattern to `^[A-Z0-9._&-]{1,32}$` through a new Foundation ADR ([ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md)); `UnderlyingReference` unchanged | APPROVED (owner, 2026-11-01) |
 | EI0-D5 | Universe | Versioned, owner-configured, no more than 10 stocks | PROPOSED |
-| EI0-D6 | Bar timestamp convention | Interval end | PROPOSED |
+| EI0-D6 | Bar timestamp convention | Interval end | APPROVED (owner, 2026-11-05, [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md)) |
 | EI0-D7 | Cutoffs | Signal 14:25, entry 14:30, planned exit 15:00 IST. No special sessions in V1. At the planned exit, an evidenced exit is recorded; otherwise `SESSION_CUTOFF_REACHED` (unresolved, no exit price) or `INCOMPLETE_EVIDENCE` ([section 6.7](#67-entry-and-exit-cutoffs-policy-proposals)). | PROPOSED |
 | EI0-D8 | Initial strategy | Opening-range breakout plus a VWAP-approximation filter, with the bounded 5/20 rule as control | PENDING (selection and test in EI-3) |
 | EI0-D9 | Intrabar ambiguity | `UNKNOWN` and indeterminate in the lifecycle. Modeled ordering only in evaluation bounds. | PENDING |
@@ -818,6 +860,8 @@ Out of scope for EI-1A:
 
 ## 17. Related Documents
 
+- [Equity Intraday V1 EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md)
+- [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md)
 - [ADR-017](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md), [ADR-018](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md)
 - [Futures Trade Recommendation Design Specification](../architecture/Futures-Trade-Recommendation-Design-Specification-v1.0.md)
 - [Futures Recommendation Generation Design Specification](../architecture/Futures-Recommendation-Generation-Design-Specification-v1.0.md)
