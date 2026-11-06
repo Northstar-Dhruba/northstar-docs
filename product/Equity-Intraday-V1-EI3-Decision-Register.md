@@ -13,6 +13,8 @@
 
 > **Note, 2026-11-07 (EI-3C, owner approval).** The owner **APPROVED** EI3-D11 (timeline establishment), EI3-D12 (concurrent commit authority) and EI3-D13 (historical decision reproducibility) on 2026-11-07, for synthetic-only EI-3C. They are recorded in [section 11](#11-ei-3c-owner-approval-record-2026-11-07). Every earlier approval is unchanged. EI0-D7, EI3-D10, EI0-D8 and EI0-D21 stay pending. Nothing here authorizes execution or production use.
 
+> **Note, 2026-11-07 (EI-3C, engineering acceptance).** EI-3C passed final synthetic acceptance on 2026-11-07 with the verdict PASS WITH DOCUMENTED LIMITATIONS, recorded in the [EI-3C Synthetic Acceptance Record](Equity-Intraday-V1-EI3C-Synthetic-Acceptance-Record.md). That record is engineering evidence, not an owner approval: no decision status changes, and nothing authorizes real data, execution or production use.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern the first Equity Intraday V1 research implementation, EI-3A, before any EI-3A code is written.
