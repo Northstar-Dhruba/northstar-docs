@@ -11,6 +11,8 @@
 
 > **Note, 2026-11-06 (EI-3B, owner approval).** The owner **APPROVED** EI3-D6 (research-only scheduling), EI3-D7 (candidate frequency) and EI3-D9 (conflicting evidence and watermark regression) on 2026-11-06, for synthetic-only EI-3B. They are recorded in [section 10](#10-ei-3b-owner-approval-record-2026-11-06). Every approval dated 2026-11-05 is unchanged. EI0-D7 and the newly recorded EI3-D10 stay pending. Nothing here authorizes execution or production use.
 
+> **Note, 2026-11-07 (EI-3C, owner approval).** The owner **APPROVED** EI3-D11 (timeline establishment), EI3-D12 (concurrent commit authority) and EI3-D13 (historical decision reproducibility) on 2026-11-07, for synthetic-only EI-3C. They are recorded in [section 11](#11-ei-3c-owner-approval-record-2026-11-07). Every earlier approval is unchanged. EI0-D7, EI3-D10, EI0-D8 and EI0-D21 stay pending. Nothing here authorizes execution or production use.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern the first Equity Intraday V1 research implementation, EI-3A, before any EI-3A code is written.
@@ -335,4 +337,137 @@ The EI-3B implementation is expected to:
 
 - Nothing here authorizes execution, a recommendation, a paper fill, production use, real market data or a real data provider.
 - A `CANDIDATE` is a research label. It is not a recommendation, an order or a trade.
+- The production-readiness restrictions in [section 8](#8-production-readiness-restrictions) all still apply.
+
+## 11. EI-3C owner approval record (2026-11-07)
+
+**Scope: synthetic-only EI-3C, authoritative research timeline persistence.** This section records approvals given on **2026-11-07**. It does not rewrite sections 1 to 10: each describes the state on its own date.
+
+### 11.1 Approved decisions
+
+Each decision below is **APPROVED BY OWNER, 2026-11-07**, for synthetic-only EI-3C.
+
+#### EI3-D11 — Timeline establishment
+
+**Approved rule.**
+
+- A research timeline, together with its fixed strategy configuration, becomes authoritative when its first research timeline entry is successfully committed.
+- An advancement that commits no entry persists no new timeline identity. This includes an advancement whose inputs are all refused or duplicates.
+
+**Consequences.**
+
+- No empty timeline identity is persisted merely because an evaluation was attempted.
+- The first committed entry establishes the timeline's authoritative configuration.
+- Once established, the configuration cannot change silently. An advancement under another configuration is refused (EI3-D7).
+- Every later advancement continues from the stored authoritative timeline.
+
+An uncommitted or in-memory timeline, including an EI-3B timeline that has not been committed, is not authoritative.
+
+**Rationale.** Persisting an identity for an attempt that recorded nothing would fix a configuration on the strength of no research, and would leave an empty record standing for a timeline that holds no decision.
+
+#### EI3-D12 — Concurrent commit authority
+
+**Approved rule.**
+
+- SQLite transaction serialization determines the order in which concurrent advancements of a research timeline are committed.
+- Established entries are immutable.
+- A writer whose loaded timeline head has become stale must reload the authoritative history and re-evaluate its submitted inputs against it.
+- A later conflicting same-instant manifest, or a retroactive historical input, is refused explicitly under EI3-D9.
+
+No advancement automatically:
+
+- overwrites an existing entry;
+- replaces a committed snapshot reference;
+- selects a winner among market evidence;
+- inserts an earlier decision retroactively;
+- withdraws an earlier candidate;
+- marks an established entry as contested.
+
+An append-only contested-evidence annotation stays **deferred**.
+
+**Clarification.** Commit order establishes the recorded history. It does not show that the first committed market evidence was objectively correct.
+
+**Required guarantee.** Concurrent writers never produce two first candidates for one timeline, and never break a timeline's entry chain.
+
+**Consequence.** Because a committed snapshot reference is never replaced, the equivalent snapshot committed first stays the entry, and a later equivalent snapshot is a duplicate of it (EI3-D9). Different valid first-commit histories may therefore carry different snapshot-specific fingerprints, while equivalent evidence still gives equivalent research.
+
+**Rationale.** EI3-D9 refuses conflicting evidence that arrives together and never overwrites history. Under concurrency, conflicting evidence may arrive only after another writer has committed. Serialization makes that order explicit and recorded, rather than resolving it by an implicit preference.
+
+#### EI3-D13 — Historical decision reproducibility
+
+**Approved rule.** Every stored research decision is rehydrated and verified against its original immutable EI-2B evidence snapshot, using compatible, versioned historical evaluation behaviour. A successful load:
+
+- verifies the original evidence snapshot;
+- preserves its snapshot ID and manifest fingerprint;
+- reproduces the original research decision;
+- verifies the stored canonical decision document;
+- verifies the decision fingerprint;
+- verifies the timeline entry fingerprint;
+- verifies the previous-entry chain;
+- preserves the original strategy configuration and the relevant versions.
+
+The load fails closed when compatible historical evaluation behaviour is unavailable, or when the reproduced decision differs from the stored one.
+
+Nothing silently:
+
+- recalculates an old decision with incompatible current logic;
+- rewrites a historical decision;
+- changes its strategy configuration;
+- replaces its evidence references;
+- migrates its fingerprint or canonical document without approval.
+
+Any future change that alters historical decision representations or evaluation semantics needs an explicit, governed compatibility or migration decision.
+
+**Current versions.** EI-3C keeps the existing fingerprint contracts unchanged: `eir1` research decisions (`northstar.equity-intraday-research-decision/1`), `eirt1` timeline entries (`northstar.equity-intraday-research-timeline-entry/1`), and the EI-2B `ecm1` manifest fingerprints and `ecs1` snapshot identities. As of 2026-11-07 Northstar contains no historical evaluator registry. The only compatible evaluation behaviour available is the current EI-3A evaluator for these versions; a stored decision it does not reproduce fails closed.
+
+**Rationale.** Evidence snapshots are immutable, so re-deriving a decision from its snapshot shows that the stored decision was made from that evidence. Silently re-running different logic would rewrite research history.
+
+### 11.2 Decisions still pending
+
+These are **not** approved by this record:
+
+| ID | Question | Status |
+| --- | --- | --- |
+| EI0-D7 | The 14:25 / 14:30 / 15:00 IST signal, entry and exit schedule | PROPOSED, deferred to later execution and risk design |
+| EI3-D10 | When the latest ended candle is not yet final at the decision instant | PENDING |
+| EI0-D8 | The initial strategy and its research control, beyond EI3-D4's synthetic approval | PENDING |
+| EI0-D21 | Revision materiality: whether a correction may withdraw or restate a decision | PENDING |
+
+- An append-only contested-evidence annotation is deferred (EI3-D12).
+- Persisting refused or duplicate outcomes is not part of EI-3C and is not decided here.
+- Every other decision listed as pending or proposed in section 5.2, and CE-D8, CE-D9, CE-D10 and CE-D15 (section 5.3), keeps its status.
+
+### 11.3 Earlier approvals unchanged
+
+- EI3-D1, EI3-D2, EI3-D3, EI3-D4, EI3-D5, EI3-D8, EI0-D3 and EI0-D6 stay **APPROVED** as recorded on 2026-11-05 (section 3).
+- EI3-D6, EI3-D7 and EI3-D9 stay **APPROVED** as recorded on 2026-11-06 ([section 10.1](#101-approved-decisions)).
+- EI0-D4 (2026-11-01, [ADR-019](../adr/ADR-019-Symbol-Ampersand-Extension.md)) and the NSE session-evidence decisions and accepted facts approved on 2026-11-04 ([NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md), section 18) are unchanged.
+- EI3-D11 sets when EI3-D7's fixed configuration becomes authoritative, and EI3-D12 applies EI3-D9 to concurrent commits. Neither changes EI3-D7 or EI3-D9.
+
+### 11.4 Approved EI-3C scope
+
+The EI-3C implementation is expected to deliver Application contracts first and the Infrastructure implementation second.
+
+**Application (`northstar-application`):**
+
+- an Application-owned authoritative timeline persistence port and advancement use case;
+- the EI-3A research evaluator, the EI-3B scheduler and timeline contracts, and the EI-2B immutable evidence snapshots, reused unchanged;
+- bounded stale-head reload and re-evaluation (EI3-D12);
+- exact retry and duplicate handling;
+- recovery after an interrupted or unconfirmed commit;
+- fingerprint-chain and historical replay verification on load (EI3-D13).
+
+**Infrastructure (`northstar-infrastructure`):**
+
+- an append-only SQLite research timeline store;
+- a timeline identity unique per strategy identity, listing and trading date;
+- a configuration fixed from the first committed entry (EI3-D11);
+- atomic compare-and-append of new entries.
+
+Throughout, EI-3C is synthetic-only research. It changes no Core model, API or Web, and adds no trading recommendation, order, fill, entry or exit logic, stop, target, sizing or transaction-cost calculation.
+
+### 11.5 Restrictions unchanged
+
+- Nothing here authorizes execution, a recommendation, a paper fill, production use, real market data or a real data provider.
+- An authoritative `CANDIDATE` is still a research label. It is not a recommendation, an order or a trade.
 - The production-readiness restrictions in [section 8](#8-production-readiness-restrictions) all still apply.
