@@ -528,6 +528,8 @@ Rules:
 - **Later reconciliation is appended, never rewritten.** Evidence that arrives after a terminal state never changes that state or its events. Examples are a late bar that fills a gap, or a candle revision. It is recorded as an explicit, audited event that cites the original terminal event, and any effect appears only in a labelled restatement ([section 10.5](#105-as-issued-and-restated-results)).
 - **Touch semantics.** "Touch" means the bar's low is at or below the level and its high is at or above it, compared exactly. Whether a gap-through counts as a touch at the level is not decided here, because V1 records no exit fill. It matters only for the modeled outcomes in [section 10](#10-backtesting-and-performance).
 
+> **Note, 2026-11-07 (EI4-D9 owner approval).** In the table above, `RECORDED` ("the recommendation is persisted") means an **issued** recommendation persisted by the issuance and lifecycle authority (EI-5 and EI-6). It does not mean an EI-4D generation record. The EI-4D generation dispositions `PROPOSED`, `NOT_ELIGIBLE` and `UNRESOLVED` are not lifecycle states, and a proposal stored by EI-4D is not in `RECORDED` or any other lifecycle state. An issued recommendation refers back to its EI-4D proposal's identity and content fingerprint (EI4-D9-J). The `eligible_from` wording of `RECORDED` is governed by EI4-D1, as noted in [section 8.1](#81-minimum-recommendation-contract). See the [EI-4 Decision Register, section 9](Equity-Intraday-V1-EI4-Decision-Register.md#9-ei4-d9-owner-approval-record-2026-11-07). The table is not rewritten.
+
 ### 8.3 Intrabar ambiguity
 
 - When a single 5-minute bar contains both stop and target, or entry and an exit, the order of those events is unknowable from OHLC data.
@@ -727,6 +729,13 @@ The Futures dashboard is the integration pattern: an API read model over persist
 | **EI-8** | Trade-level historical evaluation: net modeled outcomes, indeterminate bounds, unresolved cutoff outcomes kept out of win and loss statistics, as-issued results separate from corrected-data restatements, in-sample and out-of-sample results, sensitivity | EI-6. It reuses the EI-4 cost schedule rather than introducing one. |
 | **EI-9** | Authorized real NSE equity intraday data, the provider adapter and timestamp-convention evidence | Data-rights gate D16, EI-2 |
 | **EI-10** | Forward observation and operational acceptance | EI-7, EI-8, EI-9 |
+
+> **Note, 2026-11-07 (EI4-D9 owner approval).** EI4-D9-J clarifies the EI-4 and EI-6 rows above; the table is not rewritten.
+> - **EI-4** includes EI-4D: durable, immutable **generation records** -- generation dispositions (`PROPOSED`, `NOT_ELIGIBLE`, `UNRESOLVED`), synthetic proposal definitions and logical generation attempts. Rejections found during generation are EI-4D dispositions.
+> - **EI-5** owns recommendation issuance and lifecycle policy.
+> - **EI-6**'s "recommendations, rejections, lifecycle events, ..." means **issued** recommendations and their issuance and lifecycle records, not EI-4D generation records. An issued recommendation refers back to its EI-4D proposal identity and content fingerprint.
+>
+> See the [EI-4 Decision Register, section 9](Equity-Intraday-V1-EI4-Decision-Register.md#9-ei4-d9-owner-approval-record-2026-11-07) and [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md).
 
 ### 12.2 Prerequisites moved earlier
 

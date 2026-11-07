@@ -8,6 +8,8 @@ The product owner approved owner decision EI4-D6, equity-specific architecture, 
 
 This is a design decision. **Nothing in it is implemented** when it is recorded: the contracts it describes are planned for EI-4B to EI-4E.
 
+> **Note, 2026-11-07 (EI4-D9 owner approval).** EI4-D9, deferred below, was approved by the owner on 2026-11-07 as subdecisions EI4-D9-A to EI4-D9-J ([EI-4 Decision Register, section 9](../product/Equity-Intraday-V1-EI4-Decision-Register.md#9-ei4-d9-owner-approval-record-2026-11-07)). The persistence architecture is recorded in [ADR-021](ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md), which does not supersede this ADR. Where section 3 below derives identity from the generation-policy version, EI4-D9-B refines that version to a composite synthetic policy-set identity. The text of this ADR is otherwise unchanged.
+
 ## Date
 
 2026-11-07
@@ -158,6 +160,8 @@ This ADR records an architecture. It does not:
 - **Deferred decisions:** EI4-D5 (pre-entry invalidation) and EI4-D9 (persistence sequencing), and EI0-D8, EI0-D9, EI0-D10 to EI0-D13, EI0-D15 to EI0-D21 and EI3-D10, with their recorded statuses.
 - **Before real data:** every restriction in the [EI-4 Decision Register, section 7](../product/Equity-Intraday-V1-EI4-Decision-Register.md#7-production-readiness-restrictions).
 - **A shared recommendation kernel**, only by a later ADR.
+
+> **Note, 2026-11-07.** EI4-D9 is no longer deferred: see the note under [Status](#status) and [ADR-021](ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md). The EI-4 sequence now places an EI-4C compatibility slice before EI-4D, and EI-4D is delivered as an Application slice followed by an Infrastructure slice. EI4-D5 and the other decisions listed above keep their statuses.
 
 ## Related Documents
 

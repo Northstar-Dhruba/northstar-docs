@@ -12,6 +12,8 @@
 - This record has not been through Architecture Review or Engineering Review.
 - Nothing in EI-4 is implemented by this record.
 
+> **Note, 2026-11-07 (EI4-D9 owner approval).** The product owner later approved EI4-D9 on 2026-11-07, as ten separately identified subdecisions, EI4-D9-A to EI4-D9-J, recorded in [section 9](#9-ei4-d9-owner-approval-record-2026-11-07). The persistence architecture is recorded in [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md). The bullets above describe the record before that approval and are not rewritten. EI4-D5 stays deferred.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -167,6 +169,8 @@ The intended EI-4 sequence, recorded at the owner's direction:
 - EI4-D9, recommendation persistence sequencing, stays deferred ([section 5](#5-decisions-still-pending-or-deferred)). How EI-4D's persistence relates to EI-6 is to be settled by it, not assumed.
 - **Unimplemented controls are never reported as satisfied.** When an EI-4 eligibility rule needs a control that does not exist -- for example the daily modeled loss limit (EI0-D19), which needs lifecycle outcomes -- the rule fails closed, or stays outside a clearly delimited early modelling slice and is reported as not assessed.
 
+> **Note, 2026-11-07 (EI4-D9 owner approval).** EI4-D9 now settles the EI-4D row above and its relation to EI-6 ([section 9](#9-ei4-d9-owner-approval-record-2026-11-07)). EI-4D persists immutable **generation records** -- dispositions, synthetic proposals and logical generation attempts -- not issued recommendations or lifecycle records, which stay with EI-5 and EI-6 (EI4-D9-J). An EI-4C compatibility slice in Application now precedes EI-4D, and EI-4D is delivered as an Application slice (EI-4D-A) followed by an Infrastructure slice (EI-4D-B) ([section 9.4](#94-approved-implementation-sequence)). The table above is not rewritten.
+
 ## 5. Decisions still pending or deferred
 
 These are **not** approved by this record. Each keeps its existing status.
@@ -188,6 +192,8 @@ These are **not** approved by this record. Each keeps its existing status.
 | EI3-D10 | Trailing unfinalized candle policy | PENDING |
 
 - EI4-D5 and EI4-D9 are first recorded here, as proposals from the EI-4A design review. EI4-D1 to EI4-D4 and EI4-D6 to EI4-D8 are approved above; there is no EI4-D10 or later.
+
+> **Note, 2026-11-07 (EI4-D9 owner approval).** The EI4-D9 row above records its status before approval and is kept as historical evidence. It is **superseded**: EI4-D9 is now **APPROVED BY OWNER, 2026-11-07**, as subdecisions EI4-D9-A to EI4-D9-J in [section 9](#9-ei4-d9-owner-approval-record-2026-11-07). Every other row of the table keeps its status; EI4-D5 stays PROPOSED and deferred. There is still no EI4-D10 or later.
 - EI0-D1, EI0-D2 and EI0-D5 stay PROPOSED, as recorded in the [product specification, section 14](Equity-Intraday-V1-Product-Specification.md#14-owner-decision-register).
 - CE-D8, CE-D9, CE-D10 and CE-D15 stay PENDING in the [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md), section 18.2.
 
@@ -221,3 +227,186 @@ A synthetic recommendation is a research artifact. It is not a recommendation to
 - [Equity Intraday V1 EI-3C Synthetic Acceptance Record](Equity-Intraday-V1-EI3C-Synthetic-Acceptance-Record.md)
 - [ADR-017: Repository Layering and Futures Recommendation Domain Boundary](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md)
 - [ADR-018: Futures V1 Research-to-Recommendation Generation Policy](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md)
+- [ADR-021: Equity Intraday V1 Recommendation Generation Persistence](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md) (added 2026-11-07, [section 9](#9-ei4-d9-owner-approval-record-2026-11-07))
+
+## 9. EI4-D9 owner approval record (2026-11-07)
+
+**Decision: EI4-D9 -- Recommendation Generation Persistence Identity, Sequencing and Historical Verification.**
+**Scope: synthetic-only, LONG-only NSE equity intraday recommendation generation.**
+
+This section records an approval given on **2026-11-07**. It does not rewrite sections 1 to 8, which describe the record before it; where they say EI4-D9 is proposed or deferred, the dated notes there point here. The architecture is recorded in [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md). Nothing in this section is implemented by this record.
+
+### 9.1 Approved subdecisions
+
+The product owner explicitly approved the ten subdecisions below. Each is **APPROVED BY OWNER, 2026-11-07**, within the scope above, and each applies exactly as worded.
+
+#### EI4-D9-A -- Durable generation records
+
+**APPROVED BY OWNER, 2026-11-07.**
+
+- EI-4D persists one immutable **generation disposition** per authorized candidate and policy identity (EI4-D9-B).
+- A disposition has exactly one kind: `PROPOSED`, `NOT_ELIGIBLE` or `UNRESOLVED`.
+- A `PROPOSED` disposition may contain a synthetic recommendation proposal. A `NOT_ELIGIBLE` or `UNRESOLVED` disposition never contains a successful proposal.
+- A separate, append-only log records distinct logical generation attempts.
+- Integrity failures, dependency outages and attempts that found no candidate may be represented in the attempt log. They never acquire a disposition -- successful or unresolved -- under a candidate and policy key that does not exist.
+- These dispositions are generation records. They are not recommendation issuance and not lifecycle states.
+
+#### EI4-D9-B -- Composite synthetic policy-set identity
+
+**APPROVED BY OWNER, 2026-11-07.** This is option B-2 of the EI4-D9 design review.
+
+- A composite, versioned **synthetic policy-set identity** covers the generation policy, the risk policy with its model-capital configuration, the cost schedule, the price-increment reference and the timing policy.
+- The stable recommendation-generation key binds that policy-set identity, the authoritative first `CANDIDATE`, and its strategy, research configuration, listing and trading date.
+- This explicitly **refines EI4-D2**: the "applicable generation-policy version" under which a candidate yields zero or one recommendation is the synthetic policy-set identity.
+- A materially different approved policy set may have a different identity.
+- Different listing-eligibility evidence or issued-history evidence under the same policy-set identity does not authorize replacing a disposition or creating another. Such changes are content, subject to the conflict rules of EI4-D9-D.
+- A future Application compatibility change introduces a clearly versioned identity scheme. The existing EI-4C proposal-key namespace, which binds only the generation-policy version, is not silently reinterpreted.
+- A new synthetic policy-set identity never authorizes several actually issued recommendations or any broker order.
+
+#### EI4-D9-C -- Canonical content and modeled issuance
+
+**APPROVED BY OWNER, 2026-11-07.**
+
+- Assessment and proposal documents are persisted as format-versioned, canonical, structured documents.
+- A deterministic SHA-256 **content fingerprint** is computed from the canonical structured data.
+- Free-text diagnostics, exception prose and human-readable descriptions are excluded from the identity-bearing fingerprint. They may be preserved separately, but never affect deterministic identity or evaluation reproducibility.
+- The content binding captures every relevant approved synthetic input, source reference, piece of timing evidence and policy or reference version.
+- For synthetic historical modeling, **modeled issuance is derived deterministically** from an explicitly versioned synthetic latency policy and the verified source decision availability. It is not an arbitrary caller-supplied timestamp.
+- Research `decision_as_of`, modeled issuance, actual operational issuance and the earliest eligible entry stay distinct (EI4-D1). Actual operational issuance stays outside EI-4D.
+- No backdating and no look-ahead are permitted.
+- No numeric latency and no production cutoff are approved by this decision.
+
+#### EI4-D9-D -- Duplicates and conflicts
+
+**APPROVED BY OWNER, 2026-11-07.** For one generation identity:
+
+- identical verified canonical content is idempotent;
+- different canonical content is an explicit conflict. It never overwrites or silently replaces the first committed record;
+- the conflicting logical attempt is recorded when storage is available;
+- a new disposition is permitted only under a genuinely distinct approved policy identity.
+
+There is no last-write-wins, and commit order is never treated as proof that evidence is objectively correct. The rule applies equally to `PROPOSED`, `NOT_ELIGIBLE` and `UNRESOLVED` dispositions: an `UNRESOLVED` disposition never silently becomes `PROPOSED` under the same identity.
+
+#### EI4-D9-E -- Atomic transactions
+
+**APPROVED BY OWNER, 2026-11-07.**
+
+- The disposition, its proposal document where applicable and the corresponding logical attempt are committed atomically, in one SQLite transaction.
+- A failure during a multi-record write never leaves a partially authoritative generation result.
+- The transaction supports idempotent duplicate reconciliation and explicit conflicts.
+- A write is never reported as successful without committed evidence.
+
+#### EI4-D9-F -- Concurrent writers
+
+**APPROVED BY OWNER, 2026-11-07.**
+
+- SQLite transaction serialization and database uniqueness constraints govern concurrent writers, never in-memory locks alone.
+- The first successfully committed disposition establishes the authoritative record for its key.
+- A competing write of equal content is idempotent; a competing write of different content is refused as a conflict.
+- The guarantees are scoped to a single SQLite database authority. No multi-host or distributed exactly-once guarantee is approved.
+
+#### EI4-D9-G -- Commit-unconfirmed recovery
+
+**APPROVED BY OWNER, 2026-11-07.** An error during COMMIT is an uncertain outcome until a verified reload of the generation identity resolves it:
+
+- the same verified fingerprint is present: committed, or an equivalent was committed;
+- a different verified fingerprint is present: an explicit conflict;
+- the record is absent after a successful authoritative reload: no matching commit is established, and a controlled, bounded retry may proceed;
+- the reload is unavailable or inconsistent: the commit outcome stays unresolved.
+
+A COMMIT exception is never assumed to mean rollback, and no exactly-once issuance is claimed.
+
+#### EI4-D9-H -- Point-in-time issued history
+
+**APPROVED BY OWNER, 2026-11-07.**
+
+- EI-4D stores generation dispositions and attempts, and never writes them into the authoritative issued-recommendation history.
+- A stored `PROPOSED` disposition is not an issued recommendation, and neither is a stored eligibility audit.
+- An independent **issued-recommendation authority** belongs to later issuance and lifecycle work. It must eventually provide verifiable point-in-time history, with adequate recording provenance and a recording watermark.
+- A recommendation issued later never retroactively changes an earlier modeled assessment.
+- Until that authority exists:
+  - EI-4D never fabricates issuance history;
+  - missing history is unknown, never empty;
+  - explicitly labelled synthetic test fixtures may establish a complete history for testing, and they are not production authority.
+- EI4-D8's conservative open-state treatment is preserved.
+
+#### EI4-D9-I -- Restart and historical verification
+
+**APPROVED BY OWNER, 2026-11-07.** The complete evidence needed for historical verification is persisted. On reload, the following are verified:
+
+1. canonical stored-document integrity;
+2. content fingerprints;
+3. source referential integrity;
+4. the authoritative EI-3C `CANDIDATE` history;
+5. the original EI-2B snapshot and manifest;
+6. the required synthetic policy and reference documents;
+7. the exact venue-day evidence used for timing;
+8. the original point-in-time issued-history evidence, with its completeness and recording watermark;
+9. compatibility with the historical evaluation format;
+10. exact reproduction of the original EI-4C eligibility assessment and EI-4B Core result.
+
+Missing, corrupted, inconsistent or unsupported historical evidence fails closed. A record is never relinked to a newer corrected snapshot, and historical decisions are never silently migrated or reinterpreted (as in EI3-D13). SQLite may enforce structural constraints and foreign keys; cryptographic fingerprint verification stays an explicit Application responsibility unless a verified implementation shows otherwise.
+
+#### EI4-D9-J -- EI-4D versus EI-5 and EI-6 responsibilities
+
+**APPROVED BY OWNER, 2026-11-07.**
+
+- **EI-4D** owns immutable generation records: eligibility and generation dispositions, generated synthetic proposal definitions, and auditable logical generation attempts.
+- **EI-5** owns recommendation issuance and lifecycle policy.
+- **EI-6** owns durable issuance and lifecycle records.
+- A later issued recommendation refers back to the exact immutable EI-4D proposal identity and content fingerprint.
+- A proposal stored by EI-4D is not automatically in the `RECORDED` lifecycle state.
+- The product specification's EI-6 persistence wording is clarified by dated notes ([section 8.2](Equity-Intraday-V1-Product-Specification.md#82-lifecycle-states) and [section 12.1](Equity-Intraday-V1-Product-Specification.md#121-refined-sequence)); its earlier text is not deleted.
+- EI-4D does not implement EI-5 or EI-6.
+
+### 9.2 Approved clarifications
+
+Approved by the owner on 2026-11-07 with EI4-D9:
+
+- **A. Unresolved dispositions are immutable.** A committed `UNRESOLVED` disposition can never be upgraded to `PROPOSED` under the same generation identity. A different disposition needs a separate approved policy identity.
+- **B. Logical attempts are deduplicated.** The attempt log records distinct, deterministic logical attempts. Repeated identical invocations may deduplicate; there is no promise of a separate persistent row for every identical call.
+- **C. Audit-storage failure is reported.** When a database failure prevents an attempt from being recorded, the failure is reported, and the attempt is never claimed as durably audited.
+- **D. No fabricated empty history.** No production-style adapter may assert an empty issuance history merely because EI-5 and EI-6 are not implemented. Only explicitly established synthetic test histories may be used for acceptance testing.
+- **E. Architecture record.** The persistence architecture is the separate [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md). ADR-020 is not replaced.
+
+### 9.3 Required EI-4C compatibility work (pending)
+
+The approved design needs an EI-4C Application compatibility slice **before** EI-4D. None of it is implemented by this record:
+
+- the composite policy-set identity, under a clearly versioned identity scheme (EI4-D9-B);
+- versioned canonical structured assessment and proposal documents (EI4-D9-C);
+- content fingerprints that exclude diagnostic prose (EI4-D9-C);
+- modeled issuance derived deterministically from a versioned synthetic latency (EI4-D9-C);
+- the complete venue-day timing evidence preserved (EI4-D9-I);
+- verifiable point-in-time issued-history evidence, with coverage and recording provenance, preserved (EI4-D9-H, EI4-D9-I);
+- explicit persistence-oriented disposition and attempt contracts where needed (EI4-D9-A).
+
+### 9.4 Approved implementation sequence
+
+1. EI4-D9 governance approval and ADR-021 (this record).
+2. EI-4C compatibility adjustments in Application ([section 9.3](#93-required-ei-4c-compatibility-work-pending)).
+3. EI-4D-A: Application persistence ports, immutable records and record-and-reconcile orchestration.
+4. EI-4D-B: Infrastructure SQLite schema, adapter and concurrency protection.
+5. EI-4E: synthetic end-to-end acceptance on real SQLite.
+
+EI-5 and EI-6 stay separate milestones.
+
+### 9.5 Decisions still pending or unapproved
+
+These are **not** approved by this record, and each keeps its existing status:
+
+- EI4-D5, pre-entry invalidation (PROPOSED, deferred);
+- EI0-D11, risk parameters, including any portfolio exposure or simultaneous-open limit;
+- the product specification's proposed one-open-recommendation-per-listing threshold (section 9.5 of the specification);
+- EI0-D19, the daily modeled loss limit;
+- EI0-D21, candle-revision materiality;
+- EI3-D10, the trailing unfinalized candle policy;
+- every other decision in [section 5](#5-decisions-still-pending-or-deferred) other than EI4-D9, and every real-data source, venue or market-reference decision.
+
+### 9.6 Earlier approvals unchanged
+
+Every approval in [section 3](#3-approved-decisions) and [section 6](#6-earlier-approvals-unchanged) keeps its status and date. EI4-D9-B refines how EI4-D2's policy version is identified; it does not change EI4-D2's rule of zero or one recommendation per candidate under that identity.
+
+### 9.7 Restrictions unchanged
+
+Every restriction in [section 7](#7-production-readiness-restrictions) still applies. EI4-D9 authorizes no real-data use, actual recommendation issuance, trading, broker order, fill or position.
