@@ -196,6 +196,8 @@ EI3-D1 defines the instant of a **research decision**. It does not define these 
 
 These must be decided consistently with EI3-D1, EI3-D6 and EI0-D7 before EI-4.
 
+> **Note, 2026-11-07 (EI-4A, owner approval).** These instants are now decided by EI4-D1 and the revised EI0-D7 timing structure in the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md#3-approved-decisions). EI3-D1 is unchanged.
+
 ### 6.2 Non-CAS close from 2026-08-03 to 2026-08-11
 
 The [product specification, section 6.1](Equity-Intraday-V1-Product-Specification.md#61-facts-awaiting-official-validation), is corrected by a dated note. The note cannot state the non-CAS continuous close for 2026-08-03 to 2026-08-11, because that is CE-D15, which is pending. It records the gap instead of resolving it.

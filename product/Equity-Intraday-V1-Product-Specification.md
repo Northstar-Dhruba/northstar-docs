@@ -363,6 +363,8 @@ Bars after 15:00 are never used to resolve the recommendation.
 
 > **Note, 2026-11-06 (EI-3B, owner approval).** EI3-D6 is now **APPROVED** (owner, 2026-11-06) as research-only scheduling: research uses the approved window, the latest signal candle ends at 15:00 IST, and no entry-dependent cutoff is enforced. EI0-D7, this section's schedule, stays **PROPOSED** and is deferred to execution and risk design. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md#10-ei-3b-owner-approval-record-2026-11-06).
 
+> **Note, 2026-11-07 (EI-4A, owner approval).** EI0-D7 is now **APPROVED for synthetic policy structure only**. The bar-end 14:25 / 14:30 / 15:00 IST interpretation of the table above is **not** approved as an operational schedule. The approved structure distinguishes the signal-bar end, decision availability, the latest permissible entry-bar opening, any minimum remaining session time, the mandatory modeled exit boundary, shortened or special sessions and post-session research, with versioned synthetic values. No production cutoff time is approved. See the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md#3-approved-decisions).
+
 ---
 
 ## 7. Signal and Strategy
@@ -491,6 +493,8 @@ The proposed contract is `EquityTradeRecommendation`, in a new `northstar_core.r
 - **Price increment.** The NSE price increment for each stock is AWAITING OFFICIAL VALIDATION, and it is supplied as a policy input, as in ADR-018. V1 should support a single configured increment per universe version, and fail closed if a stock's increment is unknown. PENDING.
 
 > **Note, 2026-11-05 (EI-3A governance).** The `issued_at` row above says the decision instant is "the completion instant of the last cited bar". For **research decisions**, that is superseded by EI3-D1 (approved 2026-11-05): the decision instant is the `as_of` instant of the EI-2B evidence snapshot, and a bar's interval end never by itself makes a candle final or a decision available. For **recommendations**, `issued_at` and `eligible_from` (section 8.2) are **not** decided by EI3-D1. They remain open for EI-4 and EI-5, to be settled consistently with EI3-D1, EI3-D6 and EI0-D7. See the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md), section 6.1.
+
+> **Note, 2026-11-07 (EI-4A, owner approval).** EI4-D1 now decides the recommendation instants: `decision_as_of` (the EI-3 research decision instant), `issued_at` (actual issuance of an operational recommendation) and `eligible_from` are distinct, and entry evidence comes only from bars that open at or after the information-availability and issuance instant. Where section 8.2 would let the bar completing at `eligible_from` evidence an entry although it opened before the decision was available, EI4-D1 governs. EI0-D14 is **APPROVED for the initial synthetic model**: the `entry` row above is a modeled zone anchored to the signal close, built from versioned parameters and aligned to a supplied price increment. See the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md#3-approved-decisions).
 
 ### 8.2 Lifecycle states
 
@@ -783,6 +787,8 @@ Only EI0-D4 is approved. Every other decision remains PROPOSED or PENDING.
 > **Note, 2026-11-05 (EI-3A governance, owner approval).** The sentence above describes the register as of 2026-11-01. EI0-D3 and EI0-D6 are now **APPROVED** (owner, 2026-11-05), as shown in the table. Decisions EI3-D1 to EI3-D8 are recorded only in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md): EI3-D1 to EI3-D5 and EI3-D8 are approved, and EI3-D6 and EI3-D7 are **PENDING**. None of them is listed in the table below. Every other status below is unchanged.
 
 > **Note, 2026-11-06 (EI-3B, owner approval).** EI3-D6, EI3-D7 and EI3-D9 are now **APPROVED** (owner, 2026-11-06), and EI3-D10 is recorded as **PENDING**, all in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md#10-ei-3b-owner-approval-record-2026-11-06). The statuses in the table below are unchanged; EI0-D7 stays **PROPOSED**.
+
+> **Note, 2026-11-07 (EI-4A, owner approval).** In the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md#3-approved-decisions), the owner **APPROVED** EI0-D7 (revised timing structure, for synthetic policy structure only) and EI0-D14 (entry zone, for the initial synthetic model), together with EI4-D1 to EI4-D4 and EI4-D6 to EI4-D8. The EI0-D7 and EI0-D14 rows below describe their earlier status. Every other status below is unchanged: in particular EI0-D10 to EI0-D13, approving real values, stay **PENDING**, and no production cutoff time is approved.
 
 | ID | Decision | Proposal | Status |
 | --- | --- | --- | --- |
