@@ -14,6 +14,8 @@
 
 > **Note, 2026-11-07 (EI4-D9 owner approval).** The product owner later approved EI4-D9 on 2026-11-07, as ten separately identified subdecisions, EI4-D9-A to EI4-D9-J, recorded in [section 9](#9-ei4-d9-owner-approval-record-2026-11-07). The persistence architecture is recorded in [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md). The bullets above describe the record before that approval and are not rewritten. EI4-D5 stays deferred.
 
+> **Note, 2026-11-08 (EI-4E, engineering acceptance).** EI-4E synthetic end-to-end acceptance is recorded with the engineering verdict PASS WITH DOCUMENTED LIMITATIONS in the [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md). That record is engineering evidence, not an owner approval: no decision status changes, the milestone is not closed by it, and nothing authorizes real data, issuance, execution or production use. Two findings from it, AA-1 (policy-version label governance) and AA-2 (verified-writer boundary and recovery), are OWNER DECISION PENDING.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -228,6 +230,7 @@ A synthetic recommendation is a research artifact. It is not a recommendation to
 - [ADR-017: Repository Layering and Futures Recommendation Domain Boundary](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md)
 - [ADR-018: Futures V1 Research-to-Recommendation Generation Policy](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md)
 - [ADR-021: Equity Intraday V1 Recommendation Generation Persistence](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md) (added 2026-11-07, [section 9](#9-ei4-d9-owner-approval-record-2026-11-07))
+- [Equity Intraday V1 EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) (added 2026-11-08; engineering evidence, not an approval)
 
 ## 9. EI4-D9 owner approval record (2026-11-07)
 
