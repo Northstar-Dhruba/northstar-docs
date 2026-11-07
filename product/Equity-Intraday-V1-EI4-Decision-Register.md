@@ -16,6 +16,8 @@
 
 > **Note, 2026-11-08 (EI-4E, engineering acceptance).** EI-4E synthetic end-to-end acceptance is recorded with the engineering verdict PASS WITH DOCUMENTED LIMITATIONS in the [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md). That record is engineering evidence, not an owner approval: no decision status changes, the milestone is not closed by it, and nothing authorizes real data, issuance, execution or production use. Two findings from it, AA-1 (policy-version label governance) and AA-2 (verified-writer boundary and recovery), are OWNER DECISION PENDING.
 
+> **Note, 2026-11-08 (EI4-D10 and EI4-D11 owner approval).** The product owner later approved both EI-4E findings on 2026-11-08: AA-1 as **EI4-D10** (Immutable Policy-Version Identity) and AA-2 as **EI4-D11** (Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance), recorded in [section 10](#10-ei4-d10-and-ei4-d11-owner-approval-record-2026-11-08). The note above records their status before that approval and is not rewritten. Neither decision is implemented, and no invalid-record recovery mechanism is approved.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -196,6 +198,8 @@ These are **not** approved by this record. Each keeps its existing status.
 - EI4-D5 and EI4-D9 are first recorded here, as proposals from the EI-4A design review. EI4-D1 to EI4-D4 and EI4-D6 to EI4-D8 are approved above; there is no EI4-D10 or later.
 
 > **Note, 2026-11-07 (EI4-D9 owner approval).** The EI4-D9 row above records its status before approval and is kept as historical evidence. It is **superseded**: EI4-D9 is now **APPROVED BY OWNER, 2026-11-07**, as subdecisions EI4-D9-A to EI4-D9-J in [section 9](#9-ei4-d9-owner-approval-record-2026-11-07). Every other row of the table keeps its status; EI4-D5 stays PROPOSED and deferred. There is still no EI4-D10 or later.
+
+> **Note, 2026-11-08 (EI4-D10 and EI4-D11 owner approval).** The statements above that there is no EI4-D10 or later describe the register before 2026-11-08 and are kept as historical evidence. EI4-D10 and EI4-D11 now exist: they record the owner's approval of EI-4E findings AA-1 and AA-2, in [section 10](#10-ei4-d10-and-ei4-d11-owner-approval-record-2026-11-08). Neither was ever a row of the table above. Every row of the table keeps its status.
 - EI0-D1, EI0-D2 and EI0-D5 stay PROPOSED, as recorded in the [product specification, section 14](Equity-Intraday-V1-Product-Specification.md#14-owner-decision-register).
 - CE-D8, CE-D9, CE-D10 and CE-D15 stay PENDING in the [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md), section 18.2.
 
@@ -413,3 +417,195 @@ Every approval in [section 3](#3-approved-decisions) and [section 6](#6-earlier-
 ### 9.7 Restrictions unchanged
 
 Every restriction in [section 7](#7-production-readiness-restrictions) still applies. EI4-D9 authorizes no real-data use, actual recommendation issuance, trading, broker order, fill or position.
+
+## 10. EI4-D10 and EI4-D11 owner approval record (2026-11-08)
+
+**Decisions:**
+
+- **EI4-D10 -- Immutable Policy-Version Identity** (EI-4E finding AA-1);
+- **EI4-D11 -- Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance** (EI-4E finding AA-2).
+
+**Scope: synthetic-only, LONG-only NSE equity intraday recommendation generation.**
+
+This section records an approval given on **2026-11-08**. It does not rewrite sections 1 to 9. Where they, or the [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md), describe AA-1 and AA-2 as pending, or say there is no EI4-D10 or later, dated notes there point here. **Nothing in this section is implemented by this record.**
+
+The owner's instruction, given on 2026-11-08, was:
+
+> "Northstar owner governance decisions: AA-1: approve. AA-2: approve. Proceed only with the explicitly approved decisions; prepare the next governance documentation task before implementation."
+
+The approval applies to the AA-1 and AA-2 proposals reviewed after EI-4E acceptance ([EI-4E Synthetic Acceptance Record, section 14](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md#14-open-owner-decisions)), in the wording below. It extends to no other unresolved policy, to operational issuance, or to any recovery implementation.
+
+### 10.1 Identifier mapping
+
+| Register identifier | EI-4E finding | Title |
+| --- | --- | --- |
+| EI4-D10 | AA-1 | Immutable Policy-Version Identity |
+| EI4-D11 | AA-2 | Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance |
+| EI4-D11-A | AA-2.1 | Mandatory verified recording boundary |
+| EI4-D11-B | AA-2.2 | Fail-closed invalid-record handling |
+| EI4-D11-C | AA-2.3 | Evidence preservation |
+| EI4-D11-D | AA-2.4 | Separately governed recovery |
+| EI4-D11-E | AA-2.5 | Enforcement and regression tests |
+
+The identifiers continue this register's `EI4-` numbering. No existing decision is renumbered.
+
+### 10.2 EI4-D10 -- Immutable Policy-Version Identity (AA-1)
+
+**OWNER APPROVED, 2026-11-08.**
+
+- Within a defined policy namespace and policy type, a published policy-version label must identify exactly one immutable canonical policy definition.
+- Once a label has been published, its canonical policy content cannot change under that label.
+- Reusing the same label with different canonical policy content must fail closed as a policy-reference integrity conflict.
+- A legitimate change to a policy definition requires a new version label.
+
+**Existing identity architecture preserved.** Different canonical policy content continues to have different content fingerprints. EI4-D10 concerns conflicting reuse of an existing published version label; it does not remove content-based identity, and EI4-D9-B is unchanged. EI4-D10 does not authorize changing:
+
+- the `eirs1` policy-set fingerprint format;
+- the `eirk1` generation key format;
+- existing canonical document versions;
+- previously committed generation dispositions;
+- historical policy-definition evidence.
+
+**Enforcement requirements for a future implementation.** A future implementation must:
+
+1. define and respect the actual policy namespace and policy type;
+2. bind each published label to one immutable canonical definition;
+3. reject conflicting reuse before it can become accepted policy reference evidence;
+4. fail closed on incompatible historical or current references;
+5. prevent conflicting concurrent registration from establishing contradictory label bindings;
+6. preserve historical evidence and existing immutable generation records.
+
+The namespace schema, the registry storage mechanism and the concurrency mechanism are implementation design questions. This record decides none of them.
+
+**Status.**
+
+| Item | Status |
+| --- | --- |
+| Decision | **APPROVED** |
+| Engineering enforcement | **NOT YET IMPLEMENTED.** Today no Application component, store or database constraint enforces label uniqueness |
+| Acceptance evidence | EI-4E demonstrated the underlying label-reuse issue (`test_e12_c_a_reused_version_label_with_changed_content_is_another_identity`; [EI-4E record, section 14.1](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md#141-aa-1--policy-version-label-governance)). It did not test any enforcement |
+
+### 10.3 EI4-D11 -- Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance (AA-2)
+
+**OWNER APPROVED, 2026-11-08,** as five subdecisions, each applying exactly as worded.
+
+#### EI4-D11-A -- Mandatory verified recording boundary (AA-2.1)
+
+- The EI-4D-A verified Application recorder (`RecordEquityRecommendationGenerationUseCase`) is the required operational path for committing synthetic equity recommendation-generation dispositions.
+- The raw EI-4D-B SQLite adapter (`SQLiteEquityRecommendationGenerationStore`) is an Infrastructure persistence mechanism. It is not an independently authorized operational generation interface.
+
+#### EI4-D11-B -- Fail-closed invalid-record handling (AA-2.2)
+
+A stored generation record that fails any of these:
+
+- canonical document verification;
+- authoritative EI-3C source verification;
+- original EI-2B snapshot verification;
+- frozen historical assessment replay
+
+must not be:
+
+- accepted as equivalent;
+- silently repaired;
+- silently migrated;
+- replaced;
+- treated as actually issued;
+- used as authoritative recommendation evidence.
+
+The existing precise error and incompatibility distinctions are preserved, including:
+
+- invalid versus incompatible stored records;
+- source evidence that is invalid versus unavailable;
+- replay mismatch;
+- unresolved commit reconciliation.
+
+#### EI4-D11-C -- Evidence preservation (AA-2.3)
+
+The original invalid committed record, and the relevant source evidence, are preserved for investigation. They are not silently deleted, overwritten or relinked, and their immutable identity is not changed.
+
+#### EI4-D11-D -- Separately governed recovery (AA-2.4)
+
+Any recovery of an invalid committed record requires:
+
+- a separately approved recovery design;
+- explicit authorization;
+- an auditable evidence trail;
+- preservation of the original invalid record;
+- defined authority and operational boundaries.
+
+**The owner has not approved any specific recovery procedure.** The recovery mechanism remains a separate future governance decision. EI4-D11 does **not** authorize:
+
+- deleting immutable rows;
+- updating immutable rows;
+- replacing an occupied generation key;
+- rewriting canonical fingerprints;
+- introducing a privileged production repair bypass;
+- changing historical issuance status.
+
+#### EI4-D11-E -- Enforcement and regression tests (AA-2.5)
+
+- A future engineering slice must establish enforceable architectural restrictions, and appropriate regression tests, around the required operational recording boundary.
+- A documentation-only convention is not technical enforcement, and this record is not presented as one.
+- SQLite does not verify every historical semantic invariant. It enforces structure, insert-only history, foreign keys and the insert-time CANDIDATE checks of ADR-021 section 11. Fingerprint, source and replay verification remain the Application's (EI4-D9-I; [ADR-021, section 10](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md#10-restart-and-historical-verification-ei4-d9-i)).
+
+#### EI4-D11 status
+
+| Item | Status |
+| --- | --- |
+| Decision | **APPROVED** (EI4-D11-A to EI4-D11-E) |
+| Verified-recorder enforcement | **NOT YET IMPLEMENTED OR INDEPENDENTLY ACCEPTED.** Today a direct adapter call can still commit a record that later fails verification ([EI-4E record, section 14.2](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md#142-aa-2--verified-writer-boundary-and-recovery)) |
+| Recovery mechanism | **NOT APPROVED** |
+| Existing invalid evidence | Must remain fail-closed and preserved |
+| Acceptance evidence | EI-4E observed fail-closed handling on the paths it tested (`test_e20_*` and `test_e21_*`), and the occupied-key consequence. That observation is not acceptance of EI4-D11's enforcement |
+
+### 10.4 Not authorized by this record
+
+This record approves two governance decisions only. It does not authorize:
+
+- actual recommendation issuance, or the lifecycle `RECORDED` state;
+- broker or paper orders, positions or fills;
+- realized P&L, or claims of profitable trading;
+- live market-data integrations, or exchange-data licensing;
+- production trading;
+- changes to existing fingerprints, or to the `eirs1` or `eirk1` formats;
+- deletion or mutation of historical data or of immutable generation records;
+- any invalid-record recovery process;
+- EI-5 or EI-6 implementation.
+
+Every restriction in [section 7](#7-production-readiness-restrictions) and [section 9.7](#97-restrictions-unchanged) still applies.
+
+### 10.5 Decisions still pending or unapproved
+
+These are **not** approved by this record, and each keeps its existing status:
+
+- EI4-D5, pre-entry invalidation (PROPOSED, deferred);
+- EI0-D11, risk parameters, including any portfolio exposure or simultaneous-open limit;
+- the product specification's proposed one-open-recommendation-per-listing threshold (section 9.5 of the specification);
+- EI0-D19, the daily modeled loss limit;
+- EI0-D21, candle-revision materiality;
+- EI3-D10, the trailing unfinalized candle policy;
+- any specific invalid-record recovery design or procedure (EI4-D11-D);
+- every other decision listed as pending in [section 5](#5-decisions-still-pending-or-deferred) and [section 9.5](#95-decisions-still-pending-or-unapproved), and every real-data source, venue or market-reference decision.
+
+No production parameter is approved or implied.
+
+### 10.6 Earlier approvals and records unchanged
+
+- Every approval in sections 3, 6 and 9 keeps its text, status and date, including EI4-D9-A to EI4-D9-J and clarifications A to E. EI4-D10 adds a rule about version labels to EI4-D9-B's policy-set identity without changing it.
+- [ADR-020](../adr/ADR-020-Equity-Intraday-V1-Recommendation-Generation-Architecture.md) and [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md) are unchanged. Neither conflicts with EI4-D10 or EI4-D11:
+  - ADR-020 section 2 adopts "named, versioned generation policies, where any parameter change is a new version", and section 4 makes every policy input explicit and versioned. EI4-D10 makes conflicting label reuse fail closed; it contradicts neither.
+  - ADR-020 section 3 says business uniqueness is enforced by the immutable store (EI-4D). That remains true: EI4-D11 governs which path may write to the store, not where uniqueness is enforced.
+  - ADR-021 sections 10 and 11 already assign fingerprint, source and replay verification to the Application, and only structure and foreign keys to SQLite. Neither ADR names the raw adapter as an operational generation interface.
+- The [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) keeps its engineering verdict, PASS WITH DOCUMENTED LIMITATIONS, and its evidence:
+  - 72 EI-4E acceptance tests;
+  - 2,808 Infrastructure tests passed, 27 skipped, 0 failed;
+  - CI not confirmed.
+
+  It records this approval in a dated post-acceptance update. Owner approval adds no test coverage, and the EI-4E coverage gaps recorded there stay open.
+
+### 10.7 Prerequisites before implementation
+
+1. **Next governance documentation task.** Before any enforcement implementation begins, the owner directed that the next governance documentation task be prepared. It is not part of this record.
+2. **EI4-D10 design.** A design for the policy namespace and policy type, the immutable label binding, conflict rejection, concurrent registration and historical compatibility, consistent with EI4-D9-B and without changing `eirs1` or `eirk1`.
+3. **EI4-D11 boundary design.** A design for enforcing the verified-recorder boundary of EI4-D11-A and EI4-D11-E, with regression tests and independent acceptance.
+4. **Recovery.** Any invalid-record recovery mechanism needs its own separately approved design and authorization (EI4-D11-D). None exists.

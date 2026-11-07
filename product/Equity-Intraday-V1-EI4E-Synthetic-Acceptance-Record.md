@@ -5,9 +5,13 @@
 **Engineering acceptance record, 2026-11-08.**
 
 - **Verdict:** PASS WITH DOCUMENTED LIMITATIONS.
-- **Status:** Engineering evidence merged; acceptance documented with limitations; owner decisions AA-1 and AA-2 remain open.
+- **Status at acceptance (historical):** Engineering evidence merged; acceptance documented with limitations; owner decisions AA-1 and AA-2 remain open.
+- **Current governance status (dated update, 2026-11-08):**
+  - AA-1 and AA-2 are **OWNER APPROVED**, as EI4-D10 and EI4-D11 in the EI-4 Decision Register ([section 19](#19-post-acceptance-governance-update-2026-11-08)).
+  - Neither is implemented, and no invalid-record recovery mechanism is approved.
+  - The engineering verdict and evidence below are unchanged.
 - This record is engineering acceptance evidence. It is **not** an owner approval: it approves no decision, changes no decision status and does not close the EI-4E milestone on the owner's behalf. The owner approvals that EI-4D and EI-4E implement are recorded in the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md), sections 3 and 9.
-- The two findings in [section 14](#14-open-owner-decisions), AA-1 and AA-2, are **OWNER DECISION PENDING**. The policies proposed there are proposals, not approvals, and nothing implements them.
+- When this record was written, the two findings in [section 14](#14-open-owner-decisions), AA-1 and AA-2, were **OWNER DECISION PENDING**, and the policies proposed there were proposals, not approvals. The owner approved both later on 2026-11-08 ([section 19](#19-post-acceptance-governance-update-2026-11-08)). Nothing implements either.
 - Accepting EI-4E is **not** real-data readiness, production readiness, recommendation issuance, trading authorization, or acceptance of any profitability or performance claim ([section 15](#15-non-authorizations)).
 
 ## 1. Acceptance identity
@@ -18,7 +22,8 @@
 | Title | Synthetic Equity Recommendation Generation — End-to-End Acceptance |
 | Product | Northstar Equity Intraday V1: NSE cash equities, INR, LONG-only, synthetic only |
 | Engineering verdict | PASS WITH DOCUMENTED LIMITATIONS |
-| Status | Engineering evidence merged; acceptance documented with limitations; owner decisions AA-1 and AA-2 remain open |
+| Status at acceptance (historical) | Engineering evidence merged; acceptance documented with limitations; owner decisions AA-1 and AA-2 remain open |
+| Governance update, 2026-11-08 | AA-1 and AA-2 OWNER APPROVED as EI4-D10 and EI4-D11; enforcement not implemented; recovery mechanism not approved ([section 19](#19-post-acceptance-governance-update-2026-11-08)) |
 | Evidence | Infrastructure PR #54, merged to `develop` as `5dda518` |
 | Record date | 2026-11-08 |
 | Kind | Engineering evidence; not an owner approval |
@@ -458,7 +463,7 @@ The verdict is not a plain PASS because of:
 - the limitations in [section 13](#13-explicit-limitations);
 - two findings that need an owner decision ([section 14](#14-open-owner-decisions)).
 
-The verdict is an engineering result only. It does not resolve AA-1 or AA-2, approve any decision, or authorize anything in [section 15](#15-non-authorizations).
+The verdict is an engineering result only. It does not resolve AA-1 or AA-2, approve any decision, or authorize anything in [section 15](#15-non-authorizations). The owner's later approval of AA-1 and AA-2 ([section 19](#19-post-acceptance-governance-update-2026-11-08)) does not change this verdict.
 
 ## 13. Explicit limitations
 
@@ -481,7 +486,9 @@ These remain part of the acceptance conclusion.
 
 ### 14.1 AA-1 — Policy-version label governance
 
-**Status: OWNER DECISION PENDING.**
+**Status at acceptance: OWNER DECISION PENDING.**
+
+**Status update, 2026-11-08: OWNER APPROVED** as EI4-D10, Immutable Policy-Version Identity ([section 19](#19-post-acceptance-governance-update-2026-11-08)). Engineering enforcement is NOT YET IMPLEMENTED.
 
 **Finding.** The same synthetic policy-version label can identify different canonical policy contents. The `eirs1` policy-set fingerprint distinguishes the contents and so produces distinct generation keys. As a result, several dispositions can coexist for one candidate under a reused label.
 
@@ -498,9 +505,13 @@ These remain part of the acceptance conclusion.
 
 This record does not change the `eirk1` identity scheme or the `eirs1` fingerprint, and implements nothing for AA-1.
 
+> **Note, 2026-11-08.** The proposal above is kept as it was reviewed. The owner approved it on 2026-11-08 in the fuller wording of EI4-D10. The approved text, including the enforcement requirements and the preserved identity architecture, is in the [EI-4 Decision Register, section 10.2](Equity-Intraday-V1-EI4-Decision-Register.md#102-ei4-d10----immutable-policy-version-identity-aa-1).
+
 ### 14.2 AA-2 — Verified-writer boundary and recovery
 
-**Status: OWNER DECISION PENDING.**
+**Status at acceptance: OWNER DECISION PENDING.**
+
+**Status update, 2026-11-08: OWNER APPROVED** as EI4-D11, Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance, with subdecisions EI4-D11-A to EI4-D11-E ([section 19](#19-post-acceptance-governance-update-2026-11-08)). Verified-recorder enforcement is NOT YET IMPLEMENTED OR INDEPENDENTLY ACCEPTED. The recovery mechanism is NOT APPROVED.
 
 **Finding.**
 
@@ -526,6 +537,8 @@ This record does not change the `eirk1` identity scheme or the `eirs1` fingerpri
 > **PROPOSAL — NOT APPROVED.** The verified Application recorder (`RecordEquityRecommendationGenerationUseCase`) should be the mandatory operational generation write boundary. Invalid committed records should fail closed and be handled through a separately governed recovery process that preserves the original evidence.
 
 This record introduces no deletion, overwrite, mutable status transition or recovery path, and implements nothing for AA-2.
+
+> **Note, 2026-11-08.** The proposal above is kept as it was reviewed. The owner approved it on 2026-11-08 in the fuller wording of EI4-D11-A to EI4-D11-E: the mandatory verified recording boundary, fail-closed invalid-record handling, evidence preservation, separately governed recovery, and enforcement with regression tests. The approval requires a separately approved recovery design; it approves no recovery procedure. The approved text is in the [EI-4 Decision Register, section 10.3](Equity-Intraday-V1-EI4-Decision-Register.md#103-ei4-d11----mandatory-verified-recording-boundary-and-invalid-record-recovery-governance-aa-2).
 
 ### 14.3 Decisions still pending, unchanged
 
@@ -574,6 +587,8 @@ Three states are distinct, and only the first two are established by this record
 2. **Engineering verdict recorded.** The EI-4E engineering verdict is recorded here as PASS WITH DOCUMENTED LIMITATIONS.
 3. **Owner decisions open.** AA-1 and AA-2 are not approved and not implemented.
 
+> **Note, 2026-11-08.** State 3 describes the record when it was written. AA-1 and AA-2 have since been **approved by the owner**, as EI4-D10 and EI4-D11, and are still **not implemented** ([section 19](#19-post-acceptance-governance-update-2026-11-08)). States 1 and 2 are unchanged. This record still does not close the EI-4E milestone.
+
 This record does not close the EI-4E milestone or EI-4 as a whole. That governance closure is the product owner's decision. Nothing here describes Equity Intraday V1 as production-ready.
 
 ## 17. Follow-up requirements
@@ -587,6 +602,14 @@ This record does not close the EI-4E milestone or EI-4 as a whole. That governan
 4. **Review.** ADR-021 records no Architecture Review or Engineering Review sign-off; that remains pending.
 5. **No implementation follows from this record.** EI-5 and EI-6 remain separate milestones, and the pending decisions in [section 14.3](#143-decisions-still-pending-unchanged) remain pending.
 
+> **Note, 2026-11-08.** Item 1 is answered: the owner approved AA-1 and AA-2. What follows from it now is listed in [section 19](#19-post-acceptance-governance-update-2026-11-08):
+>
+> - a governance documentation task before implementation;
+> - enforcement designs and slices for EI4-D10 and EI4-D11;
+> - a separate decision on any recovery mechanism.
+>
+> Items 2 to 5 are unchanged.
+
 ## 18. Related documents
 
 - [Equity Intraday V1 EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md)
@@ -597,3 +620,48 @@ This record does not close the EI-4E milestone or EI-4 as a whole. That governan
 - [Equity Intraday V1 Product Specification](Equity-Intraday-V1-Product-Specification.md)
 - [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md)
 - [ES-003: Testing Standards](../engineering/standards/ES-003-Testing-Standards.md)
+
+## 19. Post-acceptance governance update (2026-11-08)
+
+This section was added after the record above was written. It does not rewrite it. Sections 1 to 18 keep the status at acceptance, in which AA-1 and AA-2 were OWNER DECISION PENDING. Dated notes in the Status section, in sections 14.1, 14.2, 16 and 17, and the identity table point here.
+
+### 19.1 Owner approvals
+
+The product owner approved both findings on **2026-11-08**:
+
+| EI-4E finding | Approved as | Status |
+| --- | --- | --- |
+| AA-1 | **EI4-D10 -- Immutable Policy-Version Identity** | OWNER APPROVED, 2026-11-08 |
+| AA-2 | **EI4-D11 -- Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance** (EI4-D11-A to EI4-D11-E, for AA-2.1 to AA-2.5) | OWNER APPROVED, 2026-11-08 |
+
+The approved texts are recorded only in the [EI-4 Decision Register, section 10](Equity-Intraday-V1-EI4-Decision-Register.md#10-ei4-d10-and-ei4-d11-owner-approval-record-2026-11-08), and are not repeated here.
+
+### 19.2 What the approvals do not change
+
+- **Enforcement: neither is implemented.**
+  - No component, store or database constraint yet enforces EI4-D10's label binding.
+  - The verified-recorder boundary of EI4-D11 is not yet enforced or independently accepted. A direct adapter call can still commit a record that later fails verification, as [section 14.2](#142-aa-2--verified-writer-boundary-and-recovery) found.
+- **Recovery is not approved.** No invalid-record recovery mechanism or procedure is approved (EI4-D11-D). Nothing authorizes deleting or updating immutable rows, replacing an occupied generation key, rewriting fingerprints, or a privileged repair bypass.
+- **The engineering verdict is unchanged:** PASS WITH DOCUMENTED LIMITATIONS.
+- **The engineering evidence is unchanged**:
+  - 72 EI-4E acceptance tests;
+  - 2,808 Infrastructure tests passed, 27 skipped, 0 failed;
+  - CI not confirmed.
+
+  These results were not re-run for this update, and they verify neither EI4-D10 nor EI4-D11. EI-4E demonstrated the underlying findings; it did not test any enforcement. Owner approval adds no test coverage.
+- **The coverage gaps of [section 10](#10-acceptance-matrix) and [section 13](#13-explicit-limitations) remain open:**
+  - the Core `SIZING_SEARCH_LIMIT_EXCEEDED` route, untested end to end;
+  - POSIX separate-process concurrency, untested;
+  - separate-process historical replay, untested;
+  - one synthetic trading date and venue reference;
+  - an evaluator version that no content fingerprint binds;
+  - no production issued-recommendation-history authority;
+  - single-file, single-host SQLite;
+  - synthetic inputs only;
+  - no trading readiness.
+- **The pending decisions of [section 14.3](#143-decisions-still-pending-unchanged) keep their status:** EI4-D5, EI0-D11, the same-listing exclusivity threshold, EI0-D19, EI0-D21 and EI3-D10. The approvals approve none of them and set no production parameter.
+- **The non-authorizations of [section 15](#15-non-authorizations) all still apply.** In addition, the approvals authorize no lifecycle `RECORDED` state, no live market-data integration, no change to existing fingerprints, no deletion or mutation of historical data, and no recovery process.
+
+### 19.3 Next steps
+
+As the owner directed, the next governance documentation task is prepared before any enforcement implementation begins. Implementation of EI4-D10 and EI4-D11 then needs its own designs, slices, regression tests and independent acceptance. Any recovery mechanism needs a separate owner decision ([EI-4 Decision Register, section 10.7](Equity-Intraday-V1-EI4-Decision-Register.md#107-prerequisites-before-implementation)).
