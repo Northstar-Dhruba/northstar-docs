@@ -18,6 +18,8 @@
 
 > **Note, 2026-11-08 (EI4-D10 and EI4-D11 owner approval).** The product owner later approved both EI-4E findings on 2026-11-08: AA-1 as **EI4-D10** (Immutable Policy-Version Identity) and AA-2 as **EI4-D11** (Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance), recorded in [section 10](#10-ei4-d10-and-ei4-d11-owner-approval-record-2026-11-08). The note above records their status before that approval and is not rewritten. Neither decision is implemented, and no invalid-record recovery mechanism is approved.
 
+> **Note, 2026-11-08 (EI4-D10 enforcement design owner approval).** The product owner later approved, on 2026-11-08, all nine engineering design decisions of the EI4-D10 enforcement design, EI4-D10-DQ1 to EI4-D10-DQ9, as recommended. They are recorded in [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08), and the enforcement architecture in [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md). EI4-D10 enforcement is not yet implemented, and its acceptance is not yet established. EI4-D11 is unchanged.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -235,6 +237,8 @@ A synthetic recommendation is a research artifact. It is not a recommendation to
 - [ADR-018: Futures V1 Research-to-Recommendation Generation Policy](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md)
 - [ADR-021: Equity Intraday V1 Recommendation Generation Persistence](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md) (added 2026-11-07, [section 9](#9-ei4-d9-owner-approval-record-2026-11-07))
 - [Equity Intraday V1 EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) (added 2026-11-08; engineering evidence, not an approval)
+- [EI4-D10 Policy-Version Identity Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Enforcement-Design.md) (added 2026-11-08, [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08))
+- [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) (added 2026-11-08, [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08))
 
 ## 9. EI4-D9 owner approval record (2026-11-07)
 
@@ -609,3 +613,101 @@ No production parameter is approved or implied.
 2. **EI4-D10 design.** A design for the policy namespace and policy type, the immutable label binding, conflict rejection, concurrent registration and historical compatibility, consistent with EI4-D9-B and without changing `eirs1` or `eirk1`.
 3. **EI4-D11 boundary design.** A design for enforcing the verified-recorder boundary of EI4-D11-A and EI4-D11-E, with regression tests and independent acceptance.
 4. **Recovery.** Any invalid-record recovery mechanism needs its own separately approved design and authorization (EI4-D11-D). None exists.
+
+> **Note, 2026-11-08 (EI4-D10 enforcement design owner approval).** Prerequisite 2 is met. The EI4-D10 design was prepared and its nine design decisions were approved by the owner on 2026-11-08 ([section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08); [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md)). Prerequisites 3 and 4 are unchanged: no EI4-D11 boundary design and no recovery design is approved.
+
+## 11. EI4-D10 enforcement design owner approval record (2026-11-08)
+
+**Decisions: EI4-D10-DQ1 to EI4-D10-DQ9, the engineering design decisions of the [EI4-D10 Policy-Version Identity Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Enforcement-Design.md).**
+**Scope: EI4-D10 enforcement for synthetic-only, LONG-only NSE equity intraday recommendation generation.**
+
+This section records an approval given on **2026-11-08**. It does not rewrite sections 1 to 10. The owner approved all nine design decisions **as recommended in the design's section 15**, including the clarifications below for EI4-D10-DQ6 and EI4-D10-DQ9. The enforcement architecture is recorded in [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md). **Nothing in this section is implemented by this record.**
+
+### 11.1 Approved design decisions
+
+| ID | Question | Approved decision | Status |
+| --- | --- | --- | --- |
+| EI4-D10-DQ1 | Policy namespace | One closed namespace, `northstar.equity-intraday-v1.synthetic`, part of every binding identity. It covers the current synthetic equity intraday policy catalog only, never Futures, Options, live equity execution, commodities or other verticals | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ2 | Policy types | Exactly `GENERATION_POLICY`, `RISK_POLICY`, `COST_SCHEDULE`, `PRICE_INCREMENT`, `TIMING_POLICY` and `POLICY_SET`. Uniqueness per (namespace, policy type, published label), never global across types. Listing eligibility and the EI-3 research configuration stay with their existing mechanisms | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ3 | Price-increment granularity | One immutable canonical amount per published label. A changed amount needs a new label. No production NSE tick size is introduced or inferred | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ4 | Catalog location | A durable immutable catalog in the same SQLite file as the EI-2B evidence, the EI-3C timelines and the EI-4D records, behind an Application-owned port and an Infrastructure-owned SQLite adapter. No separate file, second authority, process-local authority or direct Application SQL | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ5 | Enforcement points | Layered: explicit publication; atomic catalog registration; catalog-backed resolution; EI-4C validation while gathering inputs; a pre-write binding gate in the EI-4D-A verified recorder; catalog-free historical replay with a separate read-only audit | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ6 | Failure classification | Existing top-level `DEPENDENCY_UNAVAILABLE` with the distinct machine-readable reason `POLICY_REFERENCE_CONFLICT`, under the clarification in 11.2 | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ7 | Historical compatibility | No automatic backfill and no fabricated publication history. A read-only historical binding audit; no rewrite of evidence, records, fingerprints or keys | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ8 | Architecture record | A new ADR: [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) | **OWNER APPROVED, 2026-11-08** |
+| EI4-D10-DQ9 | Publication trust | Reliance on the existing SQLite database-file trust boundary, as a deliberate and limited assumption, under the clarification in 11.3 | **OWNER APPROVED, 2026-11-08** |
+
+### 11.2 EI4-D10-DQ6 clarification: a permanent conflict
+
+- **Permanent, not transient.** A published label bound to different canonical content is a **permanent integrity conflict** for that policy identity, never transient catalog downtime. It fails closed, is never retried automatically, and never leads to silent republication with changed content.
+- **Temporary outage.** A temporary catalog outage is dependency unavailability. It may be retried only under a separately approved operational retry policy; none exists. It never creates a binding.
+- **Unpublished label.** An unknown or unpublished label fails closed. No default is invented, and absence is not publication evidence.
+- **Corrupt or unsupported binding.** These keep the invalid versus incompatible distinction, fail closed, preserve evidence and are never migrated.
+- **Other conflicts stay distinct.** Generation-content conflicts (`CONTENT_CONFLICT`) and eligibility rejections stay distinct from a policy-reference conflict.
+- **No schema change.** No new persisted attempt status is created. The immutable attempts table and the approved status semantics are not changed.
+- **Propagation.** The machine-readable reason must propagate through the relevant outcome and audit contracts. The future Application and Infrastructure slices must validate this.
+
+### 11.3 EI4-D10-DQ9 clarification: a limited trust assumption
+
+- **Scope.** Reliance on the SQLite file trust boundary applies to current personal-use synthetic research only.
+- **What it protects.** SQLite constraints protect ordinary supported writes.
+- **What it does not protect against.** Sufficiently privileged local file or database access can bypass application-level publication authority.
+- **What it does not establish:**
+  - tamper-proof publication;
+  - protection against an operator with file write access;
+  - cryptographic proof of the publisher;
+  - multi-host authorization;
+  - a production identity or permission system;
+  - protection against every direct database-write bypass.
+- **Real trading.** It is not acceptable for real trading without separate review.
+- **EI4-D11.** It does not weaken EI4-D11's mandatory verified recording requirement.
+
+### 11.4 Status
+
+| Item | Status |
+| --- | --- |
+| EI4-D10 governance policy | APPROVED (2026-11-08, [section 10.2](#102-ei4-d10----immutable-policy-version-identity-aa-1)) |
+| EI4-D10 technical enforcement design | **APPROVED** (2026-11-08): EI4-D10-DQ1 to EI4-D10-DQ9 and ADR-022 |
+| EI4-D10 engineering implementation | **NOT YET IMPLEMENTED** |
+| EI4-D10 implementation acceptance | **NOT YET ESTABLISHED.** The design's acceptance tests are proposed and not executed |
+
+### 11.5 Approved implementation sequence
+
+1. **S1. Application contracts** (northstar-application): binding contracts, catalog port, publication use case, catalog-backed resolver, historical binding audit, typed errors. No SQLite.
+2. **S2. Infrastructure catalog** (northstar-infrastructure): the same-file SQLite catalog, additive immutable schema, atomic publication, concurrency, commit uncertainty. No generation-gate changes.
+3. **S3. Application enforcement** (northstar-application): generation validation and the recorder pre-write gate.
+4. **S4. Infrastructure end-to-end acceptance** (northstar-infrastructure): fixtures publish their synthetic policies; EI-4E integration is updated; conflicts, restart and concurrency are accepted.
+5. **S5. Documentation acceptance** (northstar-docs).
+
+S3 and S4 change generator and recorder construction and must be coordinated. Neither is represented as independently accepted full enforcement before integration. No slice is implemented or started by this record, and EI-4E's historical evidence is not altered.
+
+### 11.6 Unchanged
+
+- **EI4-D11** and its recovery restriction are unchanged ([section 10.3](#103-ei4-d11----mandatory-verified-recording-boundary-and-invalid-record-recovery-governance-aa-2)).
+  - EI4-D10 enforcement does not complete EI4-D11.
+  - Until EI4-D11's boundary is implemented and accepted, the EI4-D10 recording gate can be bypassed by direct Infrastructure adapter use.
+  - No invalid-record recovery design is approved.
+- **Identity and records.** `eirs1`, `eirk1`, every existing canonical document version, the evaluator version and every stored record are unchanged. ADR-020 and ADR-021 are unchanged.
+- **EI-4E.** The [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) and its verdict, PASS WITH DOCUMENTED LIMITATIONS, are unchanged.
+- **Pending decisions.** These are not approved by this record, and keep their status:
+  - EI4-D5;
+  - EI0-D11;
+  - the same-listing exclusivity threshold;
+  - EI0-D19;
+  - EI0-D21;
+  - EI3-D10;
+  - any invalid-record recovery design;
+  - every other pending decision in [section 5](#5-decisions-still-pending-or-deferred), [section 9.5](#95-decisions-still-pending-or-unapproved) and [section 10.5](#105-decisions-still-pending-or-unapproved).
+
+  No production policy parameter is introduced.
+- **Non-authorizations.** This record does not authorize:
+  - historical evidence mutation;
+  - changes to `eirs1` or `eirk1`;
+  - invalid-record recovery;
+  - direct-adapter operational recording;
+  - actual recommendation issuance or the lifecycle `RECORDED` state;
+  - broker or paper orders, fills or positions;
+  - realized P&L, live data integrations, data-use licensing claims or production trading;
+  - EI-5 or EI-6.
+
+  Every restriction in [section 7](#7-production-readiness-restrictions) still applies.
