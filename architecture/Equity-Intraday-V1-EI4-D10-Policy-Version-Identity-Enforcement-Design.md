@@ -1,6 +1,11 @@
 # EI4-D10 — Immutable Policy-Version Identity Enforcement Design
 
-Status: **PROPOSED — ENGINEERING DESIGN REVIEW PENDING** (2026-11-08).
+Status at proposal (historical): **PROPOSED — ENGINEERING DESIGN REVIEW PENDING** (2026-11-08).
+
+> **Status update, 2026-11-08: APPROVED DESIGN.** The owner approved all nine design decisions, EI4-D10-DQ1 to EI4-D10-DQ9, as recommended in [section 15](#15-decisions-awaiting-approval), including the DQ6 and DQ9 clarifications ([section 17](#17-owner-approval-2026-11-08)). The approved architecture is recorded in [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) and the [EI-4 Decision Register, section 11](../product/Equity-Intraday-V1-EI4-Decision-Register.md#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08).
+>
+> - EI4-D10 enforcement is **NOT YET IMPLEMENTED**, and its acceptance is **NOT YET ESTABLISHED**.
+> - The text below is kept as proposed. Where it says the design is unapproved or pending, that is the status at proposal.
 
 - **Governance basis:** EI4-D10, Immutable Policy-Version Identity, **OWNER APPROVED, 2026-11-08** ([EI-4 Decision Register, section 10.2](../product/Equity-Intraday-V1-EI4-Decision-Register.md#102-ei4-d10----immutable-policy-version-identity-aa-1)).
 - **The approved rule and this design are different things.** The rule is approved. This enforcement design is **not** approved. Every contract, table, outcome and slice below is a proposal. None exists, and nothing here authorizes implementation.
@@ -503,6 +508,8 @@ Further rules:
 
 None is authorized by this document.
 
+> **Note, 2026-11-08.** The owner approved this slice sequence with the design ([EI-4 Decision Register, section 11.5](../product/Equity-Intraday-V1-EI4-Decision-Register.md#115-approved-implementation-sequence)). No slice is implemented or started by that approval.
+
 | Slice | Repository | Responsibility | Allowed areas | Depends on | Tests | Acceptance gate | Excludes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **S1. Binding contracts and publication** (additive) | application | Catalog port, binding records, `…policy-definition/1` format and `eipd1` prefix, publication use case with reconciliation, catalog-backed resolver, audit use case | `ports/`, `application_services/` (new modules), one prefix entry in `equity_recommendation_generation_evidence.py` | Design approval | Contract and unit tests with in-memory fakes | Full Application suite green; no existing test changes; `eirs1`, `eirk1` and all existing formats unchanged (golden-fingerprint test) | No generator or recorder change; no Infrastructure |
@@ -554,6 +561,29 @@ Types:
 | 27 | Valid policy, no candidate | `NO_CANDIDATE`; the catalog is not consulted | C | S3 |
 | 28 | Eligibility refusal under published policies | `NOT_ELIGIBLE` with `LISTING_NOT_ELIGIBLE`; never a policy conflict | C, E | S3, S4 |
 | 29 | SQLite `integrity_check` and `foreign_key_check` | Clean on every database not deliberately corrupted, asserted in each S test | S | S2 |
+| 30 | Catalog unavailable during EI-4C generation | `DEPENDENCY_UNAVAILABLE` with the existing `*_UNAVAILABLE` reason; attempt-only; nothing invented or published | C, E | S3, S4 |
+| 31 | Catalog unavailable at the EI-4D-A recording gate | `POLICY_REFERENCE_UNAVAILABLE`; nothing written; `attempt_recorded=False` | C, E | S3, S4 |
+| 32 | Permanent conflict versus temporary outage, classified by machine-readable value | Distinct reasons and outcomes; never `NOT_ELIGIBLE` or `CONTENT_CONFLICT` | C, E | S3, S4 |
+| 33 | Permanent conflict is never retried or republished | One attempt only; no republication; stored binding unchanged; no disposition | C, S, E | S1, S2, S3, S4 |
+
+### 13.1 Scenarios 30 to 33
+
+Added on 2026-11-08, before ADR-022's documentation PR, so that every owner-required test of [ADR-022, section 12](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md#12-implementation-sequence-and-acceptance-requirements) has an explicit row.
+
+- Rows 1 to 29 and their identifiers are unchanged. None of them already covered these conditions:
+  - rows 9 and 10 cover an *unpublished* label, not an outage;
+  - row 19 covers a publication reload, and row 21 covers replay;
+  - rows 11 and 12 assert the conflict outcome, but not its distinction from an outage or the absence of retries.
+- The matrix now holds **33 scenarios**. Every one is **PROPOSED / NOT EXECUTED**.
+
+| # | Requirement | Scenario and setup | Expected outcome | Fail-closed invariant | Layer | Slice | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 30 | EI4-D10-DQ5 (C, D); EI4-D10-DQ6 case A | **Generation catalog outage.** The catalog-backed resolver raises its unavailable error: a contract fake, or an end-to-end test-only adapter seam or lock | Status `DEPENDENCY_UNAVAILABLE` with the existing component `*_UNAVAILABLE` reason, retained as a machine-readable value. Attempt-only: no generation key, no disposition | No synthetic definition is invented or defaulted. No binding is published (catalog rows unchanged). No disposition is recorded. Nothing retries unless a separately approved operational retry policy applies; none exists | C, E | S3, S4 | PROPOSED / NOT EXECUTED |
+| 31 | EI4-D10-DQ5 (E); EI4-D10-DQ6 case A | **Recorder catalog outage.** A verified disposition reaches the EI-4D-A recorder while the catalog cannot be read before persistence | Recording outcome `POLICY_REFERENCE_UNAVAILABLE`, with zero writes. `attempt_recorded=False`: nothing was committed, so nothing is claimed as audited | The pre-write gate refuses the disposition. No implicit policy registration. No unverified record becomes authoritative. Historical replay of already-stored records still runs from frozen inputs without the catalog (row 21) | C, E | S3, S4 | PROPOSED / NOT EXECUTED |
+| 32 | EI4-D10-DQ6 (cases A, B, E, F) | **Conflict versus outage**, two runs on the same candidate: (1) a published label is answered with conflicting canonical content; (2) the catalog is temporarily unavailable | At generation, both have status `DEPENDENCY_UNAVAILABLE`. Run 1's reason is `POLICY_REFERENCE_CONFLICT`; run 2's is the existing `*_UNAVAILABLE` reason, so their attempt identities differ. At recording, the outcomes are `POLICY_REFERENCE_CONFLICT` and `POLICY_REFERENCE_UNAVAILABLE` | Callers tell the cases apart by enum value alone, never by parsing diagnostic prose. Neither is ever reported as `NOT_ELIGIBLE` or `CONTENT_CONFLICT` | C, E | S3, S4 | PROPOSED / NOT EXECUTED |
+| 33 | EI4-D10; EI4-D10-DQ6 case B | **No retry of a permanent conflict**, with call counters on the resolver and the store: (1) publish a conflicting definition under a published label; (2) generate with conflicting content; (3) record a disposition whose label conflicts | Publication returns CONFLICT after one transaction, never retried: the bounded retry of 8.4 applies only to a *verified absence* after an unconfirmed COMMIT. Generation resolves each label once. The recording gate refuses with zero writes. Each reports the permanent conflict | No automatic retry treats the conflict as an outage. No conflicting definition is republished. No binding is overwritten. No disposition is created from the contradictory policy. The original immutable binding is byte-identical afterwards | C, S, E | S1, S2, S3, S4 | PROPOSED / NOT EXECUTED |
+
+Scenarios 30, 31 and 33 test EI4-D10's recording gate **inside** the EI-4D-A recorder only. Whether every operational write must pass through that recorder is EI4-D11's separate requirement, which these scenarios do not test. A direct Infrastructure adapter write can still bypass the gate until EI4-D11 is implemented and accepted.
 
 ## 14. Limitations
 
@@ -580,6 +610,8 @@ These are design questions, not approvals. Each needs an explicit owner decision
 | EI4-D10-DQ7 | How are pre-enforcement records and policies treated? | (a) No automatic backfill: explicit publication only; read-only audit classification; (b) backfill from the first committed disposition; (c) embed binding evidence in new frozen inputs | (a) | (b) invents history. (c) changes `eiri1` and `eira1` document versions | (a) changes nothing stored | S1, S4 | Owner |
 | EI4-D10-DQ8 | How is the approved enforcement architecture recorded? | (a) A new ADR (ADR-022) after design approval; (b) an addendum to ADR-021 | (a) | Follows the EI4-D9 → ADR-021 precedent and leaves ADR-021 unedited | None | S5 | Owner |
 | EI4-D10-DQ9 | Is file-level trust for publication accepted? | (a) Accept and document it; (b) require technical publisher authentication | (a) | Personal-use system with no identity layer. Equal to the EI-2B, EI-3C and EI-4D-B trust today | None | — | Owner |
+
+> **Note, 2026-11-08.** All nine decisions in the table above are **OWNER APPROVED, 2026-11-08**, each as its "Recommendation" column states, with the clarifications recorded in [section 17](#17-owner-approval-2026-11-08). None remains pending. The table is kept as proposed.
 
 **Not raised as owner decisions** (engineering choices under existing standards):
 
@@ -612,9 +644,53 @@ This document authorizes nothing. In particular, it does not authorize:
 
 The EI4-D10 decision itself stays **OWNER APPROVED, 2026-11-08**. Only this enforcement design is pending review. The pending decisions EI4-D5, EI0-D11, the same-listing exclusivity threshold, EI0-D19, EI0-D21 and EI3-D10 keep their status.
 
+> **Note, 2026-11-08.** The enforcement design is no longer pending review: it is approved ([section 17](#17-owner-approval-2026-11-08)). Every non-authorization above still applies. Approval of the design authorizes no implementation, data change or recovery by itself.
+
+## 17. Owner approval (2026-11-08)
+
+This section was added after the proposal above. It does not rewrite it: the proposed rationale, alternatives, risks and limitations stand as written.
+
+**OWNER APPROVED, 2026-11-08:** EI4-D10-DQ1, DQ2, DQ3, DQ4, DQ5, DQ6, DQ7, DQ8 and DQ9, each as recommended in [section 15](#15-decisions-awaiting-approval). No other owner approval is recorded here. The approved texts are in the [EI-4 Decision Register, section 11](../product/Equity-Intraday-V1-EI4-Decision-Register.md#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08), and the approved architecture is [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md).
+
+| Item | Status |
+| --- | --- |
+| EI4-D10 governance policy | APPROVED |
+| EI4-D10 technical enforcement design | APPROVED: this design, ADR-022 |
+| EI4-D10 engineering implementation | NOT YET IMPLEMENTED |
+| EI4-D10 implementation acceptance | NOT YET ESTABLISHED |
+
+**Clarifications approved with the decisions:**
+
+- **EI4-D10-DQ6.** `POLICY_REFERENCE_CONFLICT` is a **permanent integrity conflict**, never transient catalog downtime:
+  - it fails closed, under the compatible top-level `DEPENDENCY_UNAVAILABLE`;
+  - it is never retried automatically, and never leads to silent republication with changed content;
+  - a temporary catalog outage stays a dependency outage that creates no binding, and is retried only under a separately approved operational retry policy, of which none exists;
+  - the reason must propagate through the relevant outcome and audit contracts;
+  - no new persisted attempt status is created.
+- **EI4-D10-DQ9.** The SQLite file trust boundary is a deliberate, limited assumption for current personal-use synthetic research:
+  - it is not tamper-proof publication, protection against privileged file access, cryptographic publisher proof, multi-host authorization or a production identity system;
+  - it is not acceptable for real trading without separate review;
+  - it does not weaken EI4-D11's mandatory verified recording requirement.
+
+**Acceptance requirements.** Rows 1 to 29 of the [section 13](#13-acceptance-matrix) matrix are preserved. The three owner-required tests that had no explicit row were added as scenarios 30 to 33 ([section 13.1](#131-scenarios-30-to-33)):
+
+- catalog unavailability at generation (30) and at recording (31);
+- a permanent conflict classified distinctly from a transient outage (32);
+- no automatic retry of a permanent conflict (33).
+
+The matrix holds 33 scenarios. Every scenario is **PROPOSED / NOT EXECUTED**.
+
+**Unchanged.**
+
+- EI4-D11 and its recovery restriction. The EI4-D10 recording gate can still be bypassed by direct Infrastructure adapter use until EI4-D11's boundary is implemented and accepted.
+- `eirs1`, `eirk1` and every existing canonical document.
+- The EI-4E record and its verdict.
+- Every pending decision listed in [section 16](#16-explicit-non-authorizations).
+
 ## Related documents
 
-- [Equity Intraday V1 EI-4 Decision Register](../product/Equity-Intraday-V1-EI4-Decision-Register.md), sections 9 and 10
+- [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) (added 2026-11-08)
+- [Equity Intraday V1 EI-4 Decision Register](../product/Equity-Intraday-V1-EI4-Decision-Register.md), sections 9, 10 and 11
 - [Equity Intraday V1 EI-4E Synthetic Acceptance Record](../product/Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md)
 - [ADR-020: Equity Intraday V1 Recommendation Generation Architecture](../adr/ADR-020-Equity-Intraday-V1-Recommendation-Generation-Architecture.md)
 - [ADR-021: Equity Intraday V1 Recommendation Generation Persistence](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md)
