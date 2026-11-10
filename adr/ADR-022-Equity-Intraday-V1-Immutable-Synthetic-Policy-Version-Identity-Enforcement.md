@@ -15,6 +15,12 @@ The product owner approved EI4-D10, Immutable Policy-Version Identity, on 2026-1
 
 This is a design decision. **Nothing in it is implemented** when it is recorded, and nothing in it has been tested. An accepted ADR is not completed code.
 
+> **Note, 2026-11-10 (EI4-D10 engineering acceptance).** The table above records the status when this ADR was accepted. The decision text below is unchanged.
+>
+> - **Implementation.** Slices S1 to S4 are now implemented and merged.
+> - **Acceptance.** Engineering acceptance is recorded with the verdict PASS WITH DOCUMENTED LIMITATIONS in the [EI4-D10 Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md) and the [EI-4 Decision Register, section 12](../product/Equity-Intraday-V1-EI4-Decision-Register.md#12-ei4-d10-engineering-acceptance-record-2026-11-10). CI is not independently verified.
+> - **Unchanged.** EI4-D11's operational boundary (section 11) is still not implemented, and no recovery mechanism is approved.
+
 ## Date
 
 2026-11-08

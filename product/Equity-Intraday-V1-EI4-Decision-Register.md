@@ -20,6 +20,8 @@
 
 > **Note, 2026-11-08 (EI4-D10 enforcement design owner approval).** The product owner later approved, on 2026-11-08, all nine engineering design decisions of the EI4-D10 enforcement design, EI4-D10-DQ1 to EI4-D10-DQ9, as recommended. They are recorded in [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08), and the enforcement architecture in [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md). EI4-D10 enforcement is not yet implemented, and its acceptance is not yet established. EI4-D11 is unchanged.
 
+> **Note, 2026-11-10 (EI4-D10, engineering acceptance).** EI4-D10 enforcement is implemented (slices S1 to S4, merged) and its engineering acceptance is recorded with the verdict PASS WITH DOCUMENTED LIMITATIONS in the [EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md), summarized in [section 12](#12-ei4-d10-engineering-acceptance-record-2026-11-10). That record is engineering evidence, not an owner approval: no decision status changes. CI is not independently verified. EI4-D11's operational boundary is still not implemented, and no invalid-record recovery is approved. The note above records the status before implementation and is not rewritten.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -239,6 +241,7 @@ A synthetic recommendation is a research artifact. It is not a recommendation to
 - [Equity Intraday V1 EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) (added 2026-11-08; engineering evidence, not an approval)
 - [EI4-D10 Policy-Version Identity Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Enforcement-Design.md) (added 2026-11-08, [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08))
 - [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) (added 2026-11-08, [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08))
+- [Equity Intraday V1 EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md) (added 2026-11-10, [section 12](#12-ei4-d10-engineering-acceptance-record-2026-11-10); engineering evidence, not an approval)
 
 ## 9. EI4-D9 owner approval record (2026-11-07)
 
@@ -711,3 +714,47 @@ S3 and S4 change generator and recorder construction and must be coordinated. Ne
   - EI-5 or EI-6.
 
   Every restriction in [section 7](#7-production-readiness-restrictions) still applies.
+
+## 12. EI4-D10 engineering acceptance record (2026-11-10)
+
+This section records engineering acceptance evidence dated **2026-11-10**. It is not an owner approval, and it does not rewrite sections 1 to 11. The owner approvals of EI4-D10 ([section 10.2](#102-ei4-d10----immutable-policy-version-identity-aa-1)) and of EI4-D10-DQ1 to EI4-D10-DQ9 ([section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08)), both dated 2026-11-08, are unchanged. The evidence is in the [EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md).
+
+### 12.1 Status
+
+The status table in [section 11.4](#114-status) records the state before implementation and is not rewritten. The current state is:
+
+| Item | Status |
+| --- | --- |
+| EI4-D10 governance policy | APPROVED (2026-11-08, unchanged) |
+| EI4-D10 technical enforcement design | APPROVED (2026-11-08, unchanged): EI4-D10-DQ1 to EI4-D10-DQ9 and ADR-022 |
+| EI4-D10 engineering implementation | **IMPLEMENTED** (S1 to S4 merged; S5 is the acceptance record) |
+| EI4-D10 engineering acceptance | **PASS WITH DOCUMENTED LIMITATIONS** (2026-11-10). CI is not independently verified |
+| EI4-D11 operational write boundary | **NOT YET IMPLEMENTED OR INDEPENDENTLY ACCEPTED** (unchanged, [section 10.3](#103-ei4-d11----mandatory-verified-recording-boundary-and-invalid-record-recovery-governance-aa-2)) |
+| Invalid-record recovery | **NOT APPROVED** (unchanged) |
+
+### 12.2 Implementation slices
+
+| Slice | Repository | Merge (PR) |
+| --- | --- | --- |
+| S1. Application contracts | northstar-application | `ed98ecc` (#89) |
+| S2. Infrastructure catalog | northstar-infrastructure | `f7b1ab8` (#55) |
+| W2. EI-4D-B cleanup reliability fix (separate; not part of the catalog) | northstar-infrastructure | `0fa10b8` (#56) |
+| S3. Application enforcement | northstar-application | `cd2301b` (#90) |
+| S4. Infrastructure end-to-end acceptance | northstar-infrastructure | `97700b3` (#57) |
+| S5. Documentation acceptance | northstar-docs | This section and the acceptance record |
+
+### 12.3 What the acceptance does not change
+
+- **Limitations.** The acceptance holds within the limitations of its record: synthetic only; Windows process tests only; no historical publication proof; the invalid and incompatible subtype not a generation reason code; end-to-end outages by lock contention only; the DQ9 file-level trust; EI4-D11 not enforced; recovery not approved.
+- **EI4-D11.** EI4-D10 enforcement does not complete EI4-D11. A direct Infrastructure adapter write can still bypass the recording gate.
+- **EI-4E.** The [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) and its verdict are unchanged. Its AA-1 finding is closed for the verified Application workflow by EI4-D10, as the acceptance record shows.
+- **Pending decisions.** These keep their status:
+  - EI4-D5;
+  - EI0-D11;
+  - the same-listing exclusivity threshold;
+  - EI0-D19;
+  - EI0-D21;
+  - EI3-D10;
+  - the EI4-D11 recovery mechanism;
+  - every other pending decision in sections [5](#5-decisions-still-pending-or-deferred), [9.5](#95-decisions-still-pending-or-unapproved) and [10.5](#105-decisions-still-pending-or-unapproved).
+- **Non-authorizations.** The non-authorizations of [section 11.6](#116-unchanged) and the restrictions of [section 7](#7-production-readiness-restrictions) still apply.
