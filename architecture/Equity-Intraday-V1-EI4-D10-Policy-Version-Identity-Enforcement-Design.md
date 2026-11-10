@@ -7,6 +7,12 @@ Status at proposal (historical): **PROPOSED — ENGINEERING DESIGN REVIEW PENDIN
 > - EI4-D10 enforcement is **NOT YET IMPLEMENTED**, and its acceptance is **NOT YET ESTABLISHED**.
 > - The text below is kept as proposed. Where it says the design is unapproved or pending, that is the status at proposal.
 
+> **Status update, 2026-11-10: IMPLEMENTED; ENGINEERING ACCEPTANCE RECORDED.** The bullets above record the status before implementation.
+>
+> - **Implementation.** Slices S1 to S4 are implemented and merged.
+> - **Acceptance.** Engineering acceptance, PASS WITH DOCUMENTED LIMITATIONS, is recorded in the [EI4-D10 Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md). It traces every scenario of the [acceptance matrix](#13-acceptance-matrix) to its evidence.
+> - **Unchanged.** The proposal, alternatives and approvals below are unchanged. EI4-D11 is still not implemented.
+
 - **Governance basis:** EI4-D10, Immutable Policy-Version Identity, **OWNER APPROVED, 2026-11-08** ([EI-4 Decision Register, section 10.2](../product/Equity-Intraday-V1-EI4-Decision-Register.md#102-ei4-d10----immutable-policy-version-identity-aa-1)).
 - **The approved rule and this design are different things.** The rule is approved. This enforcement design is **not** approved. Every contract, table, outcome and slice below is a proposal. None exists, and nothing here authorizes implementation.
 - Nothing here changes code, schema, tests, fixtures, the `eirs1` or `eirk1` formats, any canonical document version or any stored record.
