@@ -22,6 +22,8 @@
 
 > **Note, 2026-11-10 (EI4-D10, engineering acceptance).** EI4-D10 enforcement is implemented (slices S1 to S4, merged) and its engineering acceptance is recorded with the verdict PASS WITH DOCUMENTED LIMITATIONS in the [EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md), summarized in [section 12](#12-ei4-d10-engineering-acceptance-record-2026-11-10). That record is engineering evidence, not an owner approval: no decision status changes. CI is not independently verified. EI4-D11's operational boundary is still not implemented, and no invalid-record recovery is approved. The note above records the status before implementation and is not rewritten.
 
+> **Note, 2026-11-10 (EI4-D11 enforcement design owner approval).** The product owner approved, on 2026-11-10, six engineering decisions of the EI4-D11 enforcement design: EI4D11-DQ1, DQ2, DQ3, DQ5, DQ8 and DQ10, with two mandatory clarifications. They are recorded in [section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10), and the architecture in [ADR-023](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md). EI4-D11 enforcement is **not yet implemented**, its engineering acceptance is **not yet established**, and no invalid-record recovery is approved.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -242,6 +244,8 @@ A synthetic recommendation is a research artifact. It is not a recommendation to
 - [EI4-D10 Policy-Version Identity Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Enforcement-Design.md) (added 2026-11-08, [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08))
 - [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) (added 2026-11-08, [section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08))
 - [Equity Intraday V1 EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md) (added 2026-11-10, [section 12](#12-ei4-d10-engineering-acceptance-record-2026-11-10); engineering evidence, not an approval)
+- [EI4-D11 Mandatory Operational Generation-Write Boundary Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Enforcement-Design.md) (added 2026-11-10, [section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10))
+- [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md) (added 2026-11-10, [section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10))
 
 ## 9. EI4-D9 owner approval record (2026-11-07)
 
@@ -619,6 +623,8 @@ No production parameter is approved or implied.
 
 > **Note, 2026-11-08 (EI4-D10 enforcement design owner approval).** Prerequisite 2 is met. The EI4-D10 design was prepared and its nine design decisions were approved by the owner on 2026-11-08 ([section 11](#11-ei4-d10-enforcement-design-owner-approval-record-2026-11-08); [ADR-022](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md)). Prerequisites 3 and 4 are unchanged: no EI4-D11 boundary design and no recovery design is approved.
 
+> **Note, 2026-11-10 (EI4-D11 enforcement design owner approval).** Prerequisite 3 is met. The EI4-D11 boundary design was prepared, and its engineering decisions were approved by the owner on 2026-11-10 ([section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10); [ADR-023](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md)). Its implementation and acceptance are not yet established. Prerequisite 4 is unchanged: no recovery design is approved.
+
 ## 11. EI4-D10 enforcement design owner approval record (2026-11-08)
 
 **Decisions: EI4-D10-DQ1 to EI4-D10-DQ9, the engineering design decisions of the [EI4-D10 Policy-Version Identity Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Enforcement-Design.md).**
@@ -758,3 +764,84 @@ The status table in [section 11.4](#114-status) records the state before impleme
   - the EI4-D11 recovery mechanism;
   - every other pending decision in sections [5](#5-decisions-still-pending-or-deferred), [9.5](#95-decisions-still-pending-or-unapproved) and [10.5](#105-decisions-still-pending-or-unapproved).
 - **Non-authorizations.** The non-authorizations of [section 11.6](#116-unchanged) and the restrictions of [section 7](#7-production-readiness-restrictions) still apply.
+
+## 13. EI4-D11 enforcement design owner approval record (2026-11-10)
+
+**Decisions: EI4D11-DQ1, DQ2, DQ3, DQ5, DQ8 and DQ10, engineering decisions of the [EI4-D11 Mandatory Operational Generation-Write Boundary Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Enforcement-Design.md).**
+**Scope: the operational write path for synthetic equity recommendation-generation records (EI-4D dispositions, proposals and logical attempts).**
+
+This section records an approval given on **2026-11-10**. It does not rewrite sections 1 to 12.
+- The governance decision itself, EI4-D11-A to EI4-D11-E ([section 10.3](#103-ei4-d11----mandatory-verified-recording-boundary-and-invalid-record-recovery-governance-aa-2)), was approved on 2026-11-08 and is unchanged.
+- This section records the **engineering enforcement design** approved for it, with two mandatory clarifications.
+- The architecture is recorded in [ADR-023](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md).
+- **Nothing in this section is implemented by this record.**
+
+### 13.1 Approved engineering decisions
+
+| ID | Question | Approved decision | Status |
+| --- | --- | --- | --- |
+| EI4D11-DQ1 | Operational trust boundary | Covers supported operational Application workflows, composition roots, public Application read and write interfaces, supported Infrastructure persistence interfaces, accidental or ordinary raw-adapter use, and mandatory verification before operational writes. No protection is claimed against privileged Python, direct SQL or file modification, malicious code, cryptographic forgery by privileged code, multi-host authorization or production trading security. Appropriate to personal-use synthetic research only; the ADR-022 DQ9 limitation is unchanged | **OWNER APPROVED, 2026-11-10** |
+| EI4D11-DQ2 | Enforcement mechanism | Option D, layered: read/write port separation; the verified recorder as the operational write boundary; recorder-issued verified-write authorization; Infrastructure validation before opening SQLite; CI architecture and dependency checks; existing SQLite immutability as defence in depth | **OWNER APPROVED, 2026-11-10** |
+| EI4D11-DQ3 | Attempt-only writes | Inside the boundary, under a separate attempt authorization bound to the exact attempt; no fabricated policy evidence, assessment, proposal or disposition; attempt identity and status formats unchanged | **OWNER APPROVED, 2026-11-10** |
+| EI4D11-DQ5 | Legacy raw write methods | Removed from the supported port and adapter after a phased migration. Temporary compatibility only during migration. Read-only historical access stays. Test-only corruption injection is separate from the production APIs | **OWNER APPROVED, 2026-11-10** |
+| EI4D11-DQ8 | Acceptance platform | Windows: local SQLite, independent connections, spawned processes, restart and durability, failed authorization before any connection, immutable-record guarantees. POSIX separate-process and multi-host behaviour are explicit limitations | **OWNER APPROVED, 2026-11-10** |
+| EI4D11-DQ10 | Architecture record | [ADR-023](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md) | **OWNER APPROVED, 2026-11-10** |
+
+EI4D11-DQ4 (authorization representation), DQ6 (test migration), DQ7 (PR sequence) and DQ9 (investigation through existing read-only surfaces) are engineering choices. They need no separate approval, and are constrained by the clarifications below.
+
+### 13.2 Mandatory clarification A: migration order
+
+- **The order is W1 → W2-I → W3 → W4-I → W5.**
+- **W1 (Application)** migrates the verified recorder to the authorized-write interface **before W2-I (Infrastructure)** refuses legacy raw writes.
+- **W1's temporary defaults** delegate the new methods to the legacy ones. They are a compatibility mechanism, not enforcement, and W1 alone does not complete EI4-D11.
+- **Compatibility is tested, not assumed.** Each slice is tested against the other repository's current `develop`. Cross-repository merges are not atomic, and required CI checks are never bypassed.
+- **Gaps are reported, not worked around.** A compatibility gap found in source is reported for engineering review before implementation, never closed by weakening enforcement.
+
+### 13.3 Mandatory clarification B: exact write-content binding
+
+- **Exact binding.** An authorization binds to the exact verified write contents: the disposition with its proposal, the logical attempt, the verified source and frozen-evidence results, and the verified policy-binding check. It never binds by `eirk1` alone, which does not cover assessment content.
+- **Existing identities only.** It uses existing canonical documents and identities; no new fingerprint scheme is approved.
+- **Adapter refusal.** The adapter refuses contents that differ from those the authorization covers, before any SQLite connection opens.
+- **Reuse.** Reuse is permitted only for the identical operation during existing bounded EI4-D9-G reconciliation. There is no blanket one-time nonce, and no second authorization for contradictory contents under the same key.
+- **Limitation.** Within the personal-use trust model, the issuer capability is not tamper-proof against privileged code.
+
+### 13.4 Status
+
+| Item | Status |
+| --- | --- |
+| EI4-D11 governance (EI4-D11-A to EI4-D11-E) | APPROVED (2026-11-08, unchanged) |
+| EI4-D11 engineering enforcement design | **APPROVED** (2026-11-10): EI4D11-DQ1, DQ2, DQ3, DQ5, DQ8, DQ10, clarifications A and B, and ADR-023 |
+| EI4-D11 implementation | **NOT YET IMPLEMENTED** |
+| EI4-D11 engineering acceptance | **NOT YET ESTABLISHED.** The design's 33 acceptance scenarios are proposed and not executed |
+| Invalid-record recovery | **NOT APPROVED** (EI4-D11-D, unchanged) |
+
+The [EI4-D11 status table in section 10.3](#ei4-d11-status) records the status before this approval and is not rewritten.
+
+### 13.5 Unchanged
+
+- **EI4-D10.** The EI4-D10 architecture (ADR-022) and its engineering acceptance ([section 12](#12-ei4-d10-engineering-acceptance-record-2026-11-10)) are unchanged. ADR-021 is unchanged.
+- **EI-4E.** The [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) and its verdict are unchanged.
+- **Other stores.** EI4-D11 is not extended to the futures, options or paper-trading stores.
+- **Pending decisions.** These keep their status:
+  - EI4-D5;
+  - EI0-D11;
+  - the same-listing exclusivity threshold;
+  - EI0-D19;
+  - EI0-D21;
+  - EI3-D10;
+  - the EI4-D11 recovery mechanism;
+  - every other pending decision in sections [5](#5-decisions-still-pending-or-deferred), [9.5](#95-decisions-still-pending-or-unapproved) and [10.5](#105-decisions-still-pending-or-unapproved).
+- **Non-authorizations.** This record does not authorize:
+  - implementation of any slice;
+  - invalid-record recovery, or overwrite, repair or deletion of immutable evidence;
+  - new `eirs1`, `eirk1` or `eirat1` schemes;
+  - changes to historical canonical evidence;
+  - new production operational entry points or database authorities;
+  - broker integration;
+  - recommendation issuance or the lifecycle `RECORDED` state;
+  - paper or live trading;
+  - positions or fills;
+  - real-market readiness;
+  - EI-5 or EI-6.
+
+  Every restriction of [section 7](#7-production-readiness-restrictions) still applies.
