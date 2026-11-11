@@ -9,6 +9,12 @@ Status at proposal (historical): **PROPOSAL — NOT OWNER APPROVED** (2026-11-10
 > - **Invalid-record recovery:** NOT APPROVED.
 > - The clarifications are incorporated into sections 8, 10, 14, 16 and 17, each marked "amended 2026-11-10". The text below otherwise keeps the proposal as reviewed: where it says the design is unapproved or a proposal, that is the status at proposal.
 
+> **Status update, 2026-11-11: IMPLEMENTED; ENGINEERING ACCEPTANCE RECORDED.** The bullets above record the status before implementation.
+>
+> - **Implementation.** Slices W1 to W4-I are implemented and merged: Application #91 (`298a3a5`) and #92 (`8937f12`); Infrastructure #58 (`6b90597`) and #59 (`6282cae`). W5 is the acceptance record.
+> - **Acceptance.** Engineering acceptance, PASS WITH DOCUMENTED LIMITATIONS (synthetic engineering acceptance), is recorded in the [EI4-D11 Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md). It traces every scenario of the [acceptance matrix](#17-acceptance-matrix) to its evidence: 28 VERIFIED, 5 VERIFIED WITH LIMITATION (rows 12, 21, 23, 29 and 31), 0 NOT VERIFIED. The matrix below keeps its proposal status.
+> - **Unchanged.** The proposal, alternatives, approvals and limitations below are unchanged. Invalid-record recovery is not approved, and no production composition root exists.
+
 - **Governance basis.** EI4-D11, Mandatory Verified Recording Boundary and Invalid-Record Recovery Governance, EI4-D11-A to EI4-D11-E: **OWNER APPROVED, 2026-11-08** ([EI-4 Decision Register, section 10.3](../product/Equity-Intraday-V1-EI4-Decision-Register.md#103-ei4-d11----mandatory-verified-recording-boundary-and-invalid-record-recovery-governance-aa-2)).
 - **The approved rule and this design are different things.** The rule is approved; this enforcement design is **not**. Every contract, slice and test below is a proposal. None exists, and nothing here authorizes implementation.
 - **Not implemented and not accepted.** EI4-D11 enforcement is not implemented, and its engineering acceptance is not established.
@@ -609,5 +615,7 @@ These were read at Application `cd2301b` and Infrastructure `97700b3`. They cons
 | Implementation (W1 to W4-I) | **NOT YET IMPLEMENTED** |
 | Engineering acceptance (W5) | **NOT YET ESTABLISHED.** All 33 scenarios are PROPOSED / NOT EXECUTED |
 | Invalid-record recovery | **NOT APPROVED** |
+
+> **Note, 2026-11-11.** The table above records the status at approval. Implementation (W1 to W4-I) is now merged, and engineering acceptance is recorded as PASS WITH DOCUMENTED LIMITATIONS in the [EI4-D11 Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md). Invalid-record recovery is still not approved.
 
 The EI4-D10 architecture and its engineering acceptance are unchanged. Every non-authorization of [section 20](#20-explicit-non-authorizations) still applies.
