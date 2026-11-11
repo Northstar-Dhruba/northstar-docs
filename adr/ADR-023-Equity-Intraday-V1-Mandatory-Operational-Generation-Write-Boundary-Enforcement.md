@@ -16,6 +16,12 @@ The product owner approved EI4-D11, Mandatory Verified Recording Boundary and In
 
 This is a design decision. **Nothing in it is implemented** when it is recorded, and nothing in it has been tested. An accepted ADR is not completed code.
 
+> **Note, 2026-11-11 (EI4-D11 engineering acceptance).** The table above records the status when this ADR was accepted. The decision text below is unchanged.
+>
+> - **Implementation.** Slices W1, W2-I, W3 and W4-I are now implemented and merged. The Application port and the SQLite adapter expose exactly `load_disposition`, `load_attempt`, `write_generation` and `write_attempt`; the raw `record_generation` and `record_attempt` are removed from both (section 7).
+> - **Acceptance.** Engineering acceptance is recorded with the verdict PASS WITH DOCUMENTED LIMITATIONS (synthetic engineering acceptance) in the [EI4-D11 Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md) and the [EI-4 Decision Register, section 14](../product/Equity-Intraday-V1-EI4-Decision-Register.md#14-ei4-d11-engineering-acceptance-record-2026-11-11): 28 scenarios VERIFIED and 5 VERIFIED WITH LIMITATION. CI is not independently verified.
+> - **Unchanged.** The trust boundary of section 2 is unchanged: no protection is claimed against privileged code, direct SQL or file modification, source tampering or forged capability objects. No production composition root exists, and invalid-record recovery is not approved.
+
 ## Date
 
 2026-11-10

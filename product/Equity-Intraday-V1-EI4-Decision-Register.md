@@ -24,6 +24,8 @@
 
 > **Note, 2026-11-10 (EI4-D11 enforcement design owner approval).** The product owner approved, on 2026-11-10, six engineering decisions of the EI4-D11 enforcement design: EI4D11-DQ1, DQ2, DQ3, DQ5, DQ8 and DQ10, with two mandatory clarifications. They are recorded in [section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10), and the architecture in [ADR-023](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md). EI4-D11 enforcement is **not yet implemented**, its engineering acceptance is **not yet established**, and no invalid-record recovery is approved.
 
+> **Note, 2026-11-11 (EI4-D11, engineering acceptance).** EI4-D11 enforcement is implemented (slices W1 to W4-I, merged) and its engineering acceptance is recorded with the verdict PASS WITH DOCUMENTED LIMITATIONS (synthetic engineering acceptance) in the [EI4-D11 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md), summarized in [section 14](#14-ei4-d11-engineering-acceptance-record-2026-11-11). That record is engineering evidence, not an owner approval: no decision status changes, and invalid-record recovery is still not approved.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -845,3 +847,52 @@ The [EI4-D11 status table in section 10.3](#ei4-d11-status) records the status b
   - EI-5 or EI-6.
 
   Every restriction of [section 7](#7-production-readiness-restrictions) still applies.
+
+## 14. EI4-D11 engineering acceptance record (2026-11-11)
+
+This section records engineering acceptance evidence dated **2026-11-11**. It is not an owner approval, and it does not rewrite sections 1 to 13. The owner approvals of EI4-D11-A to EI4-D11-E ([section 10.3](#103-ei4-d11----mandatory-verified-recording-boundary-and-invalid-record-recovery-governance-aa-2), 2026-11-08) and of the enforcement design ([section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10), 2026-11-10) are unchanged. The evidence is in the [EI4-D11 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md).
+
+### 14.1 Status
+
+The status table in [section 13.4](#134-status) records the state before implementation and is not rewritten. The current state is:
+
+| Item | Status |
+| --- | --- |
+| EI4-D11 governance (EI4-D11-A to EI4-D11-E) | APPROVED (2026-11-08, unchanged) |
+| EI4-D11 engineering enforcement design | APPROVED (2026-11-10, unchanged): EI4D11-DQ1, DQ2, DQ3, DQ5, DQ8, DQ10, clarifications A and B, and ADR-023 |
+| EI4-D11 engineering implementation | **IMPLEMENTED** (W1 to W4-I merged; W5 is the acceptance record) |
+| EI4-D11 engineering acceptance | **PASS WITH DOCUMENTED LIMITATIONS -- synthetic engineering acceptance** (2026-11-11). 28 scenarios VERIFIED, 5 VERIFIED WITH LIMITATION, 0 NOT VERIFIED. CI is not independently verified |
+| Production operational composition root | **NONE EXISTS** |
+| Invalid-record recovery | **NOT APPROVED** (EI4-D11-D, unchanged) |
+
+### 14.2 Implementation slices
+
+| Slice | Repository | Merge (PR) |
+| --- | --- | --- |
+| W1. Application authorization contracts and recorder migration | northstar-application | `298a3a5` (#91) |
+| W2-I. Infrastructure authorized-write enforcement | northstar-infrastructure | `6b90597` (#58) |
+| W3. Application legacy write-interface removal | northstar-application | `8937f12` (#92) |
+| W4-I. Infrastructure final adapter interface and acceptance | northstar-infrastructure | `6282cae` (#59) |
+| W5. Documentation acceptance | northstar-docs | This section and the acceptance record |
+
+### 14.3 What the acceptance does not change
+
+- **Limitations.** The acceptance holds within the limitations of its record. Five scenarios are VERIFIED WITH LIMITATION:
+  - 12, invalid committed evidence: privileged test-only SQL simulation; no recovery of occupied invalid keys;
+  - 21, Windows separate-process testing: no POSIX or multi-host behavior established;
+  - 23, no backfill or migration: tested against enforced code and planted historical records; historical revisions were not rerun;
+  - 29, composition-root rule: no production composition root exists; future integrations cannot be certified by the current scans;
+  - 31, migration ordering: relies partly on previously reported W1/W2-I runs rather than rerunning historical revisions.
+- **Trust model.** No protection is claimed against privileged Python, direct database or file modification, source tampering or forged capability objects (EI4D11-DQ1; ADR-022 DQ9).
+- **Earlier records.** The [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md) and the [EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md), with their verdicts, are unchanged. EI-4E finding AA-2 is closed for supported and ordinary operational writes, as the acceptance record shows; an occupied invalid key stays occupied.
+- **Other stores.** The futures, options and paper-trading stores are unchanged.
+- **Pending decisions.** These keep their status:
+  - EI4-D5;
+  - EI0-D11;
+  - the same-listing exclusivity threshold;
+  - EI0-D19;
+  - EI0-D21;
+  - EI3-D10;
+  - the EI4-D11 recovery mechanism;
+  - every other pending decision in sections [5](#5-decisions-still-pending-or-deferred), [9.5](#95-decisions-still-pending-or-unapproved) and [10.5](#105-decisions-still-pending-or-unapproved).
+- **Non-authorizations.** The non-authorizations of [section 13.5](#135-unchanged) and the restrictions of [section 7](#7-production-readiness-restrictions) still apply. Nothing here authorizes a production composition root, live deployment, market-data consumption, brokerage activity, recovery, EI-5 or EI-6.
