@@ -253,6 +253,11 @@ Completeness declarations (section 7) are written only through a declaration use
   Unresolved outcomes are excluded from win and loss metrics.
 - **No prices.** `INDETERMINATE_*`, `SESSION_CUTOFF_REACHED` and `INCOMPLETE_EVIDENCE` carry no exit price. No event carries a fill, quantity filled, order, broker account or P&L.
 - **Blocks become terminal only at the boundary.** A deficiency blocks monitoring, with no event, until an evaluated snapshot has `as_of` at or after the applicable boundary while a needed interval is still deficient. The boundary is the entry-window end while waiting, and `modeled_exit_at` while active. Only then is terminal `INCOMPLETE_EVIDENCE` recorded, listing every deficient interval from the cursor to the boundary with its EI-2A outcome.
+- **Exact-boundary finality** (amended 2026-11-12; EI5-D7 clarification, owner approved). Suppose a snapshot's `as_of` equals the boundary and the bar closing at that boundary is `MISSING` or `UNFINALIZED`. That bar is not yet final only because its close has just been reached, so monitoring stays temporarily blocked: no event, not terminal.
+  - **An acceptable boundary bar is evaluated normally.** EI-2A treats an interval as ended when `closes_at <= as_of`, and accepts a candle received and confirmed final exactly at its close.
+  - **Genuine deficiencies keep the rule above.** These are `CONFLICTING_VALUES`, `UNRESOLVED_REVISIONS`, any earlier deficient interval, and every evaluation after the boundary.
+  - **Replay.** A stored `INCOMPLETE_EVIDENCE` that rests only on the exact-boundary condition is refused.
+  - **No latency policy** is introduced ([EI-5 Decision Register, section 12.8](../product/Equity-Intraday-V1-EI5-Decision-Register.md#128-ei5-d7-exact-boundary-finality-clarification)).
 - **Snapshot selection.** The terminal rule depends on which post-boundary snapshot is evaluated (open point O-2).
 - **No overnight carry-over.** Snapshots of other dates are refused, and no interval after `modeled_exit_at` is read.
 

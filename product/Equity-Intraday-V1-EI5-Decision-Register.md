@@ -21,6 +21,8 @@
 >
 > O-2 and O-3 stay deferred. EI-4's formal closure stays pending independent CI verification. The bullets above record the state when this register was drafted and are not rewritten. **Nothing in EI-5 is implemented.**
 
+> **Note, 2026-11-12 (EI5-D7 exact-boundary finality clarification).** The owner later approved a clarification of EI5-D7. When a snapshot's `as_of` equals the applicable boundary and the boundary bar is `MISSING` or `UNFINALIZED`, monitoring is temporarily blocked rather than terminal. It is recorded under [EI5-D7](#ei5-d7--session-outcomes-and-insufficient-evidence) and in [section 12.8](#128-ei5-d7-exact-boundary-finality-clarification). O-2 stays deferred. EI-5B is not merged.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -279,6 +281,32 @@ Until a snapshot satisfying both is evaluated, the state does not change. No clo
 
 > **Open point.** The terminal rule depends on which post-boundary snapshot is evaluated: no maximum finality latency is approved (EI3-D6), and EI3-D10 is pending. See [open point O-2](#o-2--terminal-incomplete_evidence-depends-on-the-evaluated-snapshot).
 
+> **Clarification, 2026-11-12 (EI5-D7 exact-boundary finality, OWNER APPROVED).** Condition 1 above ("at or after the applicable boundary") is refined for one case. Suppose an evaluated snapshot's `as_of` **equals** the applicable boundary, and the bar closing at that boundary is `MISSING` or `UNFINALIZED`. Then monitoring stays temporarily blocked: no event is recorded, and the outcome is **not** terminal `INCOMPLETE_EVIDENCE`. A later snapshot decides by the rule above. See [section 12.8](#128-ei5-d7-exact-boundary-finality-clarification).
+>
+> - **The bar has ended.** At `closes_at == as_of`, EI-2A reports `NOT_ENDED` only when `closes_at > as_of`, so the bar has ended.
+> - **It may already be final.** EI-2A refuses a candle received, or finality confirmed, strictly *before* the close, and accepts both *at* the close. The bar may therefore already be `ACCEPTABLE`, and is then evaluated normally: expiry, cutoff, entry, cancellation or a level reach.
+> - **Not yet final is not deficient.** `MISSING` or `UNFINALIZED` for the boundary bar at that exact instant means only that its close has just been reached. It is not treated as a genuine deficiency.
+> - **Unchanged:**
+>   - `CONFLICTING_VALUES` and `UNRESOLVED_REVISIONS` of the boundary bar;
+>   - any deficient interval earlier than the boundary bar;
+>   - every evaluation whose `as_of` is after the boundary.
+>
+>   They follow the rule above.
+> - **No latency policy.** No finality delay, grace period or settlement allowance is introduced. O-2 and EI3-D10 stay deferred.
+>
+> **Acceptance examples (synthetic):**
+>
+> | Boundary | `as_of` | Evidence | Result |
+> | --- | --- | --- | --- |
+> | Entry window, bar 11:00 to 11:05 | 11:05 | Boundary bar `UNFINALIZED` | Temporarily blocked; no event |
+> | Entry window | 11:05 | Boundary bar `ACCEPTABLE` | Evaluated normally, for example `EXPIRED_BEFORE_ENTRY` when untouched |
+> | Entry window | After 11:05 | Boundary bar `MISSING` or `UNFINALIZED` | `INCOMPLETE_EVIDENCE` (existing rule) |
+> | Entry window | 11:05 | Bar 10:30 to 10:35 `MISSING`, an earlier interval | `INCOMPLETE_EVIDENCE`: no exception for an earlier interval |
+> | Modeled exit, bar 14:55 to 15:00 | 15:00 | Boundary bar `MISSING` | Temporarily blocked; no event |
+> | Modeled exit | 15:00 | Boundary bar `ACCEPTABLE` | Stop, target, both (`INDETERMINATE_EXIT`) or `SESSION_CUTOFF_REACHED`, as its prices show |
+> | Modeled exit | After 15:00 | Boundary bar still `MISSING` or `UNFINALIZED` | `INCOMPLETE_EVIDENCE` (existing rule) |
+> | Modeled exit | 15:00 | Boundary bar `CONFLICTING_VALUES` | `INCOMPLETE_EVIDENCE`: a genuine deficiency |
+
 ### EI5-D8 — Synthetic lifecycle timing and terminality
 
 **APPROVED BY OWNER, 2026-11-12.**
@@ -366,6 +394,7 @@ These were found by reading the current code and documents while recording the a
 - **Recommendation.** (a) for EI-5B to EI-5E, which use explicit synthetic snapshots. Decide (b), together with EI3-D10, before EI-6 monitoring or any real data.
 - **Blocks.** Nothing in EI-5B to EI-5E. Before EI-6 monitoring.
 - **Status, 2026-11-12: DEFERRED** to the governance stage before EI-6 monitoring or any real data. No resolution is recorded.
+- **Not resolved by the exact-boundary clarification (2026-11-12).** The EI5-D7 clarification ([section 12.8](#128-ei5-d7-exact-boundary-finality-clarification)) covers only `as_of` exactly at the boundary. A snapshot even one microsecond later still decides by the rule as approved, and O-2 stays **DEFERRED**.
 
 ### O-3 — Late evidence after terminal `INCOMPLETE_EVIDENCE`
 
@@ -648,6 +677,34 @@ The sequence is the approved planning baseline, not implementation evidence.
 | EI-4C versioned compatibility prerequisite | Required before EI-5D; **NOT STARTED**; own design and approval needed (R-1, R-2 open) |
 | O-2, O-3 | **DEFERRED** |
 | EI-5B to EI-5E, EI-6 | **NOT STARTED** |
+| Acceptance scenarios (119) | **PLANNED** |
+| EI-4 formal closure | **PENDING** independent CI verification |
+| Operational or production authorization | **NOT GRANTED** |
+
+### 12.8 EI5-D7 exact-boundary finality clarification
+
+**OWNER APPROVED, 2026-11-12.** The clarification is recorded, with its acceptance examples, under [EI5-D7](#ei5-d7--session-outcomes-and-insufficient-evidence). In short:
+
+- **When it applies.** At `as_of` exactly equal to the applicable boundary, a `MISSING` or `UNFINALIZED` boundary bar blocks temporarily and is never terminal. The boundary is the close of the last entry bar while waiting, and `modeled_exit_at` while active.
+- **What is unchanged.** An `ACCEPTABLE` boundary bar is evaluated normally. `CONFLICTING_VALUES`, `UNRESOLVED_REVISIONS`, earlier deficient intervals and every later evaluation keep the EI5-D7 rule.
+
+**The EI-2A contract it relies on.** EI-2A, in `equity_intraday_candle_validation.py`:
+
+| Rule | Comparison |
+| --- | --- |
+| `NOT_ENDED` | Only when `closes_at > as_of` |
+| A candle received too early is refused | Only when received strictly before the close |
+| Finality confirmed too early is refused | Only when confirmed strictly before the close |
+| Receipt and finality must be visible | Both at or before `as_of` |
+
+A candle received and confirmed final exactly at its close is therefore `ACCEPTABLE` at `as_of == closes_at`. A statement to the contrary in the EI3-D1 rationale is corrected by a dated erratum in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md#ei3-d1--research-decision-instant). EI3-D1 itself is unchanged.
+
+| Item | Status |
+| --- | --- |
+| EI5-D7 exact-boundary finality clarification | **APPROVED** (2026-11-12) |
+| Every other EI-5 decision, C-1, C-2, O-1, R-1, R-2 | Unchanged |
+| O-2, O-3, EI3-D10 | **DEFERRED** (unchanged) |
+| EI-5B (Core lifecycle) | Not merged. Local engineering verification is not CI evidence |
 | Acceptance scenarios (119) | **PLANNED** |
 | EI-4 formal closure | **PENDING** independent CI verification |
 | Operational or production authorization | **NOT GRANTED** |

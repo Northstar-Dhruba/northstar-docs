@@ -567,6 +567,14 @@ Rules:
 >
 >   See the [EI-5 Decision Register, section 12.3](Equity-Intraday-V1-EI5-Decision-Register.md#123-o-1--gap-through-recognition).
 
+> **Note, 2026-11-12 (EI5-D7 exact-boundary finality, owner approved).** This refines the "Gaps" bullet of the note above, and the table and rules above are not rewritten. Suppose an evaluated snapshot's `as_of` equals the applicable boundary -- the close of the last entry bar while waiting, or the modeled exit boundary while active -- and the bar closing there is `MISSING` or `UNFINALIZED`. Then monitoring stays temporarily blocked: no event is recorded, and it is not terminal `INCOMPLETE_EVIDENCE`.
+>
+> - **Such a bar may already be final.** At `closes_at == as_of` the bar has ended, and EI-2A accepts a candle received and confirmed final exactly at its close. An `ACCEPTABLE` boundary bar is evaluated normally.
+> - **Unchanged.** `CONFLICTING_VALUES`, `UNRESOLVED_REVISIONS`, earlier deficient intervals and evaluations after the boundary keep the existing rule.
+> - **No latency policy.** No finality delay or settlement allowance is introduced, and O-2 and EI3-D10 stay deferred.
+>
+> See the [EI-5 Decision Register, section 12.8](Equity-Intraday-V1-EI5-Decision-Register.md#128-ei5-d7-exact-boundary-finality-clarification).
+
 ### 8.3 Intrabar ambiguity
 
 - When a single 5-minute bar contains both stop and target, or entry and an exit, the order of those events is unknowable from OHLC data.
