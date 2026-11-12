@@ -21,6 +21,14 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Where it is incorporated.** Sections 4, 5.3, 5.5, 6.3, 6.4 and 12.5 (TB-03, TB-04), each marked "amended 2026-11-12 (exact boundary)". The record is in the [EI-5 Decision Register, section 12.8](../product/Equity-Intraday-V1-EI5-Decision-Register.md#128-ei5-d7-exact-boundary-finality-clarification).
 > - **Unchanged.** O-2 stays deferred, and the matrix keeps 119 PLANNED scenarios.
 
+> **Status update, 2026-11-13: EI-4C versioned compatibility governance (owner approved).**
+>
+> - **What was approved.** R-1, R-2 and N1 to N10 are approved, and [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) is accepted. The prerequisite's engineering design is the [EI-4C Versioned History Compatibility Design v1.0](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md), with 52 PLANNED scenarios.
+> - **N10.** Version-2 generation records `PROPOSED` only when `complete_through == t − 1 µs`. Section 8.4's `>= b` is amended accordingly.
+> - **Where it is marked.** Sections 8.4, 11, 13, 14 and 17.2, each marked "amended 2026-11-13".
+> - **Milestones.** EI-5B (northstar-core #39) and EI-5C (northstar-application #93) have merged. That is a status correction only, with no acceptance record ([EI-5 Decision Register, section 13.6](../product/Equity-Intraday-V1-EI5-Decision-Register.md#136-milestone-status-correction)).
+> - **Unchanged.** The prerequisite's implementation is NOT STARTED; EI-5D is not authorized; this design's lifecycle and issuance architecture and its 119 scenarios are unchanged.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -422,7 +430,7 @@ The owner approved C-2 on 2026-11-12 ([EI-5 Decision Register, section 12.2](../
 | --- | --- |
 | Modeled issuance | `t`, derived exactly as today (EI4-D9-C) |
 | Assessment history instant (new EI-4C version) | `b = t − 1 µs`. `PointInTime` carries at most six fractional digits, so `b` is the last representable instant strictly before `t` |
-| Assessment requirement | `session_history(exchange, date, as_of=b)` with `complete_through >= b`. The frozen evidence lists exactly the issuances with `issued_at < t`; missing, unavailable, incomplete or foreign history fails closed |
+| Assessment requirement | `session_history(exchange, date, as_of=b)` with `complete_through >= b`. The frozen evidence lists exactly the issuances with `issued_at < t`; missing, unavailable, incomplete or foreign history fails closed. *Amended 2026-11-13 (N10): version-2 generation records `PROPOSED` only when `complete_through == b`; history complete beyond `b` is refused at generation, attempt only ([EI-5 Decision Register, section 13.3](../product/Equity-Intraday-V1-EI5-Decision-Register.md#133-n10--exact-history-completeness))* |
 | Issuance requirement | `issued_at = t > complete_through`, and the frozen evidence reproduces from `session_view_at(watermark)` |
 | Combined | Issuable only while the session's greatest declared `complete_through` is exactly `b` |
 | Protocol | In ascending modeled-issuance order: declare through `t − 1 µs`; assess and issue every proposal at `t`; then declare further |
@@ -430,6 +438,16 @@ The owner approved C-2 on 2026-11-12 ([EI-5 Decision Register, section 12.2](../
 | Version 1 | Existing records keep "complete through `t`"; never reinterpreted; never issuable; still verifiable (R-1) |
 
 **Prerequisite.** The new EI-4C assessment version is a required Application implementation prerequisite before EI-5D. It needs its own approved design, which must settle R-1 (two-version verification under ADR-021, section 10) and R-2 (fingerprint prefixes and storage). It is not implemented, and existing EI-4C still reads history as of `t`.
+
+*Amended 2026-11-13.* The prerequisite's design is approved: [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) and the [EI-4C Versioned History Compatibility Design v1.0](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md). It settles:
+
+- **R-1:** closed two-version verification;
+- **R-2:** retained prefixes, with `/2` inputs, assessment and attempt formats;
+- **golden vectors:** mandatory version-1 golden vectors;
+- **the history field:** the `history_boundary` field;
+- **N10:** exact completeness.
+
+It is still not implemented.
 
 ## 9. Application: lifecycle persistence port (planned for EI-6)
 
@@ -465,7 +483,7 @@ EI-5C and EI-5E use in-memory, labelled test doubles only.
 | EI-5A | northstar-docs | The EI-5 Decision Register, ADR-024, this design, and dated notes | — |
 | EI-5B | northstar-core | Section 5 and its K and A scenarios | The EI-5A documentation PR merged (amended 2026-11-12; ADR-024, the design and O-1 approved) |
 | EI-5C | northstar-application | Section 6 with test doubles; C scenarios for lifecycle | EI-5B merged |
-| EI-4C versioned compatibility (amended 2026-11-12) | northstar-application | The new EI-4C assessment version with the `t − 1 µs` history boundary (section 8.4); version 1 unchanged and still verifiable | Its own approved design, settling R-1 and R-2. A required dependency, not an approved implementation PR |
+| EI-4C versioned compatibility (amended 2026-11-12) | northstar-application | The new EI-4C assessment version with the `t − 1 µs` history boundary (section 8.4); version 1 unchanged and still verifiable | Its own approved design, settling R-1 and R-2. A required dependency, not an approved implementation PR. *Amended 2026-11-13: design approved (ADR-025); staged slices 1 to 5 across northstar-application, northstar-infrastructure and northstar-docs* |
 | EI-5D | northstar-application | Sections 7 and 8, and the history source; C scenarios for issuance and history | The EI-4C versioned compatibility prerequisite merged (amended 2026-11-12; C-1 and C-2 approved) |
 | EI-5E | northstar-application | E scenarios, from a verified proposal through issuance, history and lifecycle, on test doubles | EI-5C, EI-5D |
 | EI-6 | northstar-infrastructure | Sections 9 and 10; S scenarios; monitoring later | EI-5E; O-2 and O-3 before monitoring |
@@ -476,6 +494,18 @@ EI-5 depends on EI-4, whose formal closure is pending CI verification ([EI-4 Dec
 >
 > - EI-4's formal closure stays pending independent CI verification, and this decision waives no CI requirement.
 > - The approved order is EI-5A, EI-5B, EI-5C, the EI-4C versioned compatibility prerequisite, EI-5D, EI-5E, then EI-6.
+
+> **Amended 2026-11-13.**
+>
+> - **Merged.** EI-5A, EI-5B and EI-5C are merged. That is a status correction only, with no acceptance record.
+> - **The prerequisite's slices.** The EI-4C versioned compatibility prerequisite proceeds in the approved slices of [ADR-025, section 13](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md#13-implementation-sequence-n9):
+>   1. the Application version-1 freeze;
+>   2. Infrastructure test hygiene;
+>   3. two-version verification (3a);
+>   4. version-2 generation (3b);
+>   5. mixed-version SQLite acceptance (4);
+>   6. a Docs acceptance record (5).
+> - **EI-5D** follows only after that acceptance.
 
 ## 12. Acceptance matrix
 
@@ -695,7 +725,7 @@ They are recorded with evidence, options and recommendations in the [EI-5 Decisi
 | ID | Subject | Blocks | Status (amended 2026-11-12) |
 | --- | --- | --- | --- |
 | C-1 | The approved `eiri1` prefix is already the frozen-inputs prefix | EI-5D | **APPROVED:** `eiris1` (section 7.4) |
-| C-2 | Inclusive completeness at the modeled issuance, with no backdating, blocks issuance | EI-5D | **APPROVED:** `t − 1 µs` boundary in a new EI-4C version (section 8.4); prerequisite before EI-5D, not implemented; R-1 and R-2 open for its design |
+| C-2 | Inclusive completeness at the modeled issuance, with no backdating, blocks issuance | EI-5D | **APPROVED:** `t − 1 µs` boundary in a new EI-4C version (section 8.4); prerequisite before EI-5D, not implemented; R-1 and R-2 open for its design. *Amended 2026-11-13: R-1 and R-2 resolved, plus N10 exact completeness ([ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)); still not implemented* |
 | O-1 | Gap-through touches | EI-5B stop and target predicates | **APPROVED:** stop and target reach, with no entry transfer (sections 4, 5.4) |
 | O-2 | Terminal `INCOMPLETE_EVIDENCE` depends on the evaluated snapshot | EI-6 monitoring | **DEFERRED** |
 | O-3 | Late evidence after terminal `INCOMPLETE_EVIDENCE` | EI-6 | **DEFERRED** |
@@ -708,7 +738,7 @@ They are recorded with evidence, options and recommendations in the [EI-5 Decisi
 - **Trust model.** Personal-use, single-host SQLite. No protection against privileged code or direct file modification (ADR-024, section 14).
 - **Inherited EI-4 limitations.** Windows-only process evidence, unverified CI, and no separate-process replay. They are not removed by EI-5.
 - **Strict issuance protocol** (amended 2026-11-12). A proposal at `t` is issuable only while its session is declared complete through exactly `t − 1 µs`. EI-6 monitoring must declare and issue in ascending modeled-issuance order, or proposals become permanently non-issuable, failing closed.
-- **Two-version verification** (amended 2026-11-12, R-1). The EI-4C prerequisite must keep version-1 records verifiable. That is not yet supported, and ADR-021, section 10 excludes an evaluator registry today, so the prerequisite's design needs explicit architecture approval for it.
+- **Two-version verification** (amended 2026-11-12, R-1). The EI-4C prerequisite must keep version-1 records verifiable. That is not yet supported, and ADR-021, section 10 excludes an evaluator registry today, so the prerequisite's design needs explicit architecture approval for it. *Amended 2026-11-13: approved as a closed two-version table, not a registry ([ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)); still not implemented.*
 - **Gap-through scope** (amended 2026-11-12). The pre-entry use of the stop predicate (PE-04) follows from option (a) as approved. If the owner limits gap-through to `ACTIVE` recommendations, PE-04 changes to "no event".
 
 ## 15. Explicit non-authorizations
@@ -737,6 +767,8 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 - [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md)
 - [EI4-D11 Mandatory Operational Generation-Write Boundary Enforcement Design](Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Enforcement-Design.md)
 - [Futures Trade Recommendation Design Specification](Futures-Trade-Recommendation-Design-Specification-v1.0.md) (pattern only)
+- [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
+- [EI-4C Versioned History Compatibility Design v1.0](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 
 ## 17. Owner approval (2026-11-12)
 
@@ -756,7 +788,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 | --- | --- |
 | Architecture and engineering design | **APPROVED** (2026-11-12, with amendments) |
 | Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED** |
-| EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2) |
+| EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2). *Amended 2026-11-13: design approved (ADR-025); implementation NOT STARTED* |
 | Acceptance scenarios | **PLANNED** (119; none executed) |
 | O-2, O-3 | **DEFERRED** |
 | EI-4 formal closure | **PENDING** independent CI verification |

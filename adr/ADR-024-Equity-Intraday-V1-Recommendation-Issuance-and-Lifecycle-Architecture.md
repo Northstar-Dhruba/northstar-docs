@@ -27,6 +27,22 @@ On 2026-11-12 the product owner approved ten EI-5 policy decisions: EI0-D9, EI4-
 
 This is a design decision. **Nothing in it is implemented**, and nothing in it has been tested. An accepted ADR is not completed code. It records no Architecture Review or Engineering Review sign-off.
 
+> **Note, 2026-11-13 (ADR-025 and milestone status).** This ADR stays **accepted** and unchanged in substance.
+>
+> - **The prerequisite's architecture.** The EI-4C versioned compatibility prerequisite now has its accepted architecture, [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md):
+>   - R-1 and R-2 are resolved;
+>   - a closed two-version evaluator table;
+>   - retained prefixes with `/2` inputs, assessment and attempt formats;
+>   - mandatory version-1 golden vectors;
+>   - the N10 rule that version-2 generation records `PROPOSED` only when `complete_through == t − 1 µs`.
+> - **Not implemented.** The prerequisite's implementation is **NOT STARTED**, and EI-5D still requires its acceptance ([EI-5 Decision Register, section 13](../product/Equity-Intraday-V1-EI5-Decision-Register.md#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13)).
+> - **Merged since this table was written** ([section 13.6](../product/Equity-Intraday-V1-EI5-Decision-Register.md#136-milestone-status-correction)):
+>   - EI-5B (northstar-core #39, `ccff26e`);
+>   - EI-5C (northstar-application #93, `75c6a35`).
+>
+>   They have no Docs acceptance record and no recorded independent CI evidence.
+> - **Status table.** The table and paragraph above record the status on 2026-11-12.
+
 ## Date
 
 2026-11-12
@@ -179,6 +195,10 @@ Completeness declarations (section 7) are written only through a declaration use
   - **Prerequisite.** The change is an Application prerequisite before EI-5D, with its own design. Two contract points stay open for that design:
     - R-1, two-version verification under ADR-021, section 10;
     - R-2, fingerprint prefixes.
+  - *Amended 2026-11-13.* R-1 and R-2 are resolved by [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md).
+    - **Exact completeness.** Version-2 generation additionally requires the session to be complete through **exactly** `t − 1 µs` (N10). History complete beyond it is refused at generation.
+    - **Unchanged here.** This section's no-backdating rule and issuance window are unchanged.
+    - **The authority's check.** The authority's own transactional check is still required.
   - **Detail:** [EI-5 Decision Register, section 12.2](../product/Equity-Intraday-V1-EI5-Decision-Register.md#122-c-2--the-exclusive-history-boundary).
 
 ### 8. Lifecycle states and pure transition model
@@ -316,6 +336,7 @@ EI-5 implements none of it. Monitoring runs and any operational composition root
 - **ADR-021.** This ADR builds the issued-recommendation authority that ADR-021 sections 9 and Future Considerations deferred. It reuses ADR-021's verification levels and same-database placement, and changes none of its decisions.
   - *Amended 2026-11-12.* The C-2 compatibility prerequisite adds a new evaluator version beside version 1. Keeping version 1 verifiable then needs two-version verification (R-1). That is a bounded first step toward ADR-021's "historical evaluator registry" future consideration, which ADR-021, section 10 excludes today.
   - This ADR does not approve that step. The prerequisite's own design must obtain explicit architecture approval for it.
+  - *Amended 2026-11-13.* That approval is [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md). It amends ADR-021 section 10 with a closed two-version table, not a registry.
 - **ADR-022.** Unchanged. Issuance reads only verified proposals, whose policy bindings were checked when they were recorded.
 - **ADR-023.** Unchanged. Its verified-write pattern is reused for the issuance authority. The generation-write boundary is not extended or altered.
 
@@ -358,6 +379,7 @@ EI-5 implements none of it. Monitoring runs and any operational composition root
 ### Negative Consequences
 
 - EI-5D cannot start until the EI-4C versioned compatibility prerequisite is designed, approved and implemented (C-2, approved 2026-11-12), including R-1 and R-2. C-1 is decided.
+  - *Amended 2026-11-13.* The prerequisite is designed and approved ([ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)). EI-5D still waits for its implementation and acceptance (slices 1 to 5).
 - Issuance follows a strict protocol: a proposal at `t` is issuable only while its session is declared complete through exactly `t − 1 µs`. Declaring further first makes it permanently non-issuable, failing closed.
 - Recommendations issued at the same modeled instant do not see each other in their assessments.
 - Callers must supply snapshot identities. Choosing which snapshots to evaluate becomes an EI-6 monitoring responsibility (O-2).
@@ -387,7 +409,7 @@ Every scenario is **PLANNED** until executed and recorded in an acceptance recor
 This ADR records an accepted architecture. It does not:
 
 - implement any Core, Application or Infrastructure component, test or schema;
-- implement, or approve as an implementation PR, the EI-4C versioned compatibility change, or decide its open contract points R-1 and R-2;
+- implement, or approve as an implementation PR, the EI-4C versioned compatibility change, or decide its open contract points R-1 and R-2 (decided 2026-11-13 in [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md), not here);
 - resolve the deferred open points O-2 and O-3;
 - approve ACTUAL issuance, `INVALIDATED`, EI0-D21, EI0-D19, EI0-D11, the exclusivity threshold, EI3-D10 or the relaxation of EI4-D8;
 - approve any production cutoff, latency, price, increment or schedule. The 09:15 to 15:00 IST research window stays a research window;
@@ -397,7 +419,7 @@ This ADR records an accepted architecture. It does not:
 ## Future Considerations
 
 - Owner decisions on the deferred O-2 and O-3. C-1, C-2 and O-1 were decided on 2026-11-12.
-- The EI-4C versioned compatibility design, including R-1 (two-version verification) and R-2 (fingerprint prefixes).
+- The EI-4C versioned compatibility design, including R-1 (two-version verification) and R-2 (fingerprint prefixes). *Settled 2026-11-13 by [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md); its implementation remains.*
 - `INVALIDATED`, once a listing-applicability source and EI0-D21 exist.
 - Relaxing EI4-D8 with authoritative lifecycle state.
 - ACTUAL issuance, under separate governance.
@@ -416,3 +438,5 @@ This ADR records an accepted architecture. It does not:
 - [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md)
 - [ADR-017: Repository Layering and Futures Recommendation Domain Boundary](ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md)
 - Engineering Standards ES-001, ES-003, ES-004, ES-007
+- [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
+- [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)

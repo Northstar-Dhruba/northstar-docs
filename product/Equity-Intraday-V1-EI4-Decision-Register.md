@@ -384,6 +384,21 @@ A COMMIT exception is never assumed to mean rollback, and no exactly-once issuan
 
 Missing, corrupted, inconsistent or unsupported historical evidence fails closed. A record is never relinked to a newer corrected snapshot, and historical decisions are never silently migrated or reinterpreted (as in EI3-D13). SQLite may enforce structural constraints and foreign keys; cryptographic fingerprint verification stays an explicit Application responsibility unless a verified implementation shows otherwise.
 
+> **Note, 2026-11-13 (EI-4C versioned compatibility, ADR-025).** Item 9, "compatibility with the historical evaluation format", now means **closed, governed two-version verification**.
+>
+> - **The two versions.**
+>   - Evaluator `northstar.equity-recommendation-evaluator/1` with its `/1` documents.
+>   - Evaluator `/2` with its `/2` inputs, assessment and attempt documents.
+> - **Dispatch.** Each record is verified only under the evaluator it names. Unknown labels fail closed, and label-format mismatches are invalid.
+> - **Version 1.**
+>   - Its records, fingerprints and replay are preserved exactly; nothing is migrated or reinterpreted.
+>   - Version-1 golden vectors are a mandatory prerequisite.
+> - **The record.** Owner approved on 2026-11-13 ([EI-5 Decision Register, section 13](Equity-Intraday-V1-EI5-Decision-Register.md#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13); [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)).
+> - **Not implemented.**
+> - **Unchanged.**
+>   - EI4-D9-I's other requirements, and the historical EI-4 version-1 acceptance.
+>   - EI-4's formal closure stays **PENDING** independent CI verification ([section 15](#15-ei-4-closure-dispositions-2026-11-12)).
+
 #### EI4-D9-J -- EI-4D versus EI-5 and EI-6 responsibilities
 
 **APPROVED BY OWNER, 2026-11-07.**
