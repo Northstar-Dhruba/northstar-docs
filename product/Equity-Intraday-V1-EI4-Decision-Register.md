@@ -26,6 +26,13 @@
 
 > **Note, 2026-11-11 (EI4-D11, engineering acceptance).** EI4-D11 enforcement is implemented (slices W1 to W4-I, merged) and its engineering acceptance is recorded with the verdict PASS WITH DOCUMENTED LIMITATIONS (synthetic engineering acceptance) in the [EI4-D11 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md), summarized in [section 14](#14-ei4-d11-engineering-acceptance-record-2026-11-11). That record is engineering evidence, not an owner approval: no decision status changes, and invalid-record recovery is still not approved.
 
+> **Note, 2026-11-12 (EI-4 closure dispositions and EI-5A owner approvals).** On 2026-11-12 the product owner approved:
+>
+> - the EI-4 closure dispositions EI4-C1 to EI4-C5, recorded in [section 15](#15-ei-4-closure-dispositions-2026-11-12). EI-4 is **ENGINEERING ACCEPTED WITH DOCUMENTED LIMITATIONS — FORMAL MILESTONE CLOSURE PENDING INDEPENDENT CI VERIFICATION**, and is **not closed**;
+> - EI4-D5 (pre-entry invalidation) and EI0-D9 (intrabar ambiguity), with EI5-D1 to EI5-D8, recorded in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md).
+>
+> The notes above record earlier states and are not rewritten. Nothing in EI-5 is implemented.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-4, the step from an immutable synthetic research candidate to a synthetic recommendation, before any EI-4 code is written.
@@ -208,6 +215,13 @@ These are **not** approved by this record. Each keeps its existing status.
 > **Note, 2026-11-07 (EI4-D9 owner approval).** The EI4-D9 row above records its status before approval and is kept as historical evidence. It is **superseded**: EI4-D9 is now **APPROVED BY OWNER, 2026-11-07**, as subdecisions EI4-D9-A to EI4-D9-J in [section 9](#9-ei4-d9-owner-approval-record-2026-11-07). Every other row of the table keeps its status; EI4-D5 stays PROPOSED and deferred. There is still no EI4-D10 or later.
 
 > **Note, 2026-11-08 (EI4-D10 and EI4-D11 owner approval).** The statements above that there is no EI4-D10 or later describe the register before 2026-11-08 and are kept as historical evidence. EI4-D10 and EI4-D11 now exist: they record the owner's approval of EI-4E findings AA-1 and AA-2, in [section 10](#10-ei4-d10-and-ei4-d11-owner-approval-record-2026-11-08). Neither was ever a row of the table above. Every row of the table keeps its status.
+
+> **Note, 2026-11-12 (EI-5A owner approval).** The EI4-D5 and EI0-D9 rows above record their status before 2026-11-12 and are kept as historical evidence. Both are now **APPROVED BY OWNER, 2026-11-12**, in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#4-approved-decisions):
+>
+> - EI4-D5: a stop-only touch while waiting gives the terminal state `CANCELLED_BEFORE_ENTRY` (`STOP_TOUCHED_BEFORE_ENTRY`). A same-bar entry and stop touch with unknown ordering gives `INDETERMINATE_ENTRY`;
+> - EI0-D9: `UNKNOWN` intrabar ordering, with terminal `INDETERMINATE_ENTRY` and `INDETERMINATE_EXIT`, and no Futures stop-first rule.
+>
+> EI4-D5 is a lifecycle rule. EI-4C generation still reports the `PRE_ENTRY_INVALIDATION` control as not assessed, and no EI-4 record changes. Every other row keeps its status.
 - EI0-D1, EI0-D2 and EI0-D5 stay PROPOSED, as recorded in the [product specification, section 14](Equity-Intraday-V1-Product-Specification.md#14-owner-decision-register).
 - CE-D8, CE-D9, CE-D10 and CE-D15 stay PENDING in the [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md), section 18.2.
 
@@ -248,6 +262,9 @@ A synthetic recommendation is a research artifact. It is not a recommendation to
 - [Equity Intraday V1 EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md) (added 2026-11-10, [section 12](#12-ei4-d10-engineering-acceptance-record-2026-11-10); engineering evidence, not an approval)
 - [EI4-D11 Mandatory Operational Generation-Write Boundary Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Enforcement-Design.md) (added 2026-11-10, [section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10))
 - [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md) (added 2026-11-10, [section 13](#13-ei4-d11-enforcement-design-owner-approval-record-2026-11-10))
+- [Equity Intraday V1 EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md) (added 2026-11-12; records EI4-D5, EI0-D9 and EI5-D1 to EI5-D8)
+- [ADR-024: Equity Intraday V1 Recommendation Issuance and Lifecycle Architecture](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) (added 2026-11-12)
+- [EI-5 Issuance and Lifecycle Design](../architecture/Equity-Intraday-V1-EI5-Issuance-and-Lifecycle-Design-v1.0.md) (added 2026-11-12)
 
 ## 9. EI4-D9 owner approval record (2026-11-07)
 
@@ -896,3 +913,61 @@ The status table in [section 13.4](#134-status) records the state before impleme
   - the EI4-D11 recovery mechanism;
   - every other pending decision in sections [5](#5-decisions-still-pending-or-deferred), [9.5](#95-decisions-still-pending-or-unapproved) and [10.5](#105-decisions-still-pending-or-unapproved).
 - **Non-authorizations.** The non-authorizations of [section 13.5](#135-unchanged) and the restrictions of [section 7](#7-production-readiness-restrictions) still apply. Nothing here authorizes a production composition root, live deployment, market-data consumption, brokerage activity, recovery, EI-5 or EI-6.
+
+## 15. EI-4 closure dispositions (2026-11-12)
+
+This section records owner dispositions given on **2026-11-12**. It does not rewrite sections 1 to 14, and it changes no engineering verdict or test result in the [EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md), the [EI4-D10 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D10-Policy-Version-Identity-Engineering-Acceptance-Record.md) or the [EI4-D11 Engineering Acceptance Record](Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Engineering-Acceptance-Record.md).
+
+The dispositions answer follow-up items 2 to 4 of the [EI-4E record, section 17](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md#17-follow-up-requirements). That record still states that it does not close EI-4 ([section 16](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md#16-milestone-closure-boundaries)), and this section does not close it either.
+
+### 15.1 Approved dispositions
+
+| ID | Item | Existing evidence | Remaining gap | Owner disposition, 2026-11-12 |
+| --- | --- | --- | --- | --- |
+| EI4-C1 | Core `SIZING_SEARCH_LIMIT_EXCEEDED`, end to end ([EI-4E record, section 10](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md#10-acceptance-matrix), NOT TESTED) | **Core rejection:** `test_an_oversized_search_fails_closed` (northstar-core `tests/recommendations/equity/test_sizing_search.py`), with the search bound lowered by the test. **Application mapping:** `test_t_cores_exact_search_bound_is_propagated_fail_closed` (northstar-application `tests/application_services/test_generate_equity_trade_recommendation.py`), with the bound lowered, giving `EVALUATION_UNRESOLVED` with Core reason `SIZING_SEARCH_LIMIT_EXCEEDED`. **Persistence:** `UNRESOLVED` dispositions are persisted immutably through other causes (`test_e10_an_unresolved_disposition_is_immutable_and_never_becomes_proposed`) | The natural combined execution -- Core reaching its real bound, mapped by the Application and persisted on real SQLite -- is **NOT VERIFIED** | **ACCEPTED WITH DOCUMENTED LIMITATION.** The existing evidence is accepted. The natural end-to-end scenario remains untested and is not labelled VERIFIED |
+| EI4-C2 | POSIX separate-process evidence | Windows spawned-process tests: `test_e19_separate_os_processes_are_serialized_by_the_database`, the EI4-D10 catalog test `test_separate_processes_are_serialized_by_the_database` (northstar-infrastructure `tests/test_sqlite_equity_synthetic_policy_catalog.py`), and EI4-D11 scenario 21. They use the `spawn` start method on every platform | Never run on POSIX. The repositories' CI workflows run on `ubuntu-latest` and would execute these tests, but **no CI result has been verified** | **ACCEPTED WITH DOCUMENTED LIMITATION.** Windows evidence accepted; POSIX behaviour is not established. Linux CI may add POSIX spawn evidence only when its actual results are recorded |
+| EI4-C3 | Replay from a separate OS process | Same-process restart and replay (`test_e15_every_disposition_kind_replays_after_restart_from_frozen_evidence`) and separate-process writes (EI4-C2) | No test verifies or replays from a freshly spawned process. Same-process replay and separate-process writing are distinct evidence, and neither is the missing scenario | **ACCEPTED AS A DOCUMENTED LIMITATION** |
+| EI4-C4 | Independent CI verification | None verified. Local suites passed (last reported: Application 4,414 passed; Infrastructure 3,234 passed, 27 skipped), and local results are not CI results | Every CI result | **MANDATORY BEFORE FORMAL EI-4 MILESTONE CLOSURE.** Status: **NOT VERIFIED.** It is never inferred from local results |
+| EI4-C5 | ADR-021 architecture review | Implementation conformance with ADR-021 sections 1 to 11, evidenced by the EI-4E, EI4-D10 and EI4-D11 records | Formal sign-off, and a stale implementation status | **APPROVED: architecture conformance and formal sign-off.** A dated sign-off note is added to [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md#status). Its decisions are unchanged |
+
+### 15.2 EI-4 milestone status
+
+**ENGINEERING ACCEPTED WITH DOCUMENTED LIMITATIONS — FORMAL MILESTONE CLOSURE PENDING INDEPENDENT CI VERIFICATION.**
+
+| Item | Status |
+| --- | --- |
+| EI-4A to EI-4E, EI4-D10, EI4-D11 (W1 to W5) | Implemented and merged; engineering acceptance recorded with documented limitations |
+| Infrastructure cleanup-reliability fixes L9-T, L9-C, L9-F and L9-P | Merged (latest: L9-P, PR #63, merge `c105e94`, commit `d97f854`) |
+| EI4-C1 to EI4-C3 | Accepted, with documented limitations |
+| EI4-C5, ADR-021 sign-off | Approved; dated note added |
+| EI4-C4, independent CI | **NOT VERIFIED** |
+| Formal EI-4 milestone closure | **PENDING.** EI-4 is **not closed** |
+
+### 15.3 What closes EI-4
+
+Formal closure needs both of the following:
+
+1. **Recorded CI evidence.** Successful runs of each repository's `python-ci.yml` workflow (`ruff check`, `ruff format --check`, `pytest` on `ubuntu-latest`) for northstar-core, northstar-application and northstar-infrastructure, at the accepted `develop` commits or their accepted successors. Each run is recorded with:
+   - the repository and commit;
+   - the run identifier and conclusion;
+   - for Application and Infrastructure, the dependency commits the run checked out, because their workflows check out the other repositories' `develop` at run time.
+2. **A dated owner closure decision** recorded in this register.
+
+A run that fails, is skipped, or cannot be identified is not closure evidence.
+
+### 15.4 Unchanged
+
+- **Engineering records.** Every engineering verdict, test count and limitation in the EI-4E, EI4-D10 and EI4-D11 records is unchanged.
+- **ADRs.** ADR-020, ADR-022 and ADR-023 are unchanged. ADR-021's decisions are unchanged; only a dated sign-off note is added.
+- **Pending decisions.** These keep their status:
+  - EI0-D11;
+  - the same-listing exclusivity threshold;
+  - EI0-D19;
+  - EI0-D21;
+  - EI3-D10;
+  - the EI4-D11 recovery mechanism;
+  - every other pending decision in sections [5](#5-decisions-still-pending-or-deferred), [9.5](#95-decisions-still-pending-or-unapproved) and [10.5](#105-decisions-still-pending-or-unapproved).
+
+  EI4-D5 and EI0-D9 are now approved, in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md).
+- **EI-5 sequencing.** The owner approved on 2026-11-12 that EI-5B may begin after the EI-5A documentation PR is merged ([EI-5 Decision Register, section 12.5](Equity-Intraday-V1-EI5-Decision-Register.md#125-ei-5b-sequencing-and-the-revised-sequence)). This does not close EI-4 and does not waive EI4-C4: formal closure still needs the recorded CI evidence of [section 15.3](#153-what-closes-ei-4).
+- **Non-authorizations.** The non-authorizations of [section 13.5](#135-unchanged) and the restrictions of [section 7](#7-production-readiness-restrictions) still apply. Nothing here authorizes production use, real data, issuance beyond EI-5's synthetic scope, execution or trading.

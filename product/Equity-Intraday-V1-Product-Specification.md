@@ -17,6 +17,14 @@ This document proposes the smallest product definition for Northstar's first act
 > - Every other decision in this document keeps its status. In particular, EI0-D7 (the 14:25 / 14:30 / 15:00 IST schedule) and EI0-D8 (initial strategy and control) are **not** approved.
 > - No strategy, parameter, threshold or cost rate is approved for production. The rest of this document remains a draft.
 
+> **Note, 2026-11-12 (EI-5A, owner approval).** On 2026-11-12 the owner **APPROVED** these decisions, for synthetic-only EI-5:
+>
+> - EI0-D9 (intrabar ambiguity);
+> - EI4-D5 (pre-entry invalidation, adding the terminal state `CANCELLED_BEFORE_ENTRY`);
+> - EI5-D1 to EI5-D8 (issuance authority, `RECORDED`, issuance identity, issued history and watermark, lifecycle transitions, observation ordering, session outcomes, and timing and terminality).
+>
+> They are recorded in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md), with the architecture in [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md). The owner accepted ADR-024 on 2026-11-12, with the approved amendments C-1, C-2 and O-1. Dated notes in sections 6.7, 8.2 to 8.4, 10.3, 12.1 and 14 point there. Nothing in EI-5 is implemented. Every other decision keeps its status, and the rest of this document remains a draft.
+
 Statements about NSE market structure use three labels:
 
 | Label | Meaning |
@@ -365,6 +373,14 @@ Bars after 15:00 are never used to resolve the recommendation.
 
 > **Note, 2026-11-07 (EI-4A, owner approval).** EI0-D7 is now **APPROVED for synthetic policy structure only**. The bar-end 14:25 / 14:30 / 15:00 IST interpretation of the table above is **not** approved as an operational schedule. The approved structure distinguishes the signal-bar end, decision availability, the latest permissible entry-bar opening, any minimum remaining session time, the mandatory modeled exit boundary, shortened or special sessions and post-session research, with versioned synthetic values. No production cutoff time is approved. See the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md#3-approved-decisions).
 
+> **Note, 2026-11-12 (EI-5A, owner approval).** For synthetic EI-5 lifecycle evaluation, EI5-D6 and EI5-D7 apply the approved EI0-D7 structure, not the bar-end schedule in the table above:
+>
+> - **Entry evidence.** Only bars that open within `[eligible_from, latest_entry_bar_opens_at]` can establish an entry. A bar that opens later activates nothing.
+> - **Expiry.** `EXPIRED_BEFORE_ENTRY` follows the bar that opens at `latest_entry_bar_opens_at`.
+> - **Exit boundary.** Outcomes are evaluated through the bar that closes at the modeled exit boundary, and never on a later bar.
+>
+> The boundaries are versioned synthetic values within the approved 09:15 to 15:00 IST research window. **That research window is not a production entry, exit or trading authorization**, and no production cutoff is approved. See the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#ei5-d6--observation-and-entry-ordering).
+
 ---
 
 ## 7. Signal and Strategy
@@ -530,6 +546,27 @@ Rules:
 
 > **Note, 2026-11-07 (EI4-D9 owner approval).** In the table above, `RECORDED` ("the recommendation is persisted") means an **issued** recommendation persisted by the issuance and lifecycle authority (EI-5 and EI-6). It does not mean an EI-4D generation record. The EI-4D generation dispositions `PROPOSED`, `NOT_ELIGIBLE` and `UNRESOLVED` are not lifecycle states, and a proposal stored by EI-4D is not in `RECORDED` or any other lifecycle state. An issued recommendation refers back to its EI-4D proposal's identity and content fingerprint (EI4-D9-J). The `eligible_from` wording of `RECORDED` is governed by EI4-D1, as noted in [section 8.1](#81-minimum-recommendation-contract). See the [EI-4 Decision Register, section 9](Equity-Intraday-V1-EI4-Decision-Register.md#9-ei4-d9-owner-approval-record-2026-11-07). The table is not rewritten.
 
+> **Note, 2026-11-12 (EI-5A, owner approval).** EI5-D2 and EI5-D5 to EI5-D8, approved by the owner and recorded in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#4-approved-decisions), refine the table and rules above for EI-5. Neither the table nor the rules are rewritten.
+>
+> - **States.** The initial EI-5 state model adds the terminal state `CANCELLED_BEFORE_ENTRY` (EI4-D5): a stop-only touch while waiting, with the reason `STOP_TOUCHED_BEFORE_ENTRY`, no activation and no fill. **`INVALIDATED` is outside the initial EI-5 scope**: no listing-applicability source exists, and EI0-D21 is pending.
+> - **Transitions.**
+>   - `RECORDED` → `WAITING_FOR_ENTRY`;
+>   - `WAITING_FOR_ENTRY` → `ACTIVE`, `INDETERMINATE_ENTRY`, `CANCELLED_BEFORE_ENTRY`, `EXPIRED_BEFORE_ENTRY` or `INCOMPLETE_EVIDENCE`;
+>   - `ACTIVE` → `CLOSED_TARGET`, `CLOSED_STOP`, `INDETERMINATE_EXIT`, `SESSION_CUTOFF_REACHED` or `INCOMPLETE_EVIDENCE`.
+>
+>   Every terminal state is final.
+> - **`RECORDED`** begins only when an authoritative issuance is durably recorded. A valid later eligible observation moves it to `WAITING_FOR_ENTRY` (EI5-D2). No clock is consulted.
+> - **Gaps.** "Resolution stops and becomes `INCOMPLETE_EVIDENCE`" is refined by EI5-D7. A deficient interval blocks monitoring temporarily, with no event and no skipping. Terminal `INCOMPLETE_EVIDENCE` is recorded only when an evaluated snapshot's `as_of` has reached the applicable boundary while the deficiency remains. The boundary is the entry-window end while waiting, and the modeled exit boundary while active.
+> - **Evidence.** Each event cites its EI-2B snapshot and interval, and is decided at that snapshot's `as_of` (EI5-D6, EI5-D8).
+> - **Revisions.** Later corrections to cited evidence are appended as `SOURCE_REVISION_RECORDED`, with materiality `UNASSESSED`, and never change a state (EI5-D8).
+> - **Touch semantics (O-1, owner approved 2026-11-12).** The gap-through question in the last rule above is decided for the lifecycle:
+>   - the stop is reached when a bar's `low <= stop`, and the target when its `high >= target`, including a range lying wholly beyond the level;
+>   - the entry zone keeps the intersection rule, and gap-through never activates an entry;
+>   - no fill or exit price is inferred;
+>   - ambiguity precedence and `UNKNOWN` ordering are unchanged.
+>
+>   See the [EI-5 Decision Register, section 12.3](Equity-Intraday-V1-EI5-Decision-Register.md#123-o-1--gap-through-recognition).
+
 ### 8.3 Intrabar ambiguity
 
 - When a single 5-minute bar contains both stop and target, or entry and an exit, the order of those events is unknowable from OHLC data.
@@ -537,6 +574,13 @@ Rules:
 - This differs on purpose from the Futures `MODELED_STOP_FIRST` lifecycle rule. A modeled ordering belongs in performance modeling, as a labelled assumption, not in the factual lifecycle record.
 - Performance reports a range for indeterminate outcomes; see [section 10.3](#103-indeterminate-and-no-entry-outcomes).
 - **PENDING (owner):** keep this rule, or align with Futures stop-first.
+
+> **Note, 2026-11-12 (EI-5A, owner approval).** EI0-D9 is now **APPROVED** (owner, 2026-11-12): the rule above is kept, and the Futures stop-first rule is not adopted.
+>
+> - Unknown intrabar ordering stays `UNKNOWN`, and ambiguous entries and exits are terminal `INDETERMINATE_ENTRY` and `INDETERMINATE_EXIT`, with no invented price.
+> - Under EI4-D5's approved clarification, a same-bar entry and stop touch is `INDETERMINATE_ENTRY`, never `CANCELLED_BEFORE_ENTRY`.
+>
+> See the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#ei0-d9--intrabar-ambiguity). The PENDING line above records the earlier status.
 
 ### 8.4 Session-end handling
 
@@ -547,6 +591,14 @@ Rules:
   - It does not show that a position could have exited at the cutoff bar's close or at any other price.
 - The cutoff ends the idea's eligibility for continued exposure ([section 6.7](#67-entry-and-exit-cutoffs-policy-proposals)). It does not create exit evidence.
 - If a stop or target touch through the bar ending at 15:00 exists, the evidenced outcome is recorded instead. If coverage is incomplete or unverified, the outcome is `INCOMPLETE_EVIDENCE`.
+
+> **Note, 2026-11-12 (EI-5A, owner approval).** EI5-D7 confirms this section for synthetic EI-5, with "15:00" read as the versioned synthetic modeled exit boundary (EI0-D7 structure):
+>
+> - `SESSION_CUTOFF_REACHED` needs complete eligible coverage through that boundary, and no earlier terminal event;
+> - an incomplete coverage becomes `INCOMPLETE_EVIDENCE` only once the boundary is reached, as noted in [section 8.2](#82-lifecycle-states);
+> - no observation after the boundary is used.
+>
+> See the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#ei5-d7--session-outcomes-and-insufficient-evidence).
 
 ---
 
@@ -657,6 +709,8 @@ suggested_quantity   = min(quantity_by_risk, quantity_by_exposure)
   - No exit price is assumed for it, not even as a modeled bound.
   - A high share of cutoff outcomes is itself reported as a limitation of the strategy's evidence.
 
+> **Note, 2026-11-12 (EI-5A, owner approval).** `CANCELLED_BEFORE_ENTRY` (EI4-D5) is a no-entry outcome. It is not a realized winning or losing trade, and is never counted as a win or a loss. How EI-8 reports it beside `EXPIRED_BEFORE_ENTRY` is for EI-8 to define. Unresolved outcomes stay excluded from win and loss metrics (EI5-D7). See the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#ei4-d5--pre-entry-invalidation).
+
 ### 10.4 Robustness requirements before any real-data conclusion
 
 - **Independent periods.** Use at least two independent, non-overlapping historical periods. Their dates are PENDING and depend on authorized data.
@@ -737,6 +791,30 @@ The Futures dashboard is the integration pattern: an API read model over persist
 >
 > See the [EI-4 Decision Register, section 9](Equity-Intraday-V1-EI4-Decision-Register.md#9-ei4-d9-owner-approval-record-2026-11-07) and [ADR-021](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md).
 
+> **Note, 2026-11-12 (EI-5A, owner approval).** The table above is not rewritten. Its EI-5 row is refined as follows.
+>
+> - **Dependencies.**
+>   - D9 (EI0-D9) is now approved.
+>   - EI-4 is engineering-accepted with documented limitations, and its formal closure is pending independent CI verification ([EI-4 Decision Register, section 15](Equity-Intraday-V1-EI4-Decision-Register.md#15-ei-4-closure-dispositions-2026-11-12)).
+>   - D21 is still pending, so EI-5 produces no `INVALIDATED`.
+> - **Approved planning baseline for EI-5:**
+>   - EI-5A, governance (docs);
+>   - EI-5B, the pure Core lifecycle model;
+>   - EI-5C, Application lifecycle evaluation over EI-2B snapshots;
+>   - a versioned EI-4C compatibility change: an assessment requiring issued history complete strictly before the modeled issuance. It is a required prerequisite with its own design, not yet approved as an implementation;
+>   - EI-5D, Application issuance authority and contracts;
+>   - EI-5E, synthetic end-to-end contract acceptance;
+>   - then EI-6, durable issuance and lifecycle persistence, the authoritative history, monitoring and real SQLite acceptance.
+>
+>   It is not evidence that any of these slices is implemented.
+> - **EI-5 acceptance** also covers `CANCELLED_BEFORE_ENTRY`, MODELED-only issuance and the issued-history watermark.
+> - **Sequencing (owner approved 2026-11-12).**
+>   - EI-5B may begin after the EI-5A documentation PR is merged.
+>   - EI-5D needs the EI-4C compatibility prerequisite first.
+>   - EI-4's formal closure stays pending independent CI verification; no CI requirement is waived.
+>
+> See the [EI-5 Decision Register, section 12.5](Equity-Intraday-V1-EI5-Decision-Register.md#125-ei-5b-sequencing-and-the-revised-sequence).
+
 ### 12.2 Prerequisites moved earlier
 
 1. **Transaction cost and position sizing: into EI-4, not EI-8.**
@@ -798,6 +876,8 @@ Only EI0-D4 is approved. Every other decision remains PROPOSED or PENDING.
 > **Note, 2026-11-06 (EI-3B, owner approval).** EI3-D6, EI3-D7 and EI3-D9 are now **APPROVED** (owner, 2026-11-06), and EI3-D10 is recorded as **PENDING**, all in the [EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md#10-ei-3b-owner-approval-record-2026-11-06). The statuses in the table below are unchanged; EI0-D7 stays **PROPOSED**.
 
 > **Note, 2026-11-07 (EI-4A, owner approval).** In the [EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md#3-approved-decisions), the owner **APPROVED** EI0-D7 (revised timing structure, for synthetic policy structure only) and EI0-D14 (entry zone, for the initial synthetic model), together with EI4-D1 to EI4-D4 and EI4-D6 to EI4-D8. The EI0-D7 and EI0-D14 rows below describe their earlier status. Every other status below is unchanged: in particular EI0-D10 to EI0-D13, approving real values, stay **PENDING**, and no production cutoff time is approved.
+
+> **Note, 2026-11-12 (EI-5A, owner approval).** EI0-D9 is now **APPROVED** (owner, 2026-11-12), as proposed in its row below: `UNKNOWN` ordering and indeterminate states in the lifecycle, with modeled ordering only in evaluation bounds. It is recorded in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md#ei0-d9--intrabar-ambiguity), with EI4-D5 and EI5-D1 to EI5-D8. The EI0-D9 row below describes its earlier status. Every other status is unchanged; EI0-D21 and EI0-D19 stay **PENDING**.
 
 | ID | Decision | Proposal | Status |
 | --- | --- | --- | --- |
@@ -880,6 +960,9 @@ Out of scope for EI-1A:
 ## 17. Related Documents
 
 - [Equity Intraday V1 EI-3 Decision Register](Equity-Intraday-V1-EI3-Decision-Register.md)
+- [Equity Intraday V1 EI-4 Decision Register](Equity-Intraday-V1-EI4-Decision-Register.md) (added 2026-11-12)
+- [Equity Intraday V1 EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md) (added 2026-11-12)
+- [ADR-024: Equity Intraday V1 Recommendation Issuance and Lifecycle Architecture](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) (added 2026-11-12)
 - [NSE Cash-Equity Session Evidence Register](../research/NSE-Cash-Equity-Session-Evidence-Register.md)
 - [ADR-017](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md), [ADR-018](../adr/ADR-018-Futures-V1-Research-to-Recommendation-Generation-Policy.md)
 - [Futures Trade Recommendation Design Specification](../architecture/Futures-Trade-Recommendation-Design-Specification-v1.0.md)
