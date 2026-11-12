@@ -53,6 +53,18 @@ Each decision below is **APPROVED BY OWNER, 2026-11-05**.
 - Under EI-2A, a candle is final only when finality evidence from its own source, event and revision was confirmed at or after the interval end and received by the observation instant. A candle can therefore never be final at its own interval-end instant.
 - The EI-2B snapshot already freezes exactly the evidence visible at its `as_of` instant and at its journal watermark.
 
+> **Erratum, 2026-11-12 (factual correction to the rationale only).** The second sentence of the first rationale bullet is inaccurate. The EI-2A code (`equity_intraday_candle_validation.py`) refuses:
+>
+> - a candle received strictly *before* its interval end;
+> - finality confirmed strictly *before* its interval end;
+> - receipt or finality later than the observation instant.
+>
+> A candle received and confirmed final **exactly at** its interval end is therefore final, and `ACCEPTABLE`, at an observation instant equal to that end. An interval is `NOT_ENDED` only when its end is after the observation instant.
+>
+> - **EI3-D1 is unchanged.** Its approved rule and approval status are unchanged: the decision instant is the snapshot's `as_of`, and an interval-end timestamp does not by itself establish finality.
+> - **EI-2A is unchanged.** No EI-2A behaviour changes.
+> - **Where the correct contract is relied on.** The EI5-D7 exact-boundary finality clarification ([EI-5 Decision Register, section 12.8](Equity-Intraday-V1-EI5-Decision-Register.md#128-ei5-d7-exact-boundary-finality-clarification)).
+
 **Sources.**
 
 - EI-2A: `northstar-application/src/northstar_application/application_services/equity_intraday_candle_validation.py`

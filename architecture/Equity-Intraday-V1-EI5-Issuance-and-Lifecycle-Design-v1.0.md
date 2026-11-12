@@ -15,6 +15,12 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Deferred.** O-2 and O-3 stay deferred.
 > - **Historical text.** Where the text below says the design is proposed, or that C-1, C-2 or O-1 needs a decision, that is the status at proposal.
 
+> **Status update, 2026-11-12: EI5-D7 exact-boundary finality clarification (owner approved).**
+>
+> - **The rule.** At `as_of` exactly equal to the applicable boundary, a `MISSING` or `UNFINALIZED` boundary bar blocks temporarily and is never terminal. An `ACCEPTABLE` boundary bar is evaluated normally.
+> - **Where it is incorporated.** Sections 4, 5.3, 5.5, 6.3, 6.4 and 12.5 (TB-03, TB-04), each marked "amended 2026-11-12 (exact boundary)". The record is in the [EI-5 Decision Register, section 12.8](../product/Equity-Intraday-V1-EI5-Decision-Register.md#128-ei5-d7-exact-boundary-finality-clarification).
+> - **Unchanged.** O-2 stays deferred, and the matrix keeps 119 PLANNED scenarios.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -119,6 +125,7 @@ All instants are `PointInTime` values, compared as times. The synthetic values i
 | Applicable boundary | `E` while `RECORDED` or `WAITING_FOR_ENTRY`; `modeled_exit_at` while `ACTIVE` |
 | Cursor | The next interval a recommendation's lifecycle needs. It starts at the interval that opens at `eligible_from` |
 | Deficient interval | An interval whose outcome in the evaluated snapshot is `MISSING`, `UNFINALIZED`, `CONFLICTING_VALUES` or `UNRESOLVED_REVISIONS` |
+| Exact-boundary finality (amended 2026-11-12 (exact boundary)) | The bar closing at the applicable boundary is `MISSING` or `UNFINALIZED` in a snapshot whose `as_of` equals that boundary. EI-2A treats an interval as ended when `closes_at <= as_of` (`NOT_ENDED` only when `closes_at > as_of`), and accepts a candle received and confirmed final exactly at its close, so such a bar may already be `ACCEPTABLE`. When it is `MISSING` or `UNFINALIZED`, it is not yet final only because its close has just been reached. It is a temporary block, never terminal |
 | Evaluation instant | The evaluated snapshot's `as_of` (EI5-D8) |
 
 **Level predicates** (amended 2026-11-12; O-1 approved). These use exact decimal comparison, on the low and high of the interval's acceptable candle:
@@ -169,7 +176,7 @@ Every event must match exactly one row; anything else is refused at construction
 | `STOP_REACHED` | `ACTIVE` | `CLOSED_STOP` | `STOP` | `NOT_REQUIRED` | Interval in the exit range |
 | `EXIT_INDETERMINATE` | `ACTIVE` | `INDETERMINATE_EXIT` | `STOP`, `TARGET` | `UNKNOWN` | Interval in the exit range |
 | `SESSION_CUTOFF_REACHED` | `ACTIVE` | `SESSION_CUTOFF_REACHED` | none | `NOT_REQUIRED` | Interval closes at `modeled_exit_at` |
-| `EVIDENCE_INCOMPLETE` | `WAITING_FOR_ENTRY` or `ACTIVE` | `INCOMPLETE_EVIDENCE` | none | `NOT_REQUIRED` | `evaluated_at` at or after the applicable boundary; at least one deficiency, each at or before the boundary |
+| `EVIDENCE_INCOMPLETE` | `WAITING_FOR_ENTRY` or `ACTIVE` | `INCOMPLETE_EVIDENCE` | none | `NOT_REQUIRED` | `evaluated_at` at or after the applicable boundary; at least one deficiency, each at or before the boundary; never when `evaluated_at` equals the boundary and the first deficiency is the boundary bar `MISSING` or `UNFINALIZED` (amended 2026-11-12 (exact boundary)) |
 | `SOURCE_REVISION_RECORDED` | any | the same state | none | `NOT_REQUIRED` | Cites an earlier event; materiality `UNASSESSED` |
 
 **Sequence guards** checked by `EquityRecommendationLifecycle`:
@@ -217,6 +224,8 @@ There is no `INVALIDATED` and no Futures-only state or ordering. The Futures `EX
 
   Otherwise it refuses. Below the boundary, the caller receives no event: that is a temporary block.
 
+  *Amended 2026-11-12 (exact boundary).* At `evaluated_at` equal to the boundary, a `MISSING` or `UNFINALIZED` boundary bar is also a temporary block, and no `EVIDENCE_INCOMPLETE` is produced. A stored `EVIDENCE_INCOMPLETE` resting only on that condition is refused on replay. `CONFLICTING_VALUES`, `UNRESOLVED_REVISIONS` and earlier deficient intervals are not excepted.
+
 ### 5.6 Replay
 
 `EquityRecommendationLifecycle(window, events)` re-validates every shape and guard and folds the state. The same window and events always give the same state. Core therefore guarantees that a stored event stream that violates EI5-D5 cannot be rehydrated.
@@ -263,6 +272,7 @@ For snapshot `S`:
    - **`ACCEPTABLE`:** build an `EquityLifecycleBar` from its acceptable candle, append Core's events, and advance the cursor;
    - **`NOT_ENDED`:** stop with `AWAITING_EVIDENCE`;
    - **deficient:** collect every deficient interval from the cursor to the applicable boundary in `S`. If `S.as_of` is at or after the boundary, append Core's `EVIDENCE_INCOMPLETE`. Otherwise stop with `BLOCKED`, and append no event.
+     - *Amended 2026-11-12 (exact boundary).* There is one exception: `S.as_of` equals the boundary and the deficient interval is the bar closing there, `MISSING` or `UNFINALIZED`. It also stops with `BLOCKED` and no event.
 3. Detect revisions (section 6.5) for every interval cited by an earlier event.
 
 Only intervals in `S` are read, and only from the cursor forward, so no look-ahead is possible. Every interval `S` reports as ended had ended at `S.as_of` (EI-2A).
@@ -274,6 +284,9 @@ Only intervals in `S` are read, and only from the cursor forward, so no look-ahe
 | A deficient interval, and `S.as_of` before the boundary | `BLOCKED`; no event; the state is unchanged |
 | A later snapshot shows it `ACCEPTABLE` | Monitoring resumes from it |
 | A deficient interval, and `S.as_of` at or after the boundary | `INCOMPLETE_EVIDENCE`, listing every deficient interval from the cursor to the boundary |
+| `S.as_of` equals the boundary, and the boundary bar is `MISSING` or `UNFINALIZED` (amended 2026-11-12 (exact boundary)) | `BLOCKED`; no event; a later snapshot decides |
+| `S.as_of` equals the boundary, and the boundary bar is `ACCEPTABLE` | Evaluated normally: expiry, cutoff, entry, cancellation or a level reach |
+| `S.as_of` equals the boundary, and the boundary bar is `CONFLICTING_VALUES` or `UNRESOLVED_REVISIONS`, or an earlier interval is deficient | `INCOMPLETE_EVIDENCE` (unchanged) |
 | No snapshot at or after the boundary is ever evaluated | The state stays non-terminal. Nothing is assumed (O-2) |
 | An `ACCEPTABLE` interval after a deficient one | Never used while the deficiency stands |
 
@@ -547,8 +560,8 @@ The shared synthetic example is that of [EI-5 Decision Register, section 4.1](..
 | EV-07 | Two deficient intervals at the boundary | `INCOMPLETE_EVIDENCE` lists both, with their EI-2A outcome names | K, C | EI-5B, EI-5C | PLANNED |
 | TB-01 | Deficiency at 10:30; snapshot at 10:45 | `BLOCKED`; state unchanged | C | EI-5C | PLANNED |
 | TB-02 | The 10:30 interval `ACCEPTABLE` in a snapshot at 10:50 | Monitoring resumes at 10:30 | C | EI-5C | PLANNED |
-| TB-03 | Waiting; deficiency persists in a snapshot at or after 11:05 | `INCOMPLETE_EVIDENCE` | C | EI-5C | PLANNED |
-| TB-04 | Active; deficiency persists in a snapshot at or after 15:00 | `INCOMPLETE_EVIDENCE` | C | EI-5C | PLANNED |
+| TB-03 | Waiting; deficiency persists in a snapshot at or after 11:05. Amended 2026-11-12 (exact boundary): at exactly 11:05 the boundary bar 11:00 to 11:05 `UNFINALIZED` or `MISSING`; `ACCEPTABLE`; an earlier interval (10:30) `MISSING`; after 11:05, still deficient | `INCOMPLETE_EVIDENCE` after 11:05 and for the earlier interval; at exactly 11:05, `BLOCKED` with no event for the boundary bar not yet final, and normal evaluation when `ACCEPTABLE` | K, C | EI-5B, EI-5C | PLANNED |
+| TB-04 | Active; deficiency persists in a snapshot at or after 15:00. Amended 2026-11-12 (exact boundary): at exactly 15:00 the boundary bar 14:55 to 15:00 `MISSING` or `UNFINALIZED`; `ACCEPTABLE`; `CONFLICTING_VALUES`; after 15:00, still deficient | `INCOMPLETE_EVIDENCE` after 15:00 and for `CONFLICTING_VALUES`; at exactly 15:00, `BLOCKED` with no event for the boundary bar not yet final; stop, target, both or cutoff when `ACCEPTABLE` | K, C | EI-5B, EI-5C | PLANNED |
 | TB-05 | No snapshot at or after the boundary is evaluated | Non-terminal state unchanged; nothing assumed; no clock read | C, A | EI-5C | PLANNED |
 
 ### 12.6 Session end and no look-ahead (SE, LA)
