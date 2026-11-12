@@ -30,6 +30,18 @@ This is a design decision. **Nothing in it is implemented** when it is recorded.
 >   EI-4's formal milestone closure is pending independent CI verification.
 > - **No production authorization.** This sign-off does not imply production authorization, real data, actual issuance or trading.
 
+> **Note, 2026-11-13 (amended by ADR-025).** On 2026-11-13 the product owner approved R-1 and R-2 of the C-2 correction and accepted [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md). ADR-025 amends the version-verification restriction of [section 10](#10-restart-and-historical-verification-ei4-d9-i):
+>
+> - **What changes.** Versioned verification is now governed by ADR-025: a **closed** set of exactly two evaluator versions, `northstar.equity-recommendation-evaluator/1` and `/2`. Each record is verified only by the evaluator it names.
+> - **No registry.** No extensible evaluator registry is authorized.
+> - **Unchanged.**
+>   - Historical version-1 replay remains required.
+>   - An unsupported version still fails closed.
+>   - Nothing is migrated, reinterpreted or relinked.
+>   - Every other decision of this ADR is unchanged.
+> - **Original text kept.** The text of section 10 is kept as recorded on 2026-11-07, and so is its historical meaning.
+> - **Not implemented.** Evaluator version 2 does not exist in code.
+
 ## Date
 
 2026-11-07
@@ -167,6 +179,13 @@ On every load, a stored generation record is verified at four distinct levels, w
 
 Missing, corrupted, inconsistent or unsupported evidence fails closed. There is no historical evaluator registry: an unsupported format version fails closed, and nothing is migrated, reinterpreted or relinked to newer corrected evidence. SQLite enforces structure and foreign keys; SHA-256 verification is the Application's.
 
+> **Amended 2026-11-13 by [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md), section 1.** The paragraph above is kept as recorded. From 2026-11-13, "supported" means the closed two-version table of ADR-025:
+>
+> - evaluator `/1` with its `/1` documents;
+> - evaluator `/2` with its `/2` inputs, assessment and attempt documents.
+>
+> A record is replayed only under the evaluator it names. A label-format mismatch is invalid, and an unknown label is incompatible. This is still not a registry: there is no registration API, and a third version needs another ADR amendment. Levels A to D are unchanged. The amendment is not yet implemented.
+
 ### 11. Storage placement and referential integrity
 
 - Generation records live in the **same SQLite database authority** as the EI-2B evidence and EI-3C timelines they reference, so references are real foreign keys and one transaction covers a whole record (EI4-D9-E, EI4-D9-F).
@@ -241,6 +260,7 @@ This ADR records an architecture. It does not:
 - The issued-recommendation authority and its recording watermark, with EI-5 and EI-6.
 - An issued recommendation referencing its EI-4D proposal by generation identity and content fingerprint.
 - A historical evaluator registry, if evaluation formats must change; until then unsupported formats fail closed.
+  - *Note, 2026-11-13.* Evaluation formats did change (C-2). [ADR-025](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) adopts a closed two-version table instead of a registry. A general registry stays a future consideration and is not authorized.
 - External audit anchoring, which neither EI-3C nor EI-4D provides.
 
 ## Related Documents
@@ -257,3 +277,4 @@ This ADR records an architecture. It does not:
 - [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) (added 2026-11-12)
 - [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md) (added 2026-11-12)
 - [ADR-024: Equity Intraday V1 Recommendation Issuance and Lifecycle Architecture](ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) (added 2026-11-12)
+- [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)

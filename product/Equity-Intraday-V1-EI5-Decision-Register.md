@@ -23,6 +23,13 @@
 
 > **Note, 2026-11-12 (EI5-D7 exact-boundary finality clarification).** The owner later approved a clarification of EI5-D7. When a snapshot's `as_of` equals the applicable boundary and the boundary bar is `MISSING` or `UNFINALIZED`, monitoring is temporarily blocked rather than terminal. It is recorded under [EI5-D7](#ei5-d7--session-outcomes-and-insufficient-evidence) and in [section 12.8](#128-ei5-d7-exact-boundary-finality-clarification). O-2 stays deferred. EI-5B is not merged.
 
+> **Note, 2026-11-13 (EI-4C versioned compatibility governance).** The owner approved R-1, R-2 and N1 to N10 on 2026-11-13, with N10 in its stricter form: version-2 generation records `PROPOSED` only when `complete_through == t − 1 µs`. The architecture is [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md), and the record is [section 13](#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13).
+>
+> - **N10 case C.** The refusal classification for an overdeclared version-2 history was approved separately on 2026-11-13: `RECOMMENDATION_HISTORY_BOUNDARY_EXCEEDED`, status `DEPENDENCY_UNAVAILABLE`, version 2 only, keyless attempt only ([section 13.4](#134-n10-case-c--the-overdeclared-history-refusal-approved-2026-11-13)).
+> - **Not implemented.** The compatibility prerequisite is **NOT STARTED**, and EI-5D is not authorized.
+> - **Milestone status corrected.** Section 13.6 corrects the stale milestone status: EI-5A, EI-5B, the EI5-D7 addendum and EI-5C are merged.
+> - **Unchanged.** EI-4's formal closure stays pending independent CI verification.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -486,6 +493,8 @@ An `ACTIVE` state means only that the modeled entry condition was evidenced. It 
 - [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](../adr/ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md)
 - [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md)
 - [Equity Intraday V1 EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md)
+- [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
+- [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 
 ## 12. Owner approval of the EI-5A amendments (2026-11-12)
 
@@ -542,6 +551,8 @@ EI5-D4 is unchanged: the inclusive no-backdating rule, the monotone sequence, th
   - `issued_by(b)`.
 
   The frozen evidence therefore lists exactly the issuances with `issued_at < t`.
+
+  *Amended 2026-11-13 (N10).* For version-2 generation, `covers(b)` is necessary but not sufficient. `PROPOSED` needs `complete_through == b` exactly; a history complete beyond `b` is refused ([section 13.3](#133-n10--exact-history-completeness)).
 - **Fail closed.** These fail closed exactly as today, with no disposition and an attempt only:
   - missing history (`None`);
   - unavailable or unverifiable history;
@@ -552,7 +563,7 @@ EI5-D4 is unchanged: the inclusive no-backdating rule, the monotone sequence, th
 
 **Consequence for issuance (no conflict, but a protocol constraint).**
 
-- The assessment needs `complete_through >= t − 1 µs`.
+- The assessment needs `complete_through >= t − 1 µs`. *Amended 2026-11-13 (N10): version-2 generation records `PROPOSED` only when `complete_through == t − 1 µs` exactly ([section 13.3](#133-n10--exact-history-completeness)).*
 - Issuance needs `issued_at > complete_through`, that is `complete_through <= t − 1 µs`.
 - Declarations never decrease, so a proposal is issuable only while its session's greatest declared `complete_through` is exactly `t − 1 µs`.
 
@@ -567,25 +578,40 @@ A declaration beyond `t − 1 µs` made before a proposal at `t` is issued makes
 **Versioned compatibility contract: requirements for the prerequisite implementation.**
 
 1. **New versions.** A new evaluator version, and new frozen-inputs and assessment format versions, distinct from `northstar.equity-recommendation-evaluator/1`, `…-generation-inputs/1` and `…-assessment/1`. The new issued-history evidence states its boundary explicitly, and the new version validates `as_of = t − 1 µs`, as version 1 today requires `as_of = t` (`EquityRecommendationInputs`).
+   - *Amended 2026-11-13 (N3, N4, N8).* The exact new versions are:
+     - `northstar.equity-recommendation-evaluator/2`;
+     - `northstar.equity-recommendation-generation-inputs/2`;
+     - `northstar.equity-recommendation-assessment/2`;
+     - **`northstar.equity-recommendation-generation-attempt/2`**, omitted from the original list. Without it, a version-2 refusal would share a logical-attempt identity with a version-1 refusal that assessed a different instant.
+   - The proposal, policy set, generation key and Core outcome stay on `/1`.
+   - The existing prefixes are kept, because the `format` in the hash preimage identifies the version.
+   - The explicit boundary is the `issued_history.history_boundary` field ([section 13.2](#132-the-approved-contract)).
 2. **Existing records unchanged.** Every existing version-1 record, document, fingerprint (`eiri1`, `eira1`, `eirp1`) and key (`eirk1`) keeps its meaning, "complete through the modeled issuance". None is reinterpreted, migrated, relinked or re-fingerprinted.
 3. **Historical replay is not weakened.** Version-1 records stay verifiable at levels A to C by the version-1 evaluator, and new records by the new one.
 4. **The generation key is unchanged.** A candidate and policy set already recorded under version 1 keep that disposition. A new-version assessment under the same `eirk1` is a content conflict (EI4-D9-D), never a replacement.
+   - *Amended 2026-11-13 (N5).* Precisely: it is a conflict under EI4-D9-D, classified by the existing `EVALUATOR_VERSION_CONFLICT` outcome, **not** `CONTENT_CONFLICT`.
+   - The first stored disposition is preserved and is not adopted as the competing version's record.
+   - A separate version-2 key needs a genuinely different approved policy-set version.
 5. **Issuance accepts only the new version.** EI-5D issues only a disposition whose assessment is of the new version, and whose history evidence names the issuance authority and reproduces exactly from the authority's view at its recorded watermark. A version-1 disposition is refused as not issuable, and is preserved unchanged.
 6. **Verifiable across concurrency and restart.** After a declaration at or beyond `b`, any issuance with `issued_at < t` is refused as backdated. The frozen evidence therefore stays exactly the authority's complete prefix at every later watermark ([ADR-024, section 7](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md#7-recording-sequence-watermark-and-completeness)).
 
 **Contract points that remain open. They are identified here and not resolved; the prerequisite's own design must settle them.**
 
-- **R-1 — Two-version verification.**
+> **Resolved 2026-11-13.** R-1 and R-2 below are **RESOLVED** by owner decisions N1 and N3 ([section 13](#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13)) and recorded in [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md). The text below records them as they were identified on 2026-11-12.
+
+- **R-1 — Two-version verification.** *RESOLVED 2026-11-13 (N1): a closed two-version table, dispatched by the recorded label; no registry.*
   - Today the verifier replays exactly one evaluator version (`verify_equity_recommendation_generation.py` refuses any other as incompatible, "Nothing is migrated").
   - ADR-021, section 10, says there is no historical evaluator registry, and that an unsupported format fails closed.
   - Requirement 3 needs both evaluator versions to verify. That is a bounded first step toward ADR-021's "historical evaluator registry" future consideration, so it needs explicit architecture approval in the prerequisite's design.
   - The alternative, letting version-1 records become incompatible, would weaken historical replay and is not acceptable under C-2.
-- **R-2 — Fingerprint prefixes and storage.**
+- **R-2 — Fingerprint prefixes and storage.** *RESOLVED 2026-11-13 (N3): every existing prefix is retained, and no schema migration is planned.*
   - Canonical documents include their `format` field, so a new-version document has a distinct fingerprint even under the existing `eiri1` and `eira1` prefixes. That keeps the Infrastructure `GLOB` constraints valid.
-  - New prefixes would need an Infrastructure schema change.
+  - New prefixes would need an Infrastructure schema change. *(Clarified 2026-11-13: SQLite cannot alter a CHECK constraint, so that change would be a table rebuild or parallel tables.)*
   - The prerequisite's design decides which.
 
 **Status.** The approved correction is a **required implementation prerequisite before EI-5D**. It is not an approved implementation PR: it needs its own design and approval. It is **NOT STARTED**. **Existing EI-4C behaviour has not been updated**: today's EI-4C still reads history as of the modeled issuance.
+
+*Note, 2026-11-13.* The prerequisite's design now exists and is owner approved: [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) and the [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md). Its implementation is **NOT STARTED**, and existing EI-4C behaviour is still unchanged ([section 13](#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13)).
 
 ### 12.3 O-1 — Gap-through recognition
 
@@ -651,10 +677,16 @@ A declaration beyond `t − 1 µs` made before a proposal at `t` is issued makes
 
 The sequence is the approved planning baseline, not implementation evidence.
 
+> **Note, 2026-11-13.** The status column records the state on 2026-11-12.
+>
+> - **Steps 1 to 3 have since merged** ([section 13.6](#136-milestone-status-correction)).
+> - **Step 4** is now governed by [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) and its approved slices ([section 13.5](#135-approved-implementation-sequence-n9)). It is not started.
+> - **Step 5 (EI-5D)** still requires step 4 to be accepted.
+
 ### 12.6 Deferred and pending
 
 - **O-2** (post-boundary snapshot selection and finality latency) and **O-3** (late evidence after terminal `INCOMPLETE_EVIDENCE`) stay **DEFERRED** to their later governance stage. No resolution is recorded.
-- R-1 and R-2 ([section 12.2](#122-c-2--the-exclusive-history-boundary)) belong to the compatibility prerequisite's design.
+- R-1 and R-2 ([section 12.2](#122-c-2--the-exclusive-history-boundary)) belong to the compatibility prerequisite's design. *(Resolved 2026-11-13: [section 13](#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13).)*
 - Every item of [section 9](#9-decisions-still-pending) other than C-1, C-2 and O-1 keeps its status, including:
   - EI0-D21, with every revision materiality `UNASSESSED` and no `INVALIDATED`;
   - EI0-D19;
@@ -674,7 +706,7 @@ The sequence is the approved planning baseline, not implementation evidence.
 | C-1 (`eiris1`), C-2 (exclusive boundary), O-1 (gap-through) | **APPROVED** (2026-11-12) |
 | ADR-024 and the EI-5 design v1.0 | **APPROVED** (2026-11-12, with amendments) |
 | EI-5B sequencing | **APPROVED**: after the EI-5A documentation PR is merged |
-| EI-4C versioned compatibility prerequisite | Required before EI-5D; **NOT STARTED**; own design and approval needed (R-1, R-2 open) |
+| EI-4C versioned compatibility prerequisite | Required before EI-5D; **NOT STARTED**; own design and approval needed (R-1, R-2 open). *2026-11-13: design approved and R-1 and R-2 resolved ([section 13](#13-owner-approval-of-the-ei-4c-versioned-compatibility-governance-2026-11-13)); implementation still NOT STARTED* |
 | O-2, O-3 | **DEFERRED** |
 | EI-5B to EI-5E, EI-6 | **NOT STARTED** |
 | Acceptance scenarios (119) | **PLANNED** |
@@ -706,5 +738,174 @@ A candle received and confirmed final exactly at its close is therefore `ACCEPTA
 | O-2, O-3, EI3-D10 | **DEFERRED** (unchanged) |
 | EI-5B (Core lifecycle) | Not merged. Local engineering verification is not CI evidence |
 | Acceptance scenarios (119) | **PLANNED** |
+| EI-4 formal closure | **PENDING** independent CI verification |
+| Operational or production authorization | **NOT GRANTED** |
+
+## 13. Owner approval of the EI-4C versioned compatibility governance (2026-11-13)
+
+**OWNER APPROVED, 2026-11-13.**
+
+- The owner approved R-1 and R-2, the two contract points the C-2 correction left open ([section 12.2](#122-c-2--the-exclusive-history-boundary)), and decisions N1 to N10.
+- N10 is approved in a **stricter form** than the architecture review originally recommended. It supersedes that recommendation.
+- The architecture is [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md), which amends [ADR-021, section 10](../adr/ADR-021-Equity-Intraday-V1-Recommendation-Generation-Persistence.md#10-restart-and-historical-verification-ei4-d9-i) by a dated pointer.
+- The engineering specification and its 52 PLANNED scenarios are in the [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md).
+
+**Nothing here is implemented.** Today's EI-4C supports only evaluator version 1 and reads history as of the modeled issuance.
+
+### 13.1 Approved decisions N1 to N10
+
+| ID | Decision | Status |
+| --- | --- | --- |
+| N1 (R-1) | Exactly two governed evaluator versions, `northstar.equity-recommendation-evaluator/1` and `/2`, in one closed version table. Verification dispatches on the recorded label. Unknown labels are incompatible, and missing or mismatched labels are invalid. No registration API or plugin architecture; a third version needs another governance amendment | **APPROVED** |
+| N2 | ADR-025, accepted 2026-11-13, amends ADR-021 section 10 by a dated pointer; ADR-021 is not replaced | **APPROVED** |
+| N3 (R-2) | Retain the prefixes `eiri1`, `eira1`, `eirat1`, `eirk1`, `eirp1` and `eirs1`. A prefix names a fingerprint family; the document's `format`, inside the hash preimage, names the version. No schema migration is planned, subject to mixed-version SQLite acceptance | **APPROVED** |
+| N4 | `northstar.equity-recommendation-generation-attempt/2`, so version-2 attempts never share an identity with version-1 attempts | **APPROVED** |
+| N5 | A cross-version collision under one `eirk1` preserves the first disposition and returns the existing `EVALUATOR_VERSION_CONFLICT`. The competing record is not adopted and the conflict is not reclassified as `CONTENT_CONFLICT`. A separate version-2 key needs a different approved policy-set version | **APPROVED** |
+| N6 | Mandatory Application label-format pairing at construction, decoding, verification and authorized recording. A database-level pairing trigger is **DEFERRED** | **APPROVED** |
+| N7 | A keyword-only evaluator selection at the generation entry point, constrained to the closed set, defaulting to `/1`. EI-5D composition must select `/2`. Version 1 stays supported but is not issuable | **APPROVED** |
+| N8 | Version-2 frozen inputs carry an explicit canonical history-boundary field, and take history as of `b = t − 1 µs` on the existing microsecond-resolution `PointInTime`. Version 1 keeps `as_of = t` | **APPROVED** |
+| N9 | The staged sequence of [section 13.5](#135-approved-implementation-sequence-n9) | **APPROVED** |
+| N10 | Version-2 generation may record `PROPOSED` only when `complete_through == b` ([section 13.3](#133-n10--exact-history-completeness)) | **APPROVED** (stricter form) |
+
+### 13.2 The approved contract
+
+| Document | Version 1 | Version 2 |
+| --- | --- | --- |
+| Evaluator label | `northstar.equity-recommendation-evaluator/1` | `northstar.equity-recommendation-evaluator/2` |
+| Frozen inputs (`eiri1`) | `northstar.equity-recommendation-generation-inputs/1` | `northstar.equity-recommendation-generation-inputs/2` |
+| Assessment (`eira1`) | `northstar.equity-recommendation-assessment/1` | `northstar.equity-recommendation-assessment/2` |
+| Generation attempt (`eirat1`) | `northstar.equity-recommendation-generation-attempt/1` | `northstar.equity-recommendation-generation-attempt/2` |
+| Proposal (`eirp1`) | `northstar.equity-recommendation-proposal/1` | Unchanged (`/1`) |
+| Policy set (`eirs1`) | `northstar.equity-recommendation-policy-set/1` | Unchanged (`/1`) |
+| Generation key (`eirk1`) | `northstar.equity-recommendation-generation-key/1` | Unchanged (`/1`) |
+| Core outcome | `northstar.equity-recommendation-core-outcome/1` | Unchanged (`/1`) |
+| History `as_of` | `t` | `b = t − 1 µs` |
+| History boundary | Implicit, inclusive through `t` | `issued_history.history_boundary = "STRICTLY_BEFORE_MODELED_ISSUANCE"`, with `as_of = complete_through = b` |
+
+**Fixed for every version-1 record:**
+- the evaluation instant, frozen inputs, formats, fingerprints, key, evaluator label, replay behaviour and persisted identities;
+- none is rehashed, converted, relabelled or made issuable.
+
+**The version-1 freeze.** Golden vectors for `eiri1`, `eira1`, `eirp1` and `eirat1` are a **mandatory prerequisite**. No fixed reference vector pins them today. They are generated from the unchanged current code before any version-2 behaviour is introduced.
+
+**Unchanged:**
+- `eiris1` (C-1) remains the issued-recommendation identity, distinct from the `eiri1` frozen-inputs family;
+- the generation-key derivation, the proposal identity and the policy-set identity.
+
+### 13.3 N10 — Exact history completeness
+
+Let `t = modeled_issued_at` and `b = t − 1 µs`. Version-2 generation may record `PROPOSED` only when `complete_through == b`, and not merely `>= b`.
+
+| Case | History | Behaviour |
+| --- | --- | --- |
+| A | `complete_through == b` | The boundary condition is satisfied. `PROPOSED` only if every other approved check passes. Necessary, not sufficient, for issuance |
+| B | `complete_through < b` | No `PROPOSED`. Existing reason `RECOMMENDATION_HISTORY_INCOMPLETE`, status `DEPENDENCY_UNAVAILABLE`. Attempt only, with no key and no disposition |
+| C | `complete_through > b` | No `PROPOSED`. Fail closed. Reason `RECOMMENDATION_HISTORY_BOUNDARY_EXCEEDED`, status `DEPENDENCY_UNAVAILABLE`, version 2 only (**approved 2026-11-13**, [section 13.4](#134-n10-case-c--the-overdeclared-history-refusal-approved-2026-11-13)). Keyless attempt only, with no disposition, so the generation key is not consumed |
+| D | Missing, unavailable, unverifiable, or another session's history | No `PROPOSED`. Existing reason `OPEN_RECOMMENDATION_STATE_UNAVAILABLE`, status `DEPENDENCY_UNAVAILABLE`. Attempt only |
+
+**Atomicity.** The generation-time boundary does not replace the issuance authority's check. The authority must re-verify history and no-backdating inside its own serialized write transaction (EI5-D4). If declarations advance after generation and before issuance, issuance fails closed. Neither issuance nor a declaration scheduler is implemented here.
+
+### 13.4 N10 case C — The overdeclared-history refusal (approved 2026-11-13)
+
+**OWNER APPROVED, 2026-11-13.** This was approved separately from N1 to N10, on the same date.
+
+Let `t = modeled_issued_at` and `b = t − 1 µs`. When `complete_through > b`:
+
+| Item | Approved value |
+| --- | --- |
+| Reason | `RECOMMENDATION_HISTORY_BOUNDARY_EXCEEDED` |
+| Status | `DEPENDENCY_UNAVAILABLE` |
+| Evaluator applicability | `northstar.equity-recommendation-evaluator/2` only |
+| Persistence | Record an attempt only. The attempt is keyless (`generation-attempt/2`, no generation key) |
+| Disposition | No `PROPOSED` disposition, and no disposition of any kind |
+| Generation key | Not consumed |
+| Issuance | No authoritative issuance record is created |
+| Declarations | No completeness declaration is backdated or reversed |
+| Identity | Append-only and deterministic attempt-identity semantics are preserved |
+
+**Why this classification.**
+- **Accuracy.** The existing vocabulary (`equity_trade_recommendation_eligibility.py`) had no accurate reason. `RECOMMENDATION_HISTORY_INCOMPLETE` means complete only through an instant **before** the required one: it remains case B and is never used for case C.
+- **Precedent.** The status follows `POLICY_REFERENCE_CONFLICT`, a permanent condition under `DEPENDENCY_UNAVAILABLE` that callers distinguish by reason, not status.
+- **No schema change.** No new status is introduced, so the SQLite attempts table's status check needs no change.
+
+**Unchanged.**
+- Version-1 behaviour is unchanged.
+- The recorder's outcomes are unchanged.
+- The decision is **not implemented**; the reason does not yet exist in Application code (slice 3b).
+
+Details are in the [compatibility design, section 7](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md#7-n10-exact-completeness).
+
+### 13.5 Approved implementation sequence (N9)
+
+| Slice | Repository | Scope | Prerequisites |
+| --- | --- | --- | --- |
+| 0 | northstar-docs | ADR-025, these amendments, the compatibility design and its acceptance matrix | — |
+| 1 | northstar-application | Version-1 freeze: golden vectors, pinned canonical documents, conflicting future-evaluator test labels replaced. No production behaviour change | Slice 0 merged |
+| 2 | northstar-infrastructure | Test hygiene: conflicting labels replaced; a version-1 persisted-row replay fixture. Production unchanged | Slice 0 merged |
+| 3a | northstar-application | Two-version verification: version table, versioned formats, decoder pairing, version-aware records, verifier dispatch. No version-2 generation | Slices 1 **and** 2 merged |
+| 3b | northstar-application | Version-2 generation: explicit selection, `/2` inputs at `b`, N10, `/2` assessments and attempts, typed non-`PROPOSED` outcomes. No issuance | 3a merged |
+| 4 | northstar-infrastructure | Mixed-version acceptance on real SQLite. No schema migration unless an independently governed blocker is found | 3b merged |
+| 5 | northstar-docs | Acceptance record, limitations, CI evidence where available | Slice 4 merged |
+| 6 | northstar-application | EI-5D issuance, separately scoped and authorized | Slice 5 accepted |
+
+**This record does not authorize EI-5D.**
+
+**The test label `northstar.equity-recommendation-evaluator/2`.** Existing Application and Infrastructure tests use it as an unsupported "future" label, and it is now reserved for the approved version 2. Slices 1 and 2:
+- replace it with a label shown to be unused and unapproved;
+- keep every unknown-version refusal assertion.
+
+The compatibility design, section 13, records the coordination needed for tests whose premise slice 3a makes impossible to construct.
+
+### 13.6 Milestone status correction
+
+Earlier entries describe these milestones as not merged or not started. On 2026-11-13 the local `develop` histories show them merged:
+
+| Milestone | Repository | PR | Merge commit | Change commit |
+| --- | --- | --- | --- | --- |
+| EI-5A governance | northstar-docs | #57 | `0c8996c` | `a2fd857` |
+| EI-5B Core lifecycle | northstar-core | #39 | `ccff26e` | `9e06d1e` |
+| EI5-D7 exact-boundary addendum | northstar-docs | #58 | `498956e` | `14dbaf4` |
+| EI-5C Application synthetic lifecycle evaluation | northstar-application | #93 | `75c6a35` | `f29dbc1` |
+
+**What this correction is:**
+- a status correction only, from merge history;
+- not an acceptance record: no EI-5B or EI-5C acceptance record exists in Docs, and no independent CI evidence is recorded;
+- EI-5C remains synthetic and non-authoritative;
+- it does not close EI-4.
+
+The earlier entries stay as recorded.
+
+### 13.7 Unchanged
+
+- **Decisions.** Every EI-5 decision, C-1, C-2 (with N10 adding the exact-completeness rule to version-2 generation) and O-1 are unchanged, as are the EI5-D7 clarification and the EI-5B and EI-5C lifecycle decisions.
+- **Issuance requirements.** These are unchanged:
+  - MODELED only; generation is not issuance;
+  - version-1 proposals are non-issuable;
+  - version-2 verification is required;
+  - `eiris1`;
+  - one issuance per generation key, and at most one per (strategy, listing, trading date);
+  - no backdating; explicit declarations; stable watermarks;
+  - append-only history;
+  - unknown or unverifiable history fails closed.
+
+  Application pre-checks are never authoritative.
+- **EI4-D8** keeps its conservative open-state treatment. A later modeled issuance in the same session may be `EVALUATION_UNRESOLVED`. It is not relaxed.
+- **Deferred.** O-2, O-3, EI3-D10, EI0-D21 and EI0-D19 stay deferred. ACTUAL issuance stays unauthorized. No production recommendation-history authority exists.
+
+### 13.8 Status
+
+| Item | Status |
+| --- | --- |
+| R-1, R-2 | **RESOLVED** (2026-11-13) |
+| N1 to N10 | **APPROVED** (2026-11-13); N10 in its stricter form |
+| ADR-025 | **ACCEPTED** (2026-11-13) |
+| EI-4C Versioned History Compatibility Design v1.0 | Approved governance; implementation not started |
+| N10 case-C refusal classification | **APPROVED** (2026-11-13): `RECOMMENDATION_HISTORY_BOUNDARY_EXCEEDED` / `DEPENDENCY_UNAVAILABLE`; version 2 only; keyless attempt only; not implemented |
+| SQLite label-format pairing trigger | **DEFERRED** |
+| Existing SQLite schema compatibility | **EXPECTED, NOT VERIFIED** (slice 4) |
+| Slices 1 to 5 | **NOT STARTED** |
+| Compatibility acceptance scenarios (52) | **PLANNED** |
+| EI-5 acceptance scenarios (119) | **PLANNED** |
+| EI-5D | **NOT AUTHORIZED**; requires slice 5 |
 | EI-4 formal closure | **PENDING** independent CI verification |
 | Operational or production authorization | **NOT GRANTED** |
