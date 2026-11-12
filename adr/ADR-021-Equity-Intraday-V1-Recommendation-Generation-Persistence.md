@@ -8,6 +8,28 @@ The product owner approved EI4-D9 -- Recommendation Generation Persistence Ident
 
 This is a design decision. **Nothing in it is implemented** when it is recorded. It needs an EI-4C Application compatibility slice first ([section 12](#12-implementation-sequence)).
 
+> **Note, 2026-11-12 (owner architecture sign-off, EI4-C5).** The paragraphs above record the status when this ADR was accepted, on 2026-11-07, and are not rewritten. On 2026-11-12 the product owner approved ADR-021's architecture conformance and its formal sign-off ([EI-4 Decision Register, section 15](../product/Equity-Intraday-V1-EI4-Decision-Register.md#15-ei-4-closure-dispositions-2026-11-12)):
+>
+> - **Accepted and implemented.** ADR-021 is accepted and implemented within the documented EI-4 scope, through the slices of [section 12](#12-implementation-sequence):
+>   - EI-4C compatibility;
+>   - EI-4D-A;
+>   - EI-4D-B;
+>   - EI-4E synthetic acceptance.
+>
+>   The evidence is in the [EI-4E Synthetic Acceptance Record](../product/Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md). The statement above that nothing is implemented is superseded by this note.
+> - **Later hardening.** [ADR-022](ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) and [ADR-023](ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md) subsequently harden its authorization and write boundaries:
+>   - ADR-022 adds the policy-binding gate inside the section 6 recording path;
+>   - ADR-023 makes the verified recorder the only supported operational writer, and splits the store port of section 11 into a read port and a write port.
+> - **Unchanged decisions.** Every architectural decision in sections 1 to 12 is unchanged.
+> - **Limitations.** Synthetic engineering acceptance has documented limitations:
+>   - Windows-only process evidence;
+>   - no replay from a separate OS process;
+>   - no natural end-to-end sizing-search-limit scenario;
+>   - independent CI not verified.
+>
+>   EI-4's formal milestone closure is pending independent CI verification.
+> - **No production authorization.** This sign-off does not imply production authorization, real data, actual issuance or trading.
+
 ## Date
 
 2026-11-07
@@ -16,6 +38,8 @@ This is a design decision. **Nothing in it is implemented** when it is recorded.
 
 - Product owner: approved EI4-D9-A to EI4-D9-J on 2026-11-07.
 - Northstar Architecture Team: formal review pending.
+
+> **Note, 2026-11-12.** The product owner approved this ADR's architecture conformance and formal sign-off on 2026-11-12 (EI4-C5; see the note under Status). The line above records the status before that sign-off.
 
 ## Context
 
@@ -230,3 +254,6 @@ This ADR records an architecture. It does not:
 - [ADR-019: Symbol Ampersand Extension](ADR-019-Symbol-Ampersand-Extension.md)
 - [ADR-020: Equity Intraday V1 Recommendation Generation Architecture](ADR-020-Equity-Intraday-V1-Recommendation-Generation-Architecture.md)
 - Engineering Standards ES-001, ES-002, ES-003, ES-004
+- [ADR-022: Equity Intraday V1 Immutable Synthetic Policy-Version Identity Enforcement](ADR-022-Equity-Intraday-V1-Immutable-Synthetic-Policy-Version-Identity-Enforcement.md) (added 2026-11-12)
+- [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md) (added 2026-11-12)
+- [ADR-024: Equity Intraday V1 Recommendation Issuance and Lifecycle Architecture](ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) (added 2026-11-12)
