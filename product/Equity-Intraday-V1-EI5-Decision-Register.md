@@ -42,6 +42,13 @@
 
 > **Note, 2026-11-14 (EI-5D and EI-5E implemented; engineering acceptance recorded).** The note above records the state at authorization and is not rewritten. EI-5D and EI-5E are now merged (northstar-application #96, `9a68209`), and their engineering acceptance — PASS WITH DOCUMENTED LIMITATIONS, synthetic engineering acceptance — is recorded in the [EI-5D/EI-5E Engineering Acceptance Record](Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md) ([section 16](#16-ei-5d-and-ei-5e-implementation-and-engineering-acceptance-2026-11-14)). **Owner accepted, 2026-11-14: ACCEPTED WITH DOCUMENTED LIMITATIONS** ([section 16.3](#163-owner-acceptance-of-ei-5d-and-ei-5e-2026-11-14)). The issuance authority is an in-memory test double; EI-6 is not authorized.
 
+> **Note, 2026-11-14 (EI-6A authorized; EI-6 staged).** The note above records the state before this authorization and is not rewritten. Later on 2026-11-14 the owner approved decisions **D6-1 to D6-6** ([section 17](#17-owner-authorization-of-ei-6a-2026-11-14)):
+>
+> - **EI-6A — Durable SQLite Recommendation Issuance and Declaration Authority: AUTHORIZED, NOT IMPLEMENTED.** Its storage design is the [EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md).
+> - **Staged delivery.** EI-6 is delivered as EI-6A, EI-6B (lifecycle persistence) and EI-6C (monitoring), each with its own authorization and acceptance. **EI-6B and EI-6C: NOT AUTHORIZED.**
+> - **Timing clarified.** O-3 before EI-6B; O-2 and EI3-D10 before EI-6C; none blocks EI-6A. None is resolved.
+> - **Acceptance gate.** EI-6A owner acceptance requires local Windows real-SQLite acceptance **and** independently verified Linux CI. **EI-6A owner acceptance: PENDING.**
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -414,6 +421,7 @@ These were found by reading the current code and documents while recording the a
 - **Blocks.** Nothing in EI-5B to EI-5E. Before EI-6 monitoring.
 - **Status, 2026-11-12: DEFERRED** to the governance stage before EI-6 monitoring or any real data. No resolution is recorded.
 - **Not resolved by the exact-boundary clarification (2026-11-12).** The EI5-D7 clarification ([section 12.8](#128-ei5-d7-exact-boundary-finality-clarification)) covers only `as_of` exactly at the boundary. A snapshot even one microsecond later still decides by the rule as approved, and O-2 stays **DEFERRED**.
+- **Timing clarification, 2026-11-14 (D6-3, owner approved).** The text above is preserved. "Before EI-6 monitoring" means before **EI-6C** (monitoring and operational snapshot policy), and O-2 is decided together with EI3-D10. O-2 does not block EI-6A or EI-6B. O-2 itself stays **DEFERRED** ([section 17.3](#173-d6-3--o-2-o-3-and-ei3-d10-timing)).
 
 ### O-3 — Late evidence after terminal `INCOMPLETE_EVIDENCE`
 
@@ -425,6 +433,7 @@ These were found by reading the current code and documents while recording the a
 - **Recommendation.** (b) for EI-5, with (a) decided before EI-6.
 - **Blocks.** Nothing in EI-5B to EI-5E. Before EI-6.
 - **Status, 2026-11-12: DEFERRED** to the governance stage before EI-6. No resolution is recorded, and no late-evidence event kind exists.
+- **Timing clarification, 2026-11-14 (D6-3, owner approved).** The text above is preserved. Its "before EI-6" conflicted with "O-2 and O-3 before monitoring" in [section 12.5](#125-ei-5b-sequencing-and-the-revised-sequence), step 7, and the EI-5 design, section 11. O-3 concerns the persisted lifecycle-event vocabulary, so it must be decided before **EI-6B** (durable lifecycle-event persistence). It does not block EI-6A. O-3 itself stays **DEFERRED**, and the lifecycle-event vocabulary is unchanged ([section 17.3](#173-d6-3--o-2-o-3-and-ei3-d10-timing)).
 
 ## 7. Approved engineering sequence
 
@@ -507,6 +516,7 @@ An `ACTIVE` state means only that the modeled entry condition was evidenced. It 
 - [Equity Intraday V1 EI-4E Synthetic Acceptance Record](Equity-Intraday-V1-EI4E-Synthetic-Acceptance-Record.md)
 - [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
 - [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
+- [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
 
 ## 12. Owner approval of the EI-5A amendments (2026-11-12)
 
@@ -694,6 +704,14 @@ The sequence is the approved planning baseline, not implementation evidence.
 > - **Steps 1 to 3 have since merged** ([section 13.6](#136-milestone-status-correction)).
 > - **Step 4** is now governed by [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) and its approved slices ([section 13.5](#135-approved-implementation-sequence-n9)). It is not started.
 > - **Step 5 (EI-5D)** still requires step 4 to be accepted.
+
+> **Note, 2026-11-14 (D6-2 and D6-3, owner approved).** Steps 4 to 6 are merged and accepted ([sections 14](#14-ei-4c-compatibility-implementation-and-engineering-acceptance-2026-11-14) and [16](#16-ei-5d-and-ei-5e-implementation-and-engineering-acceptance-2026-11-14)). Step 7 is preserved as written and is now delivered in three separately authorized stages ([section 17.2](#172-d6-2--staged-ei-6-delivery)):
+>
+> | Stage | Scope | Repository | Prerequisite | Status |
+> | --- | --- | --- | --- | --- |
+> | EI-6A | Durable SQLite issuance and declaration authority | northstar-application (D6-5 contract PR), then northstar-infrastructure | — | **AUTHORIZED, NOT IMPLEMENTED** |
+> | EI-6B | Durable lifecycle-event persistence | northstar-application, then northstar-infrastructure | O-3 decided; own authorization | **NOT AUTHORIZED** |
+> | EI-6C | Monitoring and operational snapshot policy | To be decided at authorization | O-2 and EI3-D10 decided; own authorization | **NOT AUTHORIZED** |
 
 ### 12.6 Deferred and pending
 
@@ -1141,3 +1159,136 @@ The owner approved the engineering acceptance recommendation of the [EI-5D/EI-5E
 - resolution of deferred governance decisions.
 
 **EI-6 requires a separate owner authorization.** D5D-1 to D5D-5 are unchanged, and the acceptance adds no architecture or implementation requirement.
+
+## 17. Owner authorization of EI-6A (2026-11-14)
+
+**OWNER APPROVED, 2026-11-14:** decisions **D6-1 to D6-6**, following the EI-6 authorization review of 2026-11-14.
+
+The owner authorizes **EI-6A — Durable SQLite Recommendation Issuance and Declaration Authority**. EI-6B and EI-6C stay separately gated and are not authorized. Every decision of sections 4 and 12 to 16, of [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) and of the [EI-5 design](../architecture/Equity-Intraday-V1-EI5-Issuance-and-Lifecycle-Design-v1.0.md) stays binding, including the owner acceptance of EI-5D and EI-5E (section 16.3). The storage design is the [EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md).
+
+### 17.1 Approved decisions D6-1 to D6-6
+
+| ID | Decision | Governance reference | Status |
+| --- | --- | --- | --- |
+| D6-1 | **EI-6A is authorized** as an Infrastructure-owned durable SQLite issuance and declaration authority. Scope: implement the merged Application issuance reader and writer ports; persist MODELED issued recommendations and authoritative completeness declarations; share the existing EI-4D SQLite database; enforce deterministic identities and uniqueness; enforce source-provenance linkage; maintain one authority-wide monotone recording sequence; preserve append-only behaviour; enforce no-backdating transactionally; support restart-safe current and historical views; support concurrent processes and commit-uncertain recovery; refuse corrupt stored records without repair. Not an authorization of EI-6B or EI-6C | ADR-024 sections 4 to 7 and 13; EI-5 design sections 8 and 10 | **APPROVED** |
+| D6-2 | **Staged EI-6 delivery**: EI-6A, EI-6B, EI-6C, each with its own authorization and acceptance (section 17.2) | ADR-024 section 13; EI-5 design section 11 | **APPROVED** |
+| D6-3 | **Timing of the deferred decisions**: O-3 before EI-6B; O-2 and EI3-D10 before EI-6C; none blocks EI-6A (section 17.3) | Section 6 (O-2, O-3); section 12.5, step 7; EI-5 design section 11 | **APPROVED** (clarification) |
+| D6-4 | **EI-6A storage model**: additive SQLite objects in the EI-4D database file; structured issuance columns; integer-microsecond instant columns; one shared issuance and declaration recording-sequence ledger; no new canonical issued-record document or fingerprint format; the full issued record re-derived from verified source data on load. Approved **with additional integrity requirements** for the ledger (section 17.4) | EI-5 design section 10; ADR-024 sections 5 and 7 | **APPROVED** |
+| D6-5 | **Typed corrupt-record handling**: one small prerequisite northstar-application PR, merged before the Infrastructure implementation imports it (section 17.5) | ADR-024 section 12; EI-5 design section 8.3 | **APPROVED** |
+| D6-6 | **Mandatory CI evidence**: final EI-6A owner acceptance requires both local Windows real-SQLite engineering acceptance and independently verified successful Linux CI against the actual EI-6A PR revisions (section 17.6) | [EI-4 Decision Register, section 15.3](Equity-Intraday-V1-EI4-Decision-Register.md#153-what-closes-ei-4) (pattern) | **APPROVED** (stronger acceptance gate) |
+
+### 17.2 D6-2 — Staged EI-6 delivery
+
+This is a **sequencing and packaging amendment** to ADR-024 section 13 and to the EI-5 design, sections 9 to 11. The underlying architecture is unchanged; the original text of those sections is preserved, with dated amendments.
+
+| Stage | Scope | Status |
+| --- | --- | --- |
+| **EI-6A** | Durable SQLite issuance and declaration authority: the issuance and declaration tables, the recording-sequence ledger, views, concurrency, restart and commit-uncertain recovery | **AUTHORIZED, NOT IMPLEMENTED.** May proceed independently |
+| **EI-6B** | Durable lifecycle-event persistence: the `EquityRecommendationLifecycleStore` port, the lifecycle-event table, compare-and-append, rehydration through Core | **NOT AUTHORIZED.** Requires O-3, its own design decisions (including any canonical lifecycle-event format) and its own authorization |
+| **EI-6C** | Monitoring and operational snapshot policy | **NOT AUTHORIZED.** Requires O-2 and EI3-D10, and its own authorization |
+
+### 17.3 D6-3 — O-2, O-3 and EI3-D10 timing
+
+The historical wording is preserved in [O-2](#o-2--terminal-incomplete_evidence-depends-on-the-evaluated-snapshot), [O-3](#o-3--late-evidence-after-terminal-incomplete_evidence) and [section 12.5](#125-ei-5b-sequencing-and-the-revised-sequence), with dated clarifications:
+
+| Decision | Must be decided before | Does not block |
+| --- | --- | --- |
+| O-3 (late evidence after terminal `INCOMPLETE_EVIDENCE`) | EI-6B | EI-6A |
+| O-2 (post-boundary snapshot selection) | EI-6C | EI-6A, EI-6B |
+| EI3-D10 (trailing unfinalized candles) | EI-6C | EI-6A, EI-6B |
+
+O-2, O-3 and EI3-D10 are **not resolved** and keep their status (DEFERRED or pending). The lifecycle-event vocabulary is unchanged.
+
+### 17.4 D6-4 — Storage model and integrity requirements
+
+The binding design is the [EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md). In summary:
+
+- **Ledger.** One authority-wide ledger shared by issuances and declarations, allocated transactionally and committed atomically with its record. The implementation enforces, or fails closed on: duplicate sequence numbers; invalid ordering; a ledger kind that mismatches its record; a committed ledger entry without its record; a record without a valid ledger entry; and partial allocation after a transaction failure. A one-way foreign key does **not** prevent an orphan ledger entry; that requirement is met by a pre-commit check in the same transaction and by fail-closed checks on reads and writes ([addendum, section 4.3](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md#43-integrity-requirements-and-how-each-is-enforced)).
+- **Issuances.** `eiris1` identity, `eirk1` generation key, `eirp1` and `eira1` fingerprints, `MODELED` kind, strategy and listing and trading date, issued instant with its integer-microsecond column, and recording sequence; a foreign key to the EI-4D disposition; uniqueness by identity, by generation key and by (strategy, listing, trading date); insert-only. The referenced disposition must be `PROPOSED`, evaluator `/2`, and consistent with the issuance's stored identities and provenance. A matching generation key alone is not sufficient authority.
+- **Declarations.** Exchange and trading date, `complete_through` with its integer-microsecond column, and recording sequence; strictly monotone; equivalent retries write nothing; append-only.
+- **Transactions.** Authorization validated before any connection opens; `BEGIN IMMEDIATE`; authoritative state loaded; the Application-owned writer rules applied; the next sequence allocated; ledger entry and record inserted atomically; one COMMIT; uncertain commits reconciled through the existing Application contract; first-committed-record authority preserved.
+- **Views.** `load_issuance`, `load_session_issuance`, `session_view` and `session_view_at`, with the reference `northstar.equity-recommendation-issuance-authority/1`. An undeclared session returns `None`; a declared session with no visible issuance may return an empty tuple; a watermark beyond the current sequence is refused; views reproduce after restart and never repair records.
+- **Unchanged.** No EI-4D table or historical row is modified.
+
+### 17.5 D6-5 — Typed corrupt-record handling
+
+One small prerequisite northstar-application PR, merged **before** the Infrastructure implementation imports the new contract. It:
+
+- introduces a typed error for corrupt or non-re-deriving stored issuance records (including ledger and declaration inconsistency in the authority's stored state), named under the existing Application conventions in that PR, not frozen here;
+- classifies it as a permanent failure, distinct from the retryable unavailability error;
+- maps it through the existing issuer and the authoritative-history source, preserving the existing retryable versus permanent distinctions;
+- preserves `STORED_ISSUANCE_INVALID` semantics where governed (EI-5 design, section 8.3).
+
+It introduces no new issuance identity, format or write behaviour. **No Core change is authorized.**
+
+### 17.6 D6-6 — Mandatory CI evidence
+
+Final EI-6A owner acceptance requires **both**:
+
+1. local Windows real-SQLite engineering acceptance; and
+2. independently verified successful Linux CI, with the existing `python-ci.yml` workflows, against the actual EI-6A PR revisions — the Infrastructure EI-6A PR and the D6-5 Application PR — showing that the applicable EI-6A acceptance tests ran and passed.
+
+The acceptance record states the Infrastructure and Application commit identities used by the local checks, and for each CI run its repository, commit, run identifier, conclusion and checked-out dependency commits ([addendum, section 13](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md#13-mandatory-ci-evidence-d6-6)).
+
+- A passing local suite alone does not satisfy final owner acceptance.
+- A merged PR alone does not prove that a particular CI run passed.
+- If the CI evidence is unavailable, engineering implementation may be reported as complete, but **EI-6A owner acceptance stays PENDING**.
+- The earlier EI-4 CI closure requirement is **not waived**: EI4-C4 stays mandatory for formal EI-4 closure.
+
+### 17.7 EI-6A acceptance ownership
+
+The EI-6A rows are listed, with their status, in the [addendum, section 12](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md#12-acceptance). Every row is **PLANNED**; none is VERIFIED by being documented.
+
+| Owner | Scenarios |
+| --- | --- |
+| **EI-6A** | CC-01 to CC-06; RR-03; the historical-view part of RR-04; the SQLite (S) parts of ID-02, ID-03, BD-01, HW-03 and HW-08; storage scenarios SA-01 to SA-13 (verified source provenance, pre-connection refusal of unauthorized writes, append-only and no-replace protections, corruption and tampering refusal, restart-safe re-derivation, atomic recording-sequence integrity, durable view semantics). No backdating under concurrent writes is CC-03; commit uncertainty and bounded reconciliation are CC-06 and SA-09 |
+| **EI-6B** | RR-01; the lifecycle-state part of RR-04; RR-05; RR-06 |
+| **Unchanged** | RV-04 stays DEFERRED (O-3). Every EI-5D and EI-5E row keeps its accepted status (section 16.3) |
+
+### 17.8 Carried-forward limitations
+
+These stay in force and are not resolved by this authorization:
+
+- **VC-04:** rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is **NOT AUTHORIZED** without separate verification;
+- the deferred **N6** SQLite label-format pairing trigger;
+- the **I08** equivalent-mutant qualification;
+- the conservative exposure and exclusivity restrictions of **EI4-D8**;
+- the EI-5D **IS-16** limitation;
+- the EI-5D **HW-07** limitation, until real-reader evidence is accepted;
+- the EI-5E **NB-04** limitation;
+- **EI-4 formal CI closure**, pending (EI4-C4);
+- every existing historical-evidence restriction.
+
+### 17.9 Not authorized
+
+- EI-6B lifecycle persistence and EI-6C monitoring;
+- the resolution of O-2, O-3 or EI3-D10;
+- ACTUAL issuance;
+- broker orders or fills, real-money trading;
+- production deployment;
+- API or Web exposure;
+- composition roots or monitoring execution;
+- relaxation of EI4-D8;
+- new unapproved canonical issuance formats;
+- reconstruction or modification of historical EI-4D evidence.
+
+EI-6A remains **single-host and MODELED-only**.
+
+### 17.10 Status
+
+| Item | Status |
+| --- | --- |
+| D6-1 to D6-6 | **APPROVED** (owner, 2026-11-14) |
+| EI-6A | **AUTHORIZED, NOT IMPLEMENTED** |
+| EI-6A storage design addendum | **APPROVED** (D6-4, 2026-11-14) |
+| D6-5 Application contract PR | **AUTHORIZED, NOT STARTED**; must merge before the Infrastructure implementation imports it |
+| EI-6A acceptance scenarios | **PLANNED** |
+| EI-6A owner acceptance | **PENDING** (requires D6-6 evidence) |
+| EI-6B | **NOT AUTHORIZED** (O-3 first) |
+| EI-6C | **NOT AUTHORIZED** (O-2 and EI3-D10 first) |
+| O-2, O-3 | **DEFERRED** (timing clarified, unresolved) |
+| EI3-D10 | **Pending** |
+| EI-5D and EI-5E | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (2026-11-14, unchanged) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| EI-4 formal closure | **PENDING** independent CI verification |
+| Operational or production authorization | **NOT GRANTED** |

@@ -51,6 +51,12 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 
 > **Note, 2026-11-14 (EI-5D and EI-5E implemented).** The note above records the state at authorization. EI-5D (sections 2 to 7 and 12) and EI-5E are now merged in northstar-application #96 (`9a68209`), with engineering acceptance PASS WITH DOCUMENTED LIMITATIONS ([EI-5D/EI-5E Engineering Acceptance Record](../product/Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md)). The owner **accepted them with documented limitations on 2026-11-14** ([EI-5 Decision Register, section 16.3](../product/Equity-Intraday-V1-EI5-Decision-Register.md#163-owner-acceptance-of-ei-5d-and-ei-5e-2026-11-14)). EI-6 requires a separate owner authorization. Section 13 is unchanged: the issuance authority exercised is an in-memory test double, and the SQLite authority (EI-6) is neither implemented nor authorized.
 
+> **Note, 2026-11-14 (EI-6 staged; EI-6A authorized).** This ADR stays **accepted** and unchanged in architecture. The note above records the state before this authorization.
+>
+> - **Staged delivery (D6-2).** Section 13 is delivered in three separately authorized stages: EI-6A (issuance and declaration authority), EI-6B (lifecycle-event persistence) and EI-6C (monitoring). This is a sequencing and packaging amendment, marked "amended 2026-11-14" in section 13.
+> - **Authorized.** **EI-6A — AUTHORIZED, NOT IMPLEMENTED** ([EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14)), with the [EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md). EI-6A owner acceptance is **PENDING** and requires independently verified Linux CI (D6-6).
+> - **Not authorized.** EI-6B and EI-6C. O-3 must be decided before EI-6B, and O-2 and EI3-D10 before EI-6C (D6-3); none is resolved. Only MODELED issuance is authorized.
+
 ## Date
 
 2026-11-12
@@ -328,6 +334,16 @@ EI-6 implements, in northstar-infrastructure:
 
 EI-5 implements none of it. Monitoring runs and any operational composition root also belong to EI-6 or later.
 
+*Amended 2026-11-14 (D6-2, D6-3; owner approved).* The text above is preserved, and the architecture is unchanged: same database authority, foreign keys to the EI-4D disposition, insert-only triggers, the uniqueness constraints, one `BEGIN IMMEDIATE` per write, reload on commit uncertainty, and real-SQLite acceptance. Only the **sequencing and packaging** change. EI-6 is delivered in three stages, each needing its own milestone authorization and acceptance:
+
+| Stage | Scope from this section and section 12 | Status |
+| --- | --- | --- |
+| EI-6A | The issuance and declaration tables, with one shared recording-sequence ledger, and the issuance reader and writer of section 12 | **AUTHORIZED, NOT IMPLEMENTED** ([EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md)) |
+| EI-6B | The lifecycle-event table, lifecycle appends and the `EquityRecommendationLifecycleStore` port of section 12 | **NOT AUTHORIZED**; O-3 must be decided first |
+| EI-6C | Monitoring runs and snapshot selection | **NOT AUTHORIZED**; O-2 and EI3-D10 must be decided first |
+
+Composition roots stay outside EI-6A. The record is the [EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14).
+
 ### 14. Trust model
 
 - **Scope.** The scope of [ADR-023, section 2](ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md#2-operational-trust-boundary-dq1) and the ADR-022 DQ9 limitation applies unchanged:
@@ -448,3 +464,4 @@ This ADR records an accepted architecture. It does not:
 - Engineering Standards ES-001, ES-003, ES-004, ES-007
 - [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
 - [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
+- [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
