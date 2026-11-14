@@ -20,6 +20,13 @@
 - **Not implemented.** No module, table, trigger or test described here exists. Every scenario is **PLANNED**.
 - **Binding level.** The invariants, behaviours, the event-document format and the outcome vocabulary are binding. Python and SQLite names are pinned; an implementation PR may rename one only by stating the reason in its description.
 
+> **Status update, 2026-11-15: implemented; local engineering acceptance recorded.** The table and bullets above record the state at approval and are not rewritten.
+>
+> - **Merged.** PR-1: northstar-application #98 (`b7df16b`). PR-2: northstar-infrastructure #68 (`dd6a434`). The pinned names are used unchanged.
+> - **Acceptance.** PASS WITH DOCUMENTED LIMITATIONS, local Windows: of the 22 rows of section 12, 15 VERIFIED and 7 VERIFIED WITH LIMITATION ([EI-6B Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md#13-acceptance-evidence-matrix)). The section 12 Status columns keep their PLANNED text.
+> - **Pending.** D6B-7 Linux CI (section 13) is not verified; **EI-6B owner acceptance is PENDING**.
+> - **Recorded qualifications.** The stored `WINDOW` category is proved by a test seam only; RR-05 does not detect a canonical, Core-valid privileged rewrite (D6B-4).
+
 Code was read at:
 
 | Repository | Branch | Commit |

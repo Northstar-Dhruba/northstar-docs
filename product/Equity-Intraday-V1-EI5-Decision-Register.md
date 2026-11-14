@@ -1509,3 +1509,50 @@ EI-6B remains synthetic-evidence-only despite its non-synthetic Application reco
 | EI-4 formal closure | **PENDING** (separate obligation) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-15.** The EI-6B and scenario rows above record the state at authorization and are not rewritten. The current status is in [section 20.3](#203-status).
+
+## 20. EI-6B implementation and engineering acceptance (2026-11-15)
+
+This section records **engineering acceptance evidence**. It is not an owner approval and does not rewrite section 19. The evidence is in the [EI-6B Durable Recommendation Lifecycle Persistence Engineering Acceptance Record](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md). D6B-1 to D6B-7, the clarifications and O-3 option (b) are unchanged.
+
+**EI-6B — ENGINEERING IMPLEMENTATION MERGED; LOCAL ACCEPTANCE RECORDED; D6B-7 LINUX CI EVIDENCE PENDING; FINAL OWNER ACCEPTANCE PENDING.**
+
+### 20.1 Implementation and acceptance summary
+
+| Item | Value |
+| --- | --- |
+| Application (PR-1) | northstar-application #98, merge `b7df16b`, change commit `82f872d`; 9 files (6 new, 3 modified) |
+| Infrastructure (PR-2) | northstar-infrastructure #68, merge `dd6a434`, change commit `ac66907`; 5 files (4 new, 1 modified) |
+| Local engineering verdict | **PASS WITH DOCUMENTED LIMITATIONS — synthetic, local Windows, Application contract and real-SQLite engineering acceptance** |
+| EI-6B scenario rows (22) | 15 VERIFIED, 7 VERIFIED WITH LIMITATION (RR-04 (state), RR-06, LS-13, LS-14, LS-16: Windows-only process evidence; RR-05: D6B-4 no fingerprint; LS-17: `WINDOW` on load proved by a test seam only); none partially verified, not tested or blocked |
+| Commit-uncertainty retry | **COMPLIANT WITH APPROVED POLICY**: a second write happens only after an authoritative reload shows exactly the prior history, and it reuses the same content-bound compare-and-append |
+| Local results | Merged commits: 52 Application EI-6B cases (with 84 EI-5C cases) and 76 Infrastructure EI-6B cases passed. Pre-merge working trees: Application suite 4,726 passed; Infrastructure suite 3,412 passed, 27 skipped; mutations 6 of 6 (Application) and 10 of 11 with one equivalent survivor (Infrastructure) |
+| D6B-7 Linux CI | **PENDING** for #98 and #68 — evidence not available in this environment |
+
+### 20.2 Owner decision required
+
+D6B-7 is not satisfied, so EI-6B **cannot** be owner-accepted on this evidence. The recommended sequence is in the [acceptance record, section 17](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md#17-engineering-verdict-and-milestone-status):
+
+1. record the two Linux CI runs;
+2. reclassify the Windows-only process rows if those runs show the EI-6B modules executed without skips;
+3. then decide on acceptance with the documented limitations, including the `WINDOW` test-seam gap.
+
+### 20.3 Status
+
+| Item | Status |
+| --- | --- |
+| D6B-1 to D6B-7; clarifications 1 to 3 | **APPROVED** (2026-11-14, unchanged) |
+| EI-6B | **IMPLEMENTED AND MERGED** (#98, #68); local engineering acceptance **PASS WITH DOCUMENTED LIMITATIONS** |
+| EI-6B acceptance scenarios (22) | 15 VERIFIED, 7 VERIFIED WITH LIMITATION (local Windows) |
+| D6B-7 independent Linux CI | **PENDING** (#98 and #68) |
+| EI-6B owner acceptance | **PENDING** |
+| O-3 | **RESOLVED** (option (b), unchanged) |
+| Specification section 8.2, late gap-filling evidence | **DEFERRED** to a future EI-8 design |
+| O-2; EI3-D10 | **UNRESOLVED**; required before EI-6C |
+| EI-6A | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (2026-11-14, unchanged) |
+| EI-6C; EI-8 | **NOT AUTHORIZED** |
+| Core change | **NOT AUTHORIZED** |
+| EI-4 formal closure | **PENDING** (separate obligation) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| Operational or production authorization | **NOT GRANTED** |
