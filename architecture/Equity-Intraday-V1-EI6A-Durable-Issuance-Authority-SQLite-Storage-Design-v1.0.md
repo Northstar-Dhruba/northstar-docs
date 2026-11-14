@@ -14,6 +14,12 @@
 | EI-6B (lifecycle persistence), EI-6C (monitoring) | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |
 
+> **Status update, 2026-11-14: implemented; local engineering acceptance recorded.** The table above records the state at approval and is not rewritten.
+>
+> - **Merged.** The D6-5 Application contract (northstar-application #97, `a17bd91`) and this design (northstar-infrastructure #67, `63d2ab3`) are merged.
+> - **Acceptance.** Local Windows real-SQLite engineering acceptance is PASS WITH DOCUMENTED LIMITATIONS: 26 rows, 19 VERIFIED and 7 VERIFIED WITH LIMITATION ([EI-6A Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md)). The section 12 statuses keep their plan.
+> - **Pending.** D6-6 Linux CI is not verified, so **owner acceptance is PENDING**.
+
 - **Governance.** The owner decisions D6-1 to D6-6 are recorded in the [EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14). The architecture is [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) sections 4 to 7, 13 and 14, with its dated staged-delivery amendment of 2026-11-14.
 - **What this document is.** An addendum to the [EI-5 Issuance and Lifecycle Design v1.0](Equity-Intraday-V1-EI5-Issuance-and-Lifecycle-Design-v1.0.md). It details and tightens that design's section 10 for the issuance and declaration authority only. It changes no invariant of the EI-5 design, section 8.2, and no Application port, record, identity or format.
 - **Not implemented.** No table, trigger, adapter or test described here exists. Every scenario is **PLANNED**.

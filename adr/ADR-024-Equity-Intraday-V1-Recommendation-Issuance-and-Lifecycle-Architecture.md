@@ -57,6 +57,8 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 > - **Authorized.** **EI-6A — AUTHORIZED, NOT IMPLEMENTED** ([EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14)), with the [EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md). EI-6A owner acceptance is **PENDING** and requires independently verified Linux CI (D6-6).
 > - **Not authorized.** EI-6B and EI-6C. O-3 must be decided before EI-6B, and O-2 and EI3-D10 before EI-6C (D6-3); none is resolved. Only MODELED issuance is authorized.
 
+> **Note, 2026-11-14 (EI-6A implemented).** The note above records the state at authorization. The EI-6A part of section 13 is merged in northstar-infrastructure #67 (`63d2ab3`), on the D6-5 Application prerequisite (northstar-application #97, `a17bd91`). Local engineering acceptance is PASS WITH DOCUMENTED LIMITATIONS ([EI-6A Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md)). D6-6 Linux CI is not verified, so **EI-6A owner acceptance is PENDING**. The EI-6B and EI-6C parts of section 13 are neither implemented nor authorized.
+
 ## Date
 
 2026-11-12

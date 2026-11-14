@@ -49,6 +49,8 @@
 > - **Timing clarified.** O-3 before EI-6B; O-2 and EI3-D10 before EI-6C; none blocks EI-6A. None is resolved.
 > - **Acceptance gate.** EI-6A owner acceptance requires local Windows real-SQLite acceptance **and** independently verified Linux CI. **EI-6A owner acceptance: PENDING.**
 
+> **Note, 2026-11-14 (EI-6A implemented; local engineering acceptance recorded).** The note above records the state at authorization and is not rewritten. The D6-5 Application prerequisite (northstar-application #97, `a17bd91`) and EI-6A (northstar-infrastructure #67, `63d2ab3`) are merged. Local engineering acceptance — **PASS WITH DOCUMENTED LIMITATIONS**, synthetic, local Windows real SQLite — is recorded in the [EI-6A Engineering Acceptance Record](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md) ([section 18](#18-ei-6a-implementation-and-engineering-acceptance-2026-11-14)). **D6-6 Linux CI is not verified, so EI-6A owner acceptance stays PENDING.** EI-6B and EI-6C stay not authorized.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -517,6 +519,7 @@ An `ACTIVE` state means only that the modeled entry condition was evidenced. It 
 - [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
 - [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 - [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
+- [EI-6A Durable SQLite Issuance Authority Engineering Acceptance Record](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md) (added 2026-11-14)
 
 ## 12. Owner approval of the EI-5A amendments (2026-11-12)
 
@@ -1291,4 +1294,47 @@ EI-6A remains **single-host and MODELED-only**.
 | EI-5D and EI-5E | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (2026-11-14, unchanged) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | EI-4 formal closure | **PENDING** independent CI verification |
+| Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-14.** The EI-6A, D6-5 and acceptance-scenario rows above record the state at authorization and are not rewritten. The current status is in [section 18.3](#183-status).
+
+## 18. EI-6A implementation and engineering acceptance (2026-11-14)
+
+This section records **engineering acceptance evidence**. It is not an owner approval and does not rewrite section 17. The evidence is in the [EI-6A Durable SQLite Issuance Authority Engineering Acceptance Record](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md). D6-1 to D6-6 are unchanged.
+
+### 18.1 Implementation and acceptance summary
+
+| Item | Value |
+| --- | --- |
+| D6-5 prerequisite | northstar-application #97, merge `a17bd91`, change commit `00089fc` |
+| EI-6A implementation | northstar-infrastructure #67, merge `63d2ab3`, change commit `e756d7d`; two production modules, two exports, one fixtures module, one test module |
+| Local engineering verdict | **PASS WITH DOCUMENTED LIMITATIONS — synthetic, local Windows real-SQLite engineering acceptance** |
+| EI-6A scenario rows (26) | 19 VERIFIED, 7 VERIFIED WITH LIMITATION (CC-01 to CC-04, RR-04 (views) and ID-02 (S): Windows-only process evidence; HW-03 (S): EI4-D8 construction limit) |
+| Source verification on load | Level A on the referenced disposition, then re-derivation of the issued record; levels A to C before issuance. Matches the addendum, section 8; not a blocker |
+| Local results | 43 EI-6A cases passed on merged `63d2ab3`; full Infrastructure suite 3,336 passed, 27 skipped, and 6 of 6 targeted mutations detected, on the pre-merge working tree |
+| D6-6 Linux CI | **NOT VERIFIED** for #97 or #67 — evidence not available in this environment |
+| EI-5D HW-07 | Durable-reader evidence now exists (SA-10); closure of that limitation is an owner decision |
+
+### 18.2 Owner decision required
+
+D6-6 is not satisfied, so EI-6A **cannot** be owner-accepted on this evidence. The recommended sequence is in the [acceptance record, section 13](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md#13-engineering-verdict-and-recommendation):
+
+1. record the two Linux CI runs;
+2. then decide on acceptance with the documented limitations;
+3. decide separately whether the EI-5D HW-07 limitation is closed.
+
+### 18.3 Status
+
+| Item | Status |
+| --- | --- |
+| D6-1 to D6-6 | **APPROVED** (2026-11-14, unchanged) |
+| D6-5 Application prerequisite | **IMPLEMENTED AND MERGED** (#97) |
+| EI-6A | **IMPLEMENTED AND MERGED** (#67); local engineering acceptance **PASS WITH DOCUMENTED LIMITATIONS** |
+| EI-6A acceptance scenarios (26) | 19 VERIFIED, 7 VERIFIED WITH LIMITATION (local Windows) |
+| D6-6 independent Linux CI | **NOT VERIFIED** (#97 and #67) |
+| EI-6A owner acceptance | **PENDING** |
+| EI-6B, EI-6C | **NOT AUTHORIZED** |
+| O-2, O-3; EI3-D10 | **DEFERRED**; pending |
+| EI-4 formal closure | **PENDING** independent CI verification (separate) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |
