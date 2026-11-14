@@ -4,6 +4,16 @@
 
 **Engineering acceptance record, 2026-11-14.** This is Docs PR-3 of the EI-6A plan authorized in the [EI-5 Decision Register, section 17](Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14).
 
+**EI-6A — ACCEPTED WITH DOCUMENTED LIMITATIONS, 2026-11-14 (owner).** See [section 13.1](#131-owner-acceptance-2026-11-14).
+
+> **Note, 2026-11-14 (D6-6 evidence and owner acceptance).** The bullets below record the state at engineering acceptance and are not rewritten. Since then:
+>
+> - **Linux CI recorded.** Successful Linux runs exist for northstar-application #97 (run `43599364295`) and northstar-infrastructure #67 (run `43604917993`) ([section 11.3](#113-verified-linux-ci-evidence-2026-11-14)). **D6-6: SATISFIED**, with the workflow-identity qualification stated there.
+> - **Reclassified.** The six Windows-only separate-process rows are VERIFIED. The matrix is now **25 VERIFIED, 1 VERIFIED WITH LIMITATION (HW-03 (S)), 0 NOT VERIFIED** ([section 9.4](#94-reclassification-after-linux-ci-2026-11-14)).
+> - **Limitations reconciled** in [section 12.1](#121-limitation-reconciliation-2026-11-14).
+> - **Owner decision.** The owner accepted EI-6A with documented limitations on 2026-11-14 ([section 13.1](#131-owner-acceptance-2026-11-14)).
+> - **Unchanged.** EI-6B and EI-6C stay NOT AUTHORIZED.
+
 - **Verdict:** EI-6A LOCAL ENGINEERING ACCEPTANCE: **PASS WITH DOCUMENTED LIMITATIONS — synthetic, local Windows real-SQLite engineering acceptance** ([section 13](#13-engineering-verdict-and-recommendation)).
 - **What it covers:** EI-6A — Durable SQLite Recommendation Issuance and Declaration Authority, merged as northstar-infrastructure #67 on top of the D6-5 Application prerequisite, northstar-application #97 ([section 4](#4-repository-baselines)).
 - **Acceptance matrix:** 26 EI-6A scenario rows — **19 VERIFIED, 7 VERIFIED WITH LIMITATION**, none NOT VERIFIED ([section 9](#9-acceptance-evidence-matrix)). EI-6B rows stay out of scope.
@@ -253,6 +263,30 @@ ADR-024 section 6 says a failure to read or verify raises `EquityRecommendationH
 
 **Not here:** RR-01, the state part of RR-04, RR-05 and RR-06 (EI-6B, not authorized).
 
+### 9.4 Reclassification after Linux CI (2026-11-14)
+
+Sections 9.1 to 9.3 record the classification at engineering acceptance and are not rewritten.
+
+**Why six rows change.** Their only limitation was Windows-only separate-process evidence (L2). Their tests are in `tests/test_sqlite_equity_recommendation_issuance.py`, which has no platform conditional, skip or xfail marker, and spawns processes with the `spawn` start method on every platform. The Infrastructure Linux run (section 11.3) executed that module with successful progress and no skip or failure in its section. All 43 cases, including the separate-process ones, therefore ran and passed on Linux as well as on Windows. The GitHub log shows the module's progress, not each test name.
+
+| ID | Test | Before | After |
+| --- | --- | --- | --- |
+| CC-01 | `test_cc01_…` | VERIFIED WITH LIMITATION | VERIFIED |
+| CC-02 | `test_cc02_…` | VERIFIED WITH LIMITATION | VERIFIED |
+| CC-03 | `test_cc03_an_issuance_racing_…`; `test_cc03_both_orderings_deterministically` | VERIFIED WITH LIMITATION | VERIFIED (each spawned run still exercises one ordering; both are shown deterministically) |
+| CC-04 | `test_cc04_…` | VERIFIED WITH LIMITATION | VERIFIED |
+| RR-04 (views) | `test_rr03_rr04_id02_…` | VERIFIED WITH LIMITATION | VERIFIED (the state part stays EI-6B) |
+| ID-02 (S) | `test_rr03_rr04_id02_…`; `test_cc01_…` | VERIFIED WITH LIMITATION | VERIFIED |
+| HW-03 (S) | `test_hw03_s_…` | VERIFIED WITH LIMITATION | **Unchanged: VERIFIED WITH LIMITATION** (L1; section 10) |
+
+**Final totals:**
+
+| Group | Rows | VERIFIED | VERIFIED WITH LIMITATION | NOT VERIFIED |
+| --- | --- | --- | --- | --- |
+| EI-5 matrix rows, S parts | 13 | 12 | 1 (HW-03 (S)) | 0 |
+| Storage scenarios SA-01 to SA-13 | 13 | 13 | 0 | 0 |
+| **Total** | **26** | **25** | **1** | **0** |
+
 ## 10. HW-03 and the EI-5D HW-07 limitation
 
 - **HW-03 (S).** The EI5-D4 example has a later issuance C. Once A is issued, EI4-D8 treats it as open, and every later same-session proposal is refused (`EXPOSURE_POLICY_UNRESOLVED`), so no C can be built through the real chain. The evidence instead uses two listings issued at the same modeled instant (neither in the other's assessment) and a later declaration. It shows the view at a watermark is unchanged by later recording. EI4-D8 is not relaxed.
@@ -299,6 +333,43 @@ A run on `develop` at or after `63d2ab3` whose Application checkout contains `a1
 
 **Reconciliation attempt, 2026-11-14.** A final D6-6 reconciliation was requested. No run identifier, URL, log or artifact for #97 or #67 was supplied or found in the workspace (including `NorthstarEvidence`, which holds only unrelated October milestone evidence). Every item in the table above therefore stays **MISSING**, and no limitation or status in this record changes.
 
+### 11.3 Verified Linux CI evidence (2026-11-14)
+
+Section 11.2 records the state before this evidence and is not rewritten.
+
+**Source of the evidence.** The run and job identifiers, URLs, revisions and results were supplied and screenshot-verified by the owner on 2026-11-14. They were reconciled for this record against local Git and the repositories' workflow definitions. They were not fetched from this environment, which has no GitHub CLI or API access.
+
+| Item | northstar-application #97 | northstar-infrastructure #67 |
+| --- | --- | --- |
+| Run ID | `43599364295` | `43604917993` |
+| Job ID | `132460599656` | `132477386762` |
+| URL | <https://github.com/Northstar-Dhruba/northstar-application/actions/runs/43599364295/job/132460599656> | <https://github.com/Northstar-Dhruba/northstar-infrastructure/actions/runs/43604917993/job/132477386762> |
+| Tested revision | `a17bd91e308c298db8cce2896c0366279e4437cd` (the #97 merge; local `develop` HEAD) | `63d2ab3ac931c0bbb3b1a124fa17d9737030fe17` (the #67 merge; local `develop` HEAD) |
+| Application dependency | — | `a17bd91e308c298db8cce2896c0366279e4437cd` (contains D6-5) |
+| Core dependency | `29bd34ac97810e6b471ed6c2ba4618ebaa57d9c6` | `29bd34ac97810e6b471ed6c2ba4618ebaa57d9c6` |
+| Platform; Python | Linux; 3.13.18 | Linux; 3.13.18 |
+| Test job | SUCCESS | SUCCESS |
+| Pytest | **4,674 passed**, no failures or skips reported; 47.30 s | **3,363 collected; 3,339 passed, 24 skipped**, no failures; 182.21 s |
+| EI-6A module | Application issuance, generation and architecture tests in the suite | `tests/test_sqlite_equity_recommendation_issuance.py` shown with successful progress, no skip or failure in its section |
+
+**Consistency checks:**
+
+- **Revisions.** All four SHAs exist locally and equal the `develop` HEADs of their repositories. The #97 and #67 merge subjects name those PRs.
+- **Dependencies.** Each workflow checks out its dependencies at `develop`; the recorded commits are those `develop` HEADs.
+- **Counts.** Application's 4,674 equals the local full-suite count reported for the D6-5 change. Infrastructure's 3,363 collected equals the local Windows total (3,336 passed + 27 skipped); the Linux run skips 3 fewer.
+- **Module.** The EI-6A module holds 43 cases with no skip or platform marker. Individual scenario names are not claimed to appear in the GitHub log.
+
+**Workflow identity.** At both tested revisions, `.github/workflows/python-ci.yml` is the **only** workflow file. It is named "Python CI" and has one job, `test`, which runs on `ubuntu-latest`, installs Python 3.13 with `uv`, checks out its dependencies at `develop`, runs `ruff check`, `ruff format --check` and `pytest`. The evidence (a Linux test job, Python 3.13.18, these dependency commits) matches it, so the runs are `python-ci.yml` runs.
+
+- **Qualification.** This identity is established from the repositories' workflow inventory, not from run metadata displaying the filename, which this environment cannot access.
+- **Not shown.** The supplied evidence shows the pytest step; it does not show the Ruff steps individually. The job's SUCCESS covers them.
+
+**D6-6: SATISFIED.**
+
+- Local Windows real-SQLite acceptance: section 11.1.
+- Independently verified successful Linux CI for the D6-5 Application prerequisite and for the EI-6A Infrastructure implementation, at their actual merged revisions: this section.
+- The workflow-identity qualification is the only residual one.
+
 EI-4 formal CI closure (EI4-C4) stays a separate obligation; these runs do not close it unless they meet the [EI-4 Decision Register, section 15.3](Equity-Intraday-V1-EI4-Decision-Register.md#153-what-closes-ei-4).
 
 ## 12. Remaining limitations and blockers
@@ -330,6 +401,44 @@ EI-4 formal CI closure (EI4-C4) stays a separate obligation; these runs do not c
 - **L16 — EI-4 closure:** formal CI closure (EI4-C4) pending, separately.
 - **L17 — Deferred decisions:** O-2, O-3 and EI3-D10 deferred; EI-6B and EI-6C not authorized; ACTUAL issuance unauthorized.
 
+### 12.1 Limitation reconciliation (2026-11-14)
+
+The list above records the state at engineering acceptance and is not rewritten.
+
+**Resolved or addressed (historical limitations):**
+
+| Item | Disposition | Evidence |
+| --- | --- | --- |
+| B1 — D6-6 CI | **RESOLVED.** Both Linux runs are recorded; workflow identity is qualified as stated | Section 11.3 |
+| L2 — Windows-only process evidence | **RESOLVED.** CC-01 to CC-04, RR-04 (views) and ID-02 (S) also ran and passed on Linux | Infrastructure run `43604917993`; section 9.4 |
+| L8 — No full run on the merged commit | **ADDRESSED.** The full Infrastructure suite passed on Linux at merged `63d2ab3`, and the full Application suite at merged `a17bd91`. No full local Windows run on the merged commit is recorded; none is now required | Runs `43599364295`, `43604917993` |
+| L15 — EI-5D HW-07 | **ADDRESSED (owner approved, 2026-11-14).** SA-10 is real-SQLite evidence that `session_view_at` beyond the authority's current position is refused. The EI-5D acceptance record and its original limitation are preserved, with a dated cross-reference | Section 10; `test_sa10_view_semantics_on_sqlite` |
+
+**Remaining (accepted):**
+
+| Item | Limitation |
+| --- | --- |
+| L1 | HW-03 (S): a later same-session issuance cannot be constructed under EI4-D8; the evidence uses two same-instant listings and a later declaration |
+| L3 | Orphan-ledger integrity relies partly on the adapter (pre-commit and whole-ledger checks); the database alone does not prevent a committed orphan |
+| L4 | The issued instant is checked against the proposal only by re-derivation on load |
+| L5 | `GENERATION_ALREADY_ISSUED` is evidenced at the Application contract level only |
+| L6 | The EI-4D generation tables must exist before the first EI-6A operation |
+| L7 | Load performs the governed level-A validation of the referenced disposition and re-derivation; levels B and C run before issuance |
+| L9 | CC-05, CC-06, SA-08 and SA-09 use test seams; tampering uses labelled raw SQL |
+| — | D6-6 workflow identity: established from the workflow inventory, not from run metadata (section 11.3) |
+
+**Carried forward, unchanged:**
+
+| Item | Limitation |
+| --- | --- |
+| L10 | EI4-D8 conservative exposure and exclusivity |
+| L11 | VC-04: rollback or downgrade to a pre-3a Application against stored evaluator-v2 records not authorized |
+| L12 | N6: database-level label-format pairing trigger deferred |
+| L13 | I08: the equivalent-mutant qualification |
+| L14 | IS-16 (EI-5D) and NB-04 (EI-5E) |
+| L16 | EI-4 formal CI closure (EI4-C4) pending, as a separate obligation |
+| L17 | O-2, O-3 and EI3-D10 unresolved; EI-6B and EI-6C not authorized; ACTUAL issuance unauthorized |
+
 ## 13. Engineering verdict and recommendation
 
 **EI-6A LOCAL ENGINEERING ACCEPTANCE: PASS WITH DOCUMENTED LIMITATIONS — synthetic, local Windows real-SQLite engineering acceptance.**
@@ -344,9 +453,34 @@ EI-4 formal CI closure (EI4-C4) stays a separate obligation; these runs do not c
 2. Then decide on acceptance with documented limitations L1 to L17.
 3. Decide separately whether the EI-5D HW-07 limitation is closed by the durable evidence of section 10.
 
+The recommendation above records the state before the owner decided. The owner decided on 2026-11-14 (section 13.1).
+
+### 13.1 Owner acceptance (2026-11-14)
+
+**OWNER APPROVED — 2026-11-14.**
+
+**EI-6A — Durable SQLite Recommendation Issuance and Declaration Authority: ACCEPTED WITH DOCUMENTED LIMITATIONS.**
+
+**Scope.** The durable SQLite MODELED recommendation issuance and completeness-declaration authority, exactly as authorized by D6-1 to D6-6.
+
+| Stage | Record |
+| --- | --- |
+| Implementation merged | northstar-application #97 (`a17bd91`), the D6-5 prerequisite; northstar-infrastructure #67 (`63d2ab3`) |
+| Local Windows engineering acceptance | PASS WITH DOCUMENTED LIMITATIONS (sections 9 and 11.1) |
+| Independent Linux CI (D6-6) | SATISFIED: runs `43599364295` and `43604917993` (section 11.3), with the workflow-identity qualification |
+| Acceptance matrix (26) | 25 VERIFIED, 1 VERIFIED WITH LIMITATION (HW-03 (S)), 0 NOT VERIFIED (section 9.4) |
+| Owner acceptance | **ACCEPTED WITH DOCUMENTED LIMITATIONS**, 2026-11-14 |
+| EI-5D HW-07 | Durable-reader verification gap recognized as addressed through SA-10 (owner approved); the EI-5D record is preserved with a dated cross-reference |
+
+**Accepted limitations:** the remaining and carried-forward items of section 12.1.
+
+**Not authorized by this acceptance:** EI-6B lifecycle persistence; EI-6C monitoring; the resolution of O-2, O-3 or EI3-D10; ACTUAL issuance; broker orders or fills; real-money trading; production deployment; API or Web exposure; composition roots or monitoring execution; a relaxation of EI4-D8; a new canonical issuance format; changes to historical EI-4D evidence. It does not close EI-4. **EI-6B and EI-6C each need a separate owner authorization.**
+
+The owner record is the [EI-5 Decision Register, section 18.4](Equity-Intraday-V1-EI5-Decision-Register.md#184-owner-acceptance-of-ei-6a-2026-11-14).
+
 ## 14. Non-authorizations
 
-This record authorizes nothing: not EI-6B lifecycle persistence, EI-6C monitoring, the resolution of O-2, O-3 or EI3-D10, ACTUAL issuance, broker orders or fills, real-money trading, production deployment, API or Web exposure, composition roots or monitoring execution, a relaxation of EI4-D8, a new canonical issuance format, or any change to historical EI-4D evidence. It does not close EI-4. EI-6A remains single-host and MODELED-only.
+Neither this record nor the owner acceptance of section 13.1 authorizes anything further: not EI-6B lifecycle persistence, EI-6C monitoring, the resolution of O-2, O-3 or EI3-D10, ACTUAL issuance, broker orders or fills, real-money trading, production deployment, API or Web exposure, composition roots or monitoring execution, a relaxation of EI4-D8, a new canonical issuance format, or any change to historical EI-4D evidence. It does not close EI-4. EI-6A remains single-host and MODELED-only.
 
 ## 15. Related documents
 
