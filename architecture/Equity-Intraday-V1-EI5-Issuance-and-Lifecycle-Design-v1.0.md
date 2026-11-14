@@ -47,6 +47,13 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Acceptance.** PASS WITH DOCUMENTED LIMITATIONS, synthetic engineering acceptance, in the [EI-5D/EI-5E Engineering Acceptance Record](../product/Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md#9-acceptance-evidence-matrix). **Owner accepted, 2026-11-14: ACCEPTED WITH DOCUMENTED LIMITATIONS** (IS-16, HW-07 and NB-04 limitations retained; [EI-5 Decision Register, section 16.3](../product/Equity-Intraday-V1-EI5-Decision-Register.md#163-owner-acceptance-of-ei-5d-and-ei-5e-2026-11-14)). The section 12 Status columns keep their 2026-11-12 plan; the executed statuses of the EI-5D and EI-5E rows are in that record.
 > - **Unchanged.** The EI-6 rows (CC, RR-01 and RR-03 to RR-06, and the S parts) stay PLANNED; EI-6 is not authorized.
 
+> **Status update, 2026-11-14: EI-6 staged; EI-6A authorized (owner approved, D6-1 to D6-6).** The updates above are not rewritten.
+>
+> - **Staged delivery (D6-2).** EI-6 is delivered as EI-6A (issuance and declaration authority), EI-6B (lifecycle-event persistence) and EI-6C (monitoring), each separately authorized and accepted. Sequencing and packaging only; the architecture is unchanged.
+> - **EI-6A: AUTHORIZED, NOT IMPLEMENTED.** Section 10's issuance and declaration plan is detailed and tightened by the [EI-6A storage design addendum](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (D6-4). A D6-5 Application contract PR comes first. **EI-6A owner acceptance: PENDING**; it requires independently verified Linux CI (D6-6).
+> - **EI-6B and EI-6C: NOT AUTHORIZED.** O-3 before EI-6B; O-2 and EI3-D10 before EI-6C (D6-3). None is resolved.
+> - **Where it is marked.** Sections 9, 10, 11, 12.11, 13 and 17.2, each marked "amended 2026-11-14 (EI-6)". The record is the [EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14).
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -481,6 +488,8 @@ It is still not implemented.
 
 EI-5C and EI-5E use in-memory, labelled test doubles only.
 
+*Amended 2026-11-14 (EI-6; D6-2, D6-3).* This port belongs to **EI-6B**, which is **not authorized**. It needs O-3 decided, its own design decisions (including any canonical lifecycle-event format) and its own authorization. EI-6A neither defines nor implements it.
+
 ## 10. Infrastructure plan (EI-6; not implemented)
 
 | Concern | Plan |
@@ -495,6 +504,11 @@ EI-5C and EI-5E use in-memory, labelled test doubles only.
 | Pre-connection refusal | Missing or mismatched authorizations are refused before a connection opens (ADR-023 pattern) |
 | Cleanup reliability | The guarded close, rollback and discard pattern of the L9 fixes |
 | Acceptance | Restart, separate OS processes (spawned), concurrent issuers and declarers, lock contention, uncertain COMMIT and tampering, on real SQLite |
+
+*Amended 2026-11-14 (EI-6; D6-2, D6-4).* The table above is preserved.
+
+- **EI-6A.** The issuance and declaration rows of this plan, detailed and tightened by the [EI-6A storage design addendum](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md): a shared recording-sequence ledger with its integrity requirements, integer-microsecond instant columns, a source-provenance trigger requiring a `PROPOSED`, evaluator-`/2` disposition, no new stored document or format, and typed corrupt-record handling (D6-5).
+- **EI-6B (not authorized).** The lifecycle-event table, the unique (issuance, event sequence), lifecycle appends, their commit reconciliation and event rehydration through Core.
 
 ## 11. Slices and ownership
 
@@ -528,6 +542,16 @@ EI-5 depends on EI-4, whose formal closure is pending CI verification ([EI-4 Dec
 > - **EI-5D** follows only after that acceptance.
 
 > **Amended 2026-11-14 (D5D-2, owner approved).** The EI-4C prerequisite is accepted. EI-5D and EI-5E are authorized and are delivered in **one northstar-application implementation PR**. This is packaging only: both rows above keep their scope and their acceptance scenarios, and EI-6 still follows EI-5E under its own authorization ([EI-5 Decision Register, section 15](../product/Equity-Intraday-V1-EI5-Decision-Register.md#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)).
+
+> **Amended 2026-11-14 (EI-6; D6-2 and D6-3, owner approved).** The EI-6 row above is preserved. It is delivered in three stages, each with its own milestone authorization and acceptance. Sequencing and packaging only ([EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14)):
+>
+> | Stage | Repository | Delivers | Prerequisites | Status |
+> | --- | --- | --- | --- | --- |
+> | EI-6A | northstar-application (D6-5 contract PR), then northstar-infrastructure | Section 10's issuance and declaration authority, per the [EI-6A storage design addendum](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md); its S and SA scenarios | EI-5E (accepted); the D6-5 PR merged before the Infrastructure PR imports it | **AUTHORIZED, NOT IMPLEMENTED** |
+> | EI-6B | northstar-application, then northstar-infrastructure | Section 9 and the lifecycle part of section 10; RR-01, RR-04 (state), RR-05, RR-06 | O-3 decided; own authorization | **NOT AUTHORIZED** |
+> | EI-6C | To be decided at authorization | Monitoring and operational snapshot policy | O-2 and EI3-D10 decided; own authorization | **NOT AUTHORIZED** |
+>
+> "O-2 and O-3 before monitoring" in the EI-6 row is clarified (D6-3): O-3 before EI-6B; O-2 and EI3-D10 before EI-6C; none blocks EI-6A.
 
 ## 12. Acceptance matrix
 
@@ -717,6 +741,13 @@ The shared synthetic example is that of [EI-5 Decision Register, section 4.1](..
 | AR-02 | Core lifecycle and Application evaluation | No clock or randomness call | A | EI-5B, EI-5C | PLANNED |
 | AR-03 | Futures and Options test suites | Unchanged and passing in every EI-5 slice | A | All | PLANNED |
 
+*Amended 2026-11-14 (EI-6; D6-2).* The Slice and Status columns of sections 12.9 to 12.11 are preserved. The "EI-6" slice is split:
+
+- **EI-6A:** CC-01 to CC-06; RR-03; the view part of RR-04; the S parts of ID-02, ID-03, BD-01, HW-03 and HW-08. The EI-6A storage scenarios SA-01 to SA-13 are in the [EI-6A storage design addendum, section 12](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md#12-acceptance).
+- **EI-6B:** RR-01; the lifecycle-state part of RR-04; RR-05; RR-06.
+
+Every one of these rows stays **PLANNED**.
+
 ### 12.12 Scenario counts
 
 *Amended 2026-11-12.* C-1, C-2 and O-1 are approved, so PE-04, IS-16 and ID-03 are no longer blocked by an owner decision. The total is unchanged.
@@ -751,6 +782,8 @@ They are recorded with evidence, options and recommendations in the [EI-5 Decisi
 | O-1 | Gap-through touches | EI-5B stop and target predicates | **APPROVED:** stop and target reach, with no entry transfer (sections 4, 5.4) |
 | O-2 | Terminal `INCOMPLETE_EVIDENCE` depends on the evaluated snapshot | EI-6 monitoring | **DEFERRED** |
 | O-3 | Late evidence after terminal `INCOMPLETE_EVIDENCE` | EI-6 | **DEFERRED** |
+
+*Amended 2026-11-14 (EI-6; D6-3).* The Blocks column is preserved and clarified: O-3 blocks **EI-6B**; O-2, with EI3-D10, blocks **EI-6C**; neither blocks EI-6A. Both stay **DEFERRED**.
 
 ## 14. Risks and limitations
 
@@ -791,6 +824,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 - [Futures Trade Recommendation Design Specification](Futures-Trade-Recommendation-Design-Specification-v1.0.md) (pattern only)
 - [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
 - [EI-4C Versioned History Compatibility Design v1.0](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
+- [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
 
 ## 17. Owner approval (2026-11-12)
 
@@ -809,7 +843,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 | Item | Status |
 | --- | --- |
 | Architecture and engineering design | **APPROVED** (2026-11-12, with amendments) |
-| Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED**. *Amended 2026-11-14: EI-5B and EI-5C merged; EI-5D and EI-5E authorized (one Application PR), not started; EI-6 not authorized.* *Amended 2026-11-14 (later): EI-5D and EI-5E merged (#96); engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-6 not authorized* |
+| Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED**. *Amended 2026-11-14: EI-5B and EI-5C merged; EI-5D and EI-5E authorized (one Application PR), not started; EI-6 not authorized.* *Amended 2026-11-14 (later): EI-5D and EI-5E merged (#96); engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-6 not authorized.* *Amended 2026-11-14 (EI-6): EI-6 staged (D6-2); EI-6A AUTHORIZED, NOT IMPLEMENTED, owner acceptance PENDING; EI-6B and EI-6C NOT AUTHORIZED* |
 | EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2). *Amended 2026-11-13: design approved (ADR-025); implementation NOT STARTED.* *Amended 2026-11-14: implemented and merged; engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-5D still needs a separate owner milestone authorization* |
 | Acceptance scenarios | **PLANNED** (119; none executed) |
 | O-2, O-3 | **DEFERRED** |
