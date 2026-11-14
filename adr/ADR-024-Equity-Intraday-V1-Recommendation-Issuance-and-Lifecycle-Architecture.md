@@ -49,6 +49,8 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 > - **Authorized.** EI-5D (sections 2 to 7 and 12) and EI-5E are authorized as one synthetic, Application-only northstar-application PR, against an in-memory authority test double ([EI-5 Decision Register, section 15](../product/Equity-Intraday-V1-EI5-Decision-Register.md#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)). The authoritative history `reference` is `northstar.equity-recommendation-issuance-authority/1` (D5D-3).
 > - **Unchanged.** Section 13 is unchanged: the SQLite issuance authority belongs to EI-6, which is not authorized. Only MODELED issuance is authorized; ACTUAL issuance stays unauthorized. **Not implemented yet.**
 
+> **Note, 2026-11-14 (EI-5D and EI-5E implemented).** The note above records the state at authorization. EI-5D (sections 2 to 7 and 12) and EI-5E are now merged in northstar-application #96 (`9a68209`), with engineering acceptance PASS WITH DOCUMENTED LIMITATIONS ([EI-5D/EI-5E Engineering Acceptance Record](../product/Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md)). The owner **accepted them with documented limitations on 2026-11-14** ([EI-5 Decision Register, section 16.3](../product/Equity-Intraday-V1-EI5-Decision-Register.md#163-owner-acceptance-of-ei-5d-and-ei-5e-2026-11-14)). EI-6 requires a separate owner authorization. Section 13 is unchanged: the issuance authority exercised is an in-memory test double, and the SQLite authority (EI-6) is neither implemented nor authorized.
+
 ## Date
 
 2026-11-12

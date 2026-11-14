@@ -40,6 +40,8 @@
 
 > **Note, 2026-11-14 (EI-5D and EI-5E authorized).** The last bullet of the note above records the state before this authorization and is not rewritten. Later on 2026-11-14 the owner **authorized EI-5D (MODELED recommendation issuance) and EI-5E (synthetic end-to-end integration)**, combined in one northstar-application implementation PR, as a synthetic, Application-only milestone, with decisions D5D-1 to D5D-5 ([section 15](#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)). Only MODELED issuance is authorized. No SQLite issuance authority, ACTUAL issuance, execution, deployment or API and Web expansion is authorized; EI-6 needs its own authorization. **Nothing in EI-5D or EI-5E is implemented yet.**
 
+> **Note, 2026-11-14 (EI-5D and EI-5E implemented; engineering acceptance recorded).** The note above records the state at authorization and is not rewritten. EI-5D and EI-5E are now merged (northstar-application #96, `9a68209`), and their engineering acceptance — PASS WITH DOCUMENTED LIMITATIONS, synthetic engineering acceptance — is recorded in the [EI-5D/EI-5E Engineering Acceptance Record](Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md) ([section 16](#16-ei-5d-and-ei-5e-implementation-and-engineering-acceptance-2026-11-14)). **Owner accepted, 2026-11-14: ACCEPTED WITH DOCUMENTED LIMITATIONS** ([section 16.3](#163-owner-acceptance-of-ei-5d-and-ei-5e-2026-11-14)). The issuance authority is an in-memory test double; EI-6 is not authorized.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -1070,3 +1072,72 @@ The implementation must preserve:
 | EI-5 acceptance scenarios (119) | **PLANNED** |
 | EI-4 formal closure | **PENDING** independent CI verification; does not block EI-5D or EI-5E |
 | Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-14.** The first row above records the state at authorization and is not rewritten. The current status is in [section 16.2](#162-status).
+
+## 16. EI-5D and EI-5E implementation and engineering acceptance (2026-11-14)
+
+This section records **engineering acceptance evidence** (sections 16.1 and 16.2) and the **owner's acceptance of 2026-11-14** (section 16.3); it does not rewrite section 15. The evidence is in the [EI-5D/EI-5E Modeled Issuance and Synthetic Integration Engineering Acceptance Record](Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md). D5D-1 to D5D-5 are unchanged.
+
+### 16.1 Implementation and acceptance summary
+
+| Item | Value |
+| --- | --- |
+| Implementation | northstar-application #96, merge `9a68209`, change commit `b2c81a2`; Application only (seven production modules, two test modules) |
+| Engineering verdict | **PASS WITH DOCUMENTED LIMITATIONS — synthetic engineering acceptance** |
+| EI-5D scenario parts (38) | 36 VERIFIED, 2 VERIFIED WITH LIMITATION (IS-16, HW-07) |
+| EI-5E scenario parts (7) | 6 VERIFIED, 1 VERIFIED WITH LIMITATION (NB-04) |
+| EI-6-owned | CC-01 to CC-06, RR-01, RR-03 to RR-06, and the S parts of ID-02, ID-03, BD-01, HW-03 and HW-08: **PLANNED** |
+| Authority | A labelled in-memory test authority applying the production invariants; **not durable** |
+| CI | Not independently verified; the local Infrastructure run predates a private-variable rename and two test-only edits in the merged commit |
+
+### 16.2 Status
+
+| Item | Status |
+| --- | --- |
+| EI-5D and EI-5E | **IMPLEMENTED AND MERGED** (#96); engineering acceptance **PASS WITH DOCUMENTED LIMITATIONS** (2026-11-14) |
+| Owner acceptance of EI-5D and EI-5E | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-14; section 16.3) |
+| Accepted scenario limitations | IS-16, HW-07 (EI-5D); NB-04 (EI-5E) |
+| D5D-1 to D5D-5 | **APPROVED** (2026-11-14, unchanged) |
+| MODELED issuance | Implemented synthetically, against the in-memory test authority only |
+| SQLite issuance authority; EI-6 | **NOT IMPLEMENTED; NOT AUTHORIZED** |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| EI-4 formal closure | **PENDING** independent CI verification (separate, D5D-5) |
+| Operational or production authorization | **NOT GRANTED** |
+
+### 16.3 Owner acceptance of EI-5D and EI-5E (2026-11-14)
+
+**OWNER APPROVED — 2026-11-14. EI-5D MODELED Recommendation Issuance and EI-5E Synthetic End-to-End Integration: ACCEPTED WITH DOCUMENTED LIMITATIONS.**
+
+The owner approved the engineering acceptance recommendation of the [EI-5D/EI-5E Engineering Acceptance Record, section 13](Equity-Intraday-V1-EI5D-EI5E-Modeled-Issuance-and-Synthetic-Integration-Engineering-Acceptance-Record.md#13-engineering-verdict-and-recommendation).
+
+| Item | Accepted |
+| --- | --- |
+| Implementation | northstar-application, PR #96, merge `9a68209` |
+| EI-5D (38 parts) | 36 VERIFIED, 2 VERIFIED WITH LIMITATION |
+| EI-5E (7 parts) | 6 VERIFIED, 1 VERIFIED WITH LIMITATION |
+
+**Accepted scenario limitations:**
+
+| Scenario | Limitation |
+| --- | --- |
+| IS-16 | The invalid version-2 history-boundary sub-case cannot be constructed through the approved inputs contract, so that issuer-level negative path was not directly exercised |
+| HW-07 | The watermark-beyond-current refusal was verified against the in-memory authority; durable-reader enforcement remains EI-6's responsibility |
+| NB-04 | No-position behaviour was established within the synthetic integration environment, without a real paper-trading store |
+
+**Additional accepted limitations:** the issuance authority is an in-memory, non-durable test implementation; EI-5C retains its synthetic labelling; independent CI evidence is not verified; the reported Infrastructure run began before the final Application private-variable rename and two test-only changes, and no run against the exact merged Application commit was independently established; EI4-D8's exposure and exclusivity restrictions remain unchanged; every previously accepted EI-4C limitation remains applicable, including VC-04's legacy rollback restriction, the deferred N6 SQLite pairing trigger and the I08 equivalent-mutation qualification; EI-4 formal CI closure remains separately pending; O-2 and O-3 remain deferred.
+
+**Not authorized by this acceptance:**
+
+- EI-6 implementation;
+- durable SQLite issuance or declaration persistence;
+- ACTUAL issuance;
+- broker or account integration;
+- orders, fills or real-money trading;
+- production deployment;
+- API or Web expansion;
+- real market-data integration;
+- relaxation of EI4-D8;
+- resolution of deferred governance decisions.
+
+**EI-6 requires a separate owner authorization.** D5D-1 to D5D-5 are unchanged, and the acceptance adds no architecture or implementation requirement.
