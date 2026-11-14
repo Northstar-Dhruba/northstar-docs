@@ -57,6 +57,12 @@
 > - **Owner decision.** **EI-6A — ACCEPTED WITH DOCUMENTED LIMITATIONS, 2026-11-14** ([section 18.4](#184-owner-acceptance-of-ei-6a-2026-11-14)). The matrix is 25 VERIFIED and 1 VERIFIED WITH LIMITATION (HW-03 (S)).
 > - **Unchanged.** EI-6B and EI-6C stay **NOT AUTHORIZED**.
 
+> **Note, 2026-11-14 (EI-6B authorized; O-3 resolved).** The note above records the state before this authorization and is not rewritten. Later on 2026-11-14 the owner approved **D6B-1 to D6B-7** and three clarifications ([section 19](#19-owner-authorization-of-ei-6b-2026-11-14)):
+>
+> - **EI-6B — Durable Equity Recommendation Lifecycle Persistence: AUTHORIZED — NOT IMPLEMENTED — OWNER ACCEPTANCE PENDING.** The design is the [EI-6B Lifecycle Persistence Design addendum](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md).
+> - **O-3: RESOLVED, option (b).** Late gap-filling evidence after terminal `INCOMPLETE_EVIDENCE` produces no lifecycle event. Product specification section 8.2's audited-event requirement for it is deferred to a future EI-8 restatement design, which is not authorized.
+> - **Unchanged.** O-2 and EI3-D10 stay unresolved and are required before EI-6C, which stays **NOT AUTHORIZED**. No Core change is authorized.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -442,6 +448,7 @@ These were found by reading the current code and documents while recording the a
 - **Blocks.** Nothing in EI-5B to EI-5E. Before EI-6.
 - **Status, 2026-11-12: DEFERRED** to the governance stage before EI-6. No resolution is recorded, and no late-evidence event kind exists.
 - **Timing clarification, 2026-11-14 (D6-3, owner approved).** The text above is preserved. Its "before EI-6" conflicted with "O-2 and O-3 before monitoring" in [section 12.5](#125-ei-5b-sequencing-and-the-revised-sequence), step 7, and the EI-5 design, section 11. O-3 concerns the persisted lifecycle-event vocabulary, so it must be decided before **EI-6B** (durable lifecycle-event persistence). It does not block EI-6A. O-3 itself stays **DEFERRED**, and the lifecycle-event vocabulary is unchanged ([section 17.3](#173-d6-3--o-2-o-3-and-ei3-d10-timing)).
+- **Owner decision, 2026-11-14 (D6B-2): RESOLVED, option (b).** The entries above are preserved. Later evidence that fills the gap of a terminal `INCOMPLETE_EVIDENCE` produces no lifecycle event in EI-5 or EI-6, and the terminal state and every event stay unchanged. The audited-event requirement of the [specification, section 8.2](Equity-Intraday-V1-Product-Specification.md#82-lifecycle-states) for such evidence is deferred to a future EI-8 restatement design. RV-04: terminal state unchanged; no new lifecycle event ([section 19.3](#193-d6b-2--o-3-resolved-option-b)).
 
 ## 7. Approved engineering sequence
 
@@ -526,6 +533,7 @@ An `ACTIVE` state means only that the modeled entry condition was evidenced. It 
 - [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 - [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
 - [EI-6A Durable SQLite Issuance Authority Engineering Acceptance Record](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md) (added 2026-11-14)
+- [EI-6B Durable Recommendation Lifecycle Persistence Design v1.0](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md) (added 2026-11-14)
 
 ## 12. Owner approval of the EI-5A amendments (2026-11-12)
 
@@ -721,6 +729,8 @@ The sequence is the approved planning baseline, not implementation evidence.
 > | EI-6A | Durable SQLite issuance and declaration authority | northstar-application (D6-5 contract PR), then northstar-infrastructure | — | **AUTHORIZED, NOT IMPLEMENTED** |
 > | EI-6B | Durable lifecycle-event persistence | northstar-application, then northstar-infrastructure | O-3 decided; own authorization | **NOT AUTHORIZED** |
 > | EI-6C | Monitoring and operational snapshot policy | To be decided at authorization | O-2 and EI3-D10 decided; own authorization | **NOT AUTHORIZED** |
+>
+> *2026-11-14 (later):* EI-6A is accepted ([section 18.4](#184-owner-acceptance-of-ei-6a-2026-11-14)); O-3 is resolved and EI-6B is **AUTHORIZED, NOT IMPLEMENTED** ([section 19](#19-owner-authorization-of-ei-6b-2026-11-14)). EI-6C stays not authorized.
 
 ### 12.6 Deferred and pending
 
@@ -1398,5 +1408,104 @@ It does not close EI-4. **EI-6B and EI-6C each need a separate owner authorizati
 | EI-6B, EI-6C | **NOT AUTHORIZED** |
 | O-2, O-3; EI3-D10 | **DEFERRED**; pending |
 | EI-4 formal closure | **PENDING** (EI4-C4; separate obligation) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-14.** The EI-6B and O-3 rows above record the state before the EI-6B authorization later that day and are not rewritten. The current status is in [section 19.7](#197-status).
+
+## 19. Owner authorization of EI-6B (2026-11-14)
+
+**OWNER APPROVED, 2026-11-14:** decisions **D6B-1 to D6B-7**, with three clarifications, following the EI-6B authorization review of 2026-11-14.
+
+The owner authorizes **EI-6B — Durable Equity Recommendation Lifecycle Persistence**. EI-6C stays not authorized.
+
+- **Still binding:** every earlier decision of this register, [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), the [EI-5 design](../architecture/Equity-Intraday-V1-EI5-Issuance-and-Lifecycle-Design-v1.0.md), EI5-D5 to EI5-D8 (the frozen Core lifecycle policy), and the owner acceptance of EI-6A (section 18.4).
+- **The binding design:** the [EI-6B Lifecycle Persistence Design addendum](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md).
+
+### 19.1 Approved decisions D6B-1 to D6B-7
+
+| ID | Decision | Design | Status |
+| --- | --- | --- | --- |
+| D6B-1 | **EI-6B authorized.** Scope: persist the Core lifecycle events of an existing authoritative MODELED issuance, from explicitly supplied synthetic evidence; an Application lifecycle-store contract; a verified append boundary; an Application-owned canonical event format; a narrow Application recording use case; persistence in the EI-6A SQLite file; atomic compare-and-append; rehydration and replay through existing Core rules; immutable history, concurrency, restart and recovery; synthetic end-to-end persisted acceptance. Limitations: single host, MODELED only, development machine only, no real market data, no monitoring or automatic snapshot selection | Addendum sections 1, 7 | **APPROVED** |
+| D6B-2 | **O-3 resolved: option (b)** (section 19.3) | Addendum section 9 | **APPROVED** |
+| D6B-3 | **Lifecycle-store contract:** `EquityRecommendationLifecycleStore` with `load_lifecycle` (a verified, replayed lifecycle record, or `None` for an unknown issuance) and `append(authorization)` (`APPENDED`, `EQUIVALENT`, `CONFLICT`); typed unavailable, commit-unconfirmed, unverified-append and permanent lifecycle-corruption failures, kept distinct from the EI-6A D6-5 error | Addendum section 4 | **APPROVED** |
+| D6B-4 | **Canonical event documents:** Application-owned format `northstar.equity-recommendation-lifecycle-event/1`, strictly decoded and re-encoded; **no lifecycle-event content fingerprint**; v1 is the first durable event contract, with no migration | Addendum section 3 | **APPROVED** |
+| D6B-5 | **Verified append authorization:** `VerifiedEquityRecommendationLifecycleAppend`, content-bound to the issuance identity, the exact prior history, the exact new events and the expected position; issued only by the recording use case; validated before any connection opens; no raw append | Addendum section 5 | **APPROVED** |
+| D6B-6 | **SQLite lifecycle store:** `equity_recommendation_lifecycle_events` in the EI-4D and EI-6A file; foreign key to `equity_recommendation_issuances`; unique (issuance, event sequence); per-issuance sequences, separate from the EI-6A ledger; insert-only; chronology and not-before-issuance guards; `BEGIN IMMEDIATE`; parent re-derivation; Core replay | Addendum section 8 | **APPROVED** |
+| D6B-7 | **Evidence gate:** local Windows synthetic and real-SQLite acceptance, plus independently verified Linux CI for the Application and Infrastructure implementation PRs, with exact commits and evidence that the EI-6B tests ran; then a separate owner decision | Addendum section 13 | **APPROVED** |
+
+### 19.2 Approved clarifications
+
+| # | Clarification | Design |
+| --- | --- | --- |
+| 1 | **Concurrent identical appends.** First valid append `APPENDED`. An identical retry, or a concurrent identical request, is `EQUIVALENT` with no duplicates. A concurrent conflicting request, or a stale writer, is `CONFLICT`, and its events are never adopted. Commit uncertainty resolves by reload: `EQUIVALENT` only after confirming the exact events, with no blind retry. Corrupt history fails closed and is never `EQUIVALENT` | Addendum section 10 |
+| 2 | **Authoritative window derivation.** The lifecycle window is derived from the authoritative issuance and its verified disposition and candidate grid, never from the caller. Inconsistent or undecodable provenance fails closed. Infrastructure calls the Application derivation and computes no window itself. Explicit acceptance tests (LS-17) | Addendum section 6 |
+| 3 | **No persisted quiet-evaluation cursor.** A snapshot producing no event fabricates nothing and advances nothing; no exactly-once processing is claimed; repeated evaluation is deterministic and safe; no processing-offset table. Snapshot selection and monitoring progress are EI-6C's | Addendum section 7 |
+
+### 19.3 D6B-2 — O-3 resolved: option (b)
+
+**OWNER APPROVED, 2026-11-14.**
+
+- **No event.** When a lifecycle has reached terminal `INCOMPLETE_EVIDENCE`, later evidence that fills the original gap causes **no new lifecycle event** during EI-5 or EI-6.
+- **Unchanged.** The terminal state stays final, and the lifecycle history stays immutable. No event is deleted, corrected, superseded or rewritten, and there is no automatic reopening.
+- **Where the evidence lives.** The late evidence remains in the immutable EI-2B journal and snapshots.
+- **Revisions are a different case.** `SOURCE_REVISION_RECORDED` stays exactly as Core permits it; it is not expanded to cite `EVIDENCE_INCOMPLETE`. A late gap-filling bar and a permitted source revision are not equivalent.
+- **Scoped exception.** The [specification, section 8.2](Equity-Intraday-V1-Product-Specification.md#82-lifecycle-states) requires late gap-filling evidence to be recorded as an explicit audited event citing the original terminal event. That requirement is **deferred to a future EI-8 restatement design**. The specification is not rewritten. EI-8 is **not** authorized; it may consider a non-state reconciliation event, but no such Core event kind is authorized now.
+- **RV-04:** terminal state unchanged; no new lifecycle event for late gap-filling evidence. This authorizes no monitoring or restatement.
+- **Status.** O-3 is **RESOLVED**. O-2 and EI3-D10 stay **UNRESOLVED** and are required before EI-6C.
+
+### 19.4 Implementation sequence
+
+| PR | Repository | Delivers |
+| --- | --- | --- |
+| PR-0 | northstar-docs | This section; the addendum; the specification section 8.2 deferral |
+| PR-1 | northstar-application | Port, errors, codec, window derivation, authorization, recording use case, in-memory and synthetic end-to-end tests |
+| PR-2 | northstar-infrastructure | Additive lifecycle table and SQLite store; provenance; compare-and-append; replay; restart and concurrency acceptance |
+| PR-3 | northstar-docs | Engineering acceptance record, matrix, Linux CI evidence, limitations; a separate owner decision |
+
+One writable repository per PR. Core is read-only; no PR imports unmerged interfaces.
+
+### 19.5 Carried-forward limitations
+
+These stay in force:
+
+- EI4-D8 conservative exposure and exclusivity;
+- EI-6A HW-03; EI-6A's adapter-enforced ledger checks;
+- VC-04's legacy rollback restriction;
+- the deferred N6 trigger; the I08 qualification;
+- IS-16; NB-04;
+- EI-4 formal CI closure outstanding;
+- the single-host trust model; MODELED-only issuance.
+
+EI-6A's acceptance is not reopened.
+
+### 19.6 Not authorized
+
+- EI-6C monitoring; automatic snapshot selection; monitoring scheduling or polling;
+- the resolution of O-2 or EI3-D10;
+- ACTUAL issuance; broker orders or fills; real-money trading;
+- live market-data integration; production deployment; API or Web endpoints;
+- EI4-D8 relaxation;
+- terminal-state reopening; historical lifecycle rewriting;
+- EI-8 restatement implementation;
+- any new Core event kind or other Core change.
+
+EI-6B remains synthetic-evidence-only despite its non-synthetic Application recording boundary.
+
+### 19.7 Status
+
+| Item | Status |
+| --- | --- |
+| D6B-1 to D6B-7; clarifications 1 to 3 | **APPROVED** (owner, 2026-11-14) |
+| EI-6B | **AUTHORIZED — NOT IMPLEMENTED — OWNER ACCEPTANCE PENDING** |
+| EI-6B design addendum | **APPROVED** (2026-11-14) |
+| EI-6B acceptance scenarios (RR-01, RR-04 (state), RR-05, RR-06, RV-04, LS-01 to LS-17) | **PLANNED** |
+| O-3 | **RESOLVED** (option (b), 2026-11-14) |
+| Specification section 8.2, late gap-filling evidence | **DEFERRED** to a future EI-8 design (scoped exception) |
+| O-2; EI3-D10 | **UNRESOLVED**; required before EI-6C |
+| EI-6A | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (2026-11-14, unchanged) |
+| EI-6C; EI-8 | **NOT AUTHORIZED** |
+| Core change | **NOT AUTHORIZED** |
+| EI-4 formal closure | **PENDING** (separate obligation) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |

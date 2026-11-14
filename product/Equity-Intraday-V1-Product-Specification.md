@@ -575,6 +575,15 @@ Rules:
 >
 > See the [EI-5 Decision Register, section 12.8](Equity-Intraday-V1-EI5-Decision-Register.md#128-ei5-d7-exact-boundary-finality-clarification).
 
+> **Note, 2026-11-14 (O-3 resolved, option (b); scoped deferral, owner approved).** This scopes the rule "Later reconciliation is appended, never rewritten" above for one case. The rule is not rewritten.
+>
+> - **The case.** When a lifecycle has reached terminal `INCOMPLETE_EVIDENCE`, later evidence that fills the original gap, such as "a late bar that fills a gap", produces **no lifecycle event** in EI-5 or EI-6.
+> - **What does not change.** The terminal state and every recorded event stay unchanged, and nothing reopens automatically. The late evidence remains in the immutable EI-2B journal and snapshots.
+> - **The requirement deferred.** Recording that evidence as an explicit audited event citing the original terminal event is **deferred to a future EI-8 restatement design**. EI-8 is not authorized, and no reconciliation event kind is authorized now.
+> - **Candle revisions** of evidence a bar-driven event cited are still recorded, as `SOURCE_REVISION_RECORDED` (EI5-D8).
+>
+> See the [EI-5 Decision Register, section 19.3](Equity-Intraday-V1-EI5-Decision-Register.md#193-d6b-2--o-3-resolved-option-b).
+
 ### 8.3 Intrabar ambiguity
 
 - When a single 5-minute bar contains both stop and target, or entry and an exit, the order of those events is unknowable from OHLC data.

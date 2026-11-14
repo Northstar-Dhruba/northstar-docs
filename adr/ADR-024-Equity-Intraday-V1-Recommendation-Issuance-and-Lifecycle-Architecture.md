@@ -61,6 +61,12 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 
 > **Note, 2026-11-14 (EI-6A accepted).** The note above records the state before this decision. With D6-6 Linux CI recorded (runs `43599364295` and `43604917993`), the owner **accepted EI-6A with documented limitations on 2026-11-14** ([EI-5 Decision Register, section 18.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#184-owner-acceptance-of-ei-6a-2026-11-14)). This ADR is unchanged in substance. The EI-6B and EI-6C parts of section 13 stay neither implemented nor authorized.
 
+> **Note, 2026-11-14 (EI-6B authorized; O-3 resolved).** The note above records the state before this authorization.
+>
+> - **Authorized.** **EI-6B — AUTHORIZED, NOT IMPLEMENTED, OWNER ACCEPTANCE PENDING** (D6B-1 to D6B-7; [EI-5 Decision Register, section 19](../product/Equity-Intraday-V1-EI5-Decision-Register.md#19-owner-authorization-of-ei-6b-2026-11-14)), with the [EI-6B Lifecycle Persistence Design addendum](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md).
+> - **O-3: option (b).** No lifecycle event for late gap-filling evidence; the specification section 8.2 requirement is deferred to a future EI-8 design.
+> - **Unchanged.** The staged architecture of section 13 and sections 8 to 11 (no Core change). EI-6C stays not authorized; O-2 and EI3-D10 stay unresolved.
+
 ## Date
 
 2026-11-12
@@ -348,6 +354,8 @@ EI-5 implements none of it. Monitoring runs and any operational composition root
 
 Composition roots stay outside EI-6A. The record is the [EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14).
 
+*Amended 2026-11-14 (later; D6B-1).* The EI-6A row is accepted (EI-5 Decision Register, section 18.4). The EI-6B row is **AUTHORIZED, NOT IMPLEMENTED**: O-3 is decided (option (b)), and its design is the [EI-6B Lifecycle Persistence Design addendum](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md). The EI-6C row stays not authorized.
+
 ### 14. Trust model
 
 - **Scope.** The scope of [ADR-023, section 2](ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md#2-operational-trust-boundary-dq1) and the ADR-022 DQ9 limitation applies unchanged:
@@ -469,3 +477,4 @@ This ADR records an accepted architecture. It does not:
 - [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
 - [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 - [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
+- [EI-6B Durable Recommendation Lifecycle Persistence Design v1.0](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md) (added 2026-11-14)

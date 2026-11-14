@@ -63,6 +63,20 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 
 > **Status update, 2026-11-14: EI-6A accepted.** The update above records the state before this decision and is not rewritten. D6-6 Linux CI is recorded, and the owner **accepted EI-6A with documented limitations on 2026-11-14**: 25 VERIFIED and 1 VERIFIED WITH LIMITATION (HW-03 (S)) ([EI-5 Decision Register, section 18.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#184-owner-acceptance-of-ei-6a-2026-11-14)). The EI-6B rows stay PLANNED; EI-6B and EI-6C are not authorized.
 
+> **Status update, 2026-11-14: EI-6B authorized; O-3 resolved (owner approved, D6B-1 to D6B-7).** The update above records the state before this authorization and is not rewritten.
+>
+> - **Authorized.** **EI-6B: AUTHORIZED — NOT IMPLEMENTED — OWNER ACCEPTANCE PENDING.** Sections 9 and the lifecycle part of section 10 are detailed and pinned by the [EI-6B Lifecycle Persistence Design addendum](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md):
+>   - canonical event format `northstar.equity-recommendation-lifecycle-event/1`, with no fingerprint;
+>   - `EquityRecommendationLifecycleStore` with `load_lifecycle` and authorized `append`;
+>   - content-bound append authorization;
+>   - authoritative window derivation;
+>   - the non-synthetic, synthetic-evidence-only `RecordEquityRecommendationLifecycleUseCase` on explicit snapshots;
+>   - the SQLite lifecycle-event table.
+> - **O-3: option (b).** Late gap-filling evidence after terminal `INCOMPLETE_EVIDENCE` produces no lifecycle event. RV-04 is no longer deferred.
+> - **No quiet-evaluation cursor.** Snapshot selection and monitoring progress stay EI-6C's.
+> - **Where it is marked.** Sections 6.5, 9, 12.7, 12.11, 13 and 17.2, each marked "amended 2026-11-14 (EI-6B)". The record is the [EI-5 Decision Register, section 19](../product/Equity-Intraday-V1-EI5-Decision-Register.md#19-owner-authorization-of-ei-6b-2026-11-14).
+> - **Unchanged.** Core (section 5), EI-5C (section 6, apart from a shared window helper), O-2 and EI3-D10. EI-6C is not authorized.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -340,6 +354,7 @@ For every interval cited as `ACCEPTABLE` evidence by an earlier event, a later s
 - It also runs after a terminal state, which is the only evaluation permitted then.
 - It never changes the state.
 - Late evidence for an interval cited as deficient is not recorded (O-3).
+  - *Amended 2026-11-14 (EI-6B; D6B-2).* O-3 is resolved as option (b): this stays the rule in EI-5 and EI-6, as a decision rather than a deferral. `SOURCE_REVISION_RECORDED` is not expanded to cite `EVIDENCE_INCOMPLETE`.
 
 ## 7. Application: issuance (EI-5D)
 
@@ -498,6 +513,13 @@ It is still not implemented.
 EI-5C and EI-5E use in-memory, labelled test doubles only.
 
 *Amended 2026-11-14 (EI-6; D6-2, D6-3).* This port belongs to **EI-6B**, which is **not authorized**. It needs O-3 decided, its own design decisions (including any canonical lifecycle-event format) and its own authorization. EI-6A neither defines nor implements it.
+
+*Amended 2026-11-14 (EI-6B; D6B-3 to D6B-5).* EI-6B is authorized. The port above is pinned as `EquityRecommendationLifecycleStore` with:
+
+- `load_lifecycle(issuance_id)`: a verified, replayed lifecycle record, or `None` for an unknown issuance;
+- `append(authorization)`: `APPENDED`, `EQUIVALENT` or `CONFLICT`. Its compare-and-append is bound to the exact prior history, which is stronger than a bare expected sequence.
+
+The verified boundary is `VerifiedEquityRecommendationLifecycleAppend`. The events are the existing Core events, in the canonical format `northstar.equity-recommendation-lifecycle-event/1`. See the [EI-6B design addendum](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md), sections 3 to 5 and 10.
 
 ## 10. Infrastructure plan (EI-6; not implemented)
 
@@ -675,6 +697,8 @@ The shared synthetic example is that of [EI-5 Decision Register, section 4.1](..
 | RV-04 | Late evidence fills an interval cited by `INCOMPLETE_EVIDENCE` | State unchanged; whether it is recorded is undecided | C | EI-5C | PLANNED — DEFERRED: awaits O-3 |
 | RV-05 | Any revision | Never `INVALIDATED`; never a state change | K | EI-5B | PLANNED |
 
+*Amended 2026-11-14 (EI-6B; D6B-2).* The RV-04 row is preserved. O-3 is resolved as option (b), so RV-04's expected result is **"terminal state unchanged; no new lifecycle event for late gap-filling evidence"**. It is no longer deferred; it is planned for EI-6B at layers C and E ([EI-6B design addendum, section 12.1](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md#121-rows-of-the-ei-5-matrix)).
+
 ### 12.8 Issuance (IS)
 
 | ID | Scenario | Expected | Layer | Slice | Status |
@@ -757,6 +781,8 @@ The shared synthetic example is that of [EI-5 Decision Register, section 4.1](..
 
 Every one of these rows stays **PLANNED**.
 
+*Amended 2026-11-14 (EI-6B; D6B-7).* EI-6B is authorized. RR-01, RR-04 (state), RR-05 and RR-06, with RV-04, are joined by the lifecycle-store scenarios LS-01 to LS-17 of the [EI-6B design addendum, section 12](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md#12-acceptance). All are **PLANNED**.
+
 ### 12.12 Scenario counts
 
 *Amended 2026-11-12.* C-1, C-2 and O-1 are approved, so PE-04, IS-16 and ID-03 are no longer blocked by an owner decision. The total is unchanged.
@@ -793,6 +819,8 @@ They are recorded with evidence, options and recommendations in the [EI-5 Decisi
 | O-3 | Late evidence after terminal `INCOMPLETE_EVIDENCE` | EI-6 | **DEFERRED** |
 
 *Amended 2026-11-14 (EI-6; D6-3).* The Blocks column is preserved and clarified: O-3 blocks **EI-6B**; O-2, with EI3-D10, blocks **EI-6C**; neither blocks EI-6A. Both stay **DEFERRED**.
+
+*Amended 2026-11-14 (EI-6B; D6B-2).* **O-3 is RESOLVED** as option (b): no lifecycle event for late gap-filling evidence after terminal `INCOMPLETE_EVIDENCE`, and the specification section 8.2 requirement is deferred to a future EI-8 design. O-2 stays **DEFERRED** and, with EI3-D10, blocks EI-6C.
 
 ## 14. Risks and limitations
 
@@ -834,6 +862,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 - [ADR-025: Equity Intraday V1 Versioned Evaluation and History Compatibility](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) (added 2026-11-13)
 - [EI-4C Versioned History Compatibility Design v1.0](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 - [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
+- [EI-6B Durable Recommendation Lifecycle Persistence Design v1.0](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md) (added 2026-11-14)
 
 ## 17. Owner approval (2026-11-12)
 
@@ -852,7 +881,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 | Item | Status |
 | --- | --- |
 | Architecture and engineering design | **APPROVED** (2026-11-12, with amendments) |
-| Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED**. *Amended 2026-11-14: EI-5B and EI-5C merged; EI-5D and EI-5E authorized (one Application PR), not started; EI-6 not authorized.* *Amended 2026-11-14 (later): EI-5D and EI-5E merged (#96); engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-6 not authorized.* *Amended 2026-11-14 (EI-6): EI-6 staged (D6-2); EI-6A AUTHORIZED, NOT IMPLEMENTED, owner acceptance PENDING; EI-6B and EI-6C NOT AUTHORIZED* |
+| Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED**. *Amended 2026-11-14: EI-5B and EI-5C merged; EI-5D and EI-5E authorized (one Application PR), not started; EI-6 not authorized.* *Amended 2026-11-14 (later): EI-5D and EI-5E merged (#96); engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-6 not authorized.* *Amended 2026-11-14 (EI-6): EI-6 staged (D6-2); EI-6A AUTHORIZED, NOT IMPLEMENTED, owner acceptance PENDING; EI-6B and EI-6C NOT AUTHORIZED.* *Amended 2026-11-14 (EI-6B): EI-6A ACCEPTED WITH DOCUMENTED LIMITATIONS; EI-6B AUTHORIZED, NOT IMPLEMENTED, owner acceptance PENDING; EI-6C NOT AUTHORIZED* |
 | EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2). *Amended 2026-11-13: design approved (ADR-025); implementation NOT STARTED.* *Amended 2026-11-14: implemented and merged; engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-5D still needs a separate owner milestone authorization* |
 | Acceptance scenarios | **PLANNED** (119; none executed) |
 | O-2, O-3 | **DEFERRED** |
