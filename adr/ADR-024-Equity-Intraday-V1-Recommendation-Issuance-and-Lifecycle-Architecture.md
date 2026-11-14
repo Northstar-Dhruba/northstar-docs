@@ -68,6 +68,8 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 > - **Unchanged.** The staged architecture of section 13 and sections 8 to 11 (no Core change). EI-6C stays not authorized; O-2 and EI3-D10 stay unresolved.
 >
 > **Note, 2026-11-15 (EI-6B implemented).** The note above records the state at authorization. The EI-6B part of section 13 is merged in northstar-application #98 (`b7df16b`) and northstar-infrastructure #68 (`dd6a434`). Local engineering acceptance is PASS WITH DOCUMENTED LIMITATIONS: 15 VERIFIED and 7 VERIFIED WITH LIMITATION of 22 rows ([EI-6B Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md)). D6B-7 Linux CI is pending, so **EI-6B owner acceptance is PENDING**. This ADR is unchanged in substance; EI-6C stays not authorized.
+>
+> **Note, 2026-11-15 (EI-6B accepted).** The note above records the state before this decision. With D6B-7 Linux CI recorded (runs `43623021952` and `43643943540`), the owner **accepted EI-6B with documented limitations on 2026-11-15**: 20 VERIFIED and 2 VERIFIED WITH LIMITATION (RR-05, LS-17) of 22 rows ([EI-5 Decision Register, section 21](../product/Equity-Intraday-V1-EI5-Decision-Register.md#21-owner-acceptance-of-ei-6b-2026-11-15)). This ADR is unchanged in substance. The EI-6C part of section 13 stays not authorized; O-2 and EI3-D10 stay unresolved.
 
 ## Date
 

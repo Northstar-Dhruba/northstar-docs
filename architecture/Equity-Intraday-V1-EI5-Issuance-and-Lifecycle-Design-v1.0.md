@@ -84,6 +84,8 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Pending.** D6B-7 Linux CI is not verified; **EI-6B owner acceptance is PENDING**.
 > - **Unchanged.** EI-6C is not authorized; O-2 and EI3-D10 stay unresolved.
 
+> **Status update, 2026-11-15: EI-6B accepted.** The update above records the state before this decision and is not rewritten. D6B-7 Linux CI is recorded, and the owner **accepted EI-6B with documented limitations on 2026-11-15**: 20 VERIFIED and 2 VERIFIED WITH LIMITATION (RR-05, LS-17) ([EI-5 Decision Register, section 21](../product/Equity-Intraday-V1-EI5-Decision-Register.md#21-owner-acceptance-of-ei-6b-2026-11-15)). The section 12 Status columns keep their 2026-11-12 plan. EI-6C is not authorized; O-2 and EI3-D10 stay unresolved.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.

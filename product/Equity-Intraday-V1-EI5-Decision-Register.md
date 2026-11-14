@@ -1556,3 +1556,43 @@ D6B-7 is not satisfied, so EI-6B **cannot** be owner-accepted on this evidence. 
 | EI-4 formal closure | **PENDING** (separate obligation) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-15.** The D6B-7, scenario and owner-acceptance rows above record the state before the owner's decision and are not rewritten. The current status is in [section 21.2](#212-status).
+
+## 21. Owner acceptance of EI-6B (2026-11-15)
+
+**OWNER APPROVED — 2026-11-15.**
+
+**EI-6B — ACCEPTED WITH DOCUMENTED LIMITATIONS, 2026-11-15.**
+
+D6B-1 to D6B-7, clarifications 1 to 3 and the O-3 approval of section 19 are unchanged. The evidence is the [EI-6B Engineering Acceptance Record, section 17.1](Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md#171-owner-acceptance-2026-11-15).
+
+### 21.1 Decision
+
+| Item | Value |
+| --- | --- |
+| Scope accepted | Durable lifecycle events for authoritative MODELED recommendations, from controlled synthetic evidence; the Application lifecycle-store contract; canonical event documents `/1`; content-bound verified append authorization; same-file SQLite lifecycle storage; atomic compare-and-append; deterministic Core replay; restart and cross-process persistence verification; O-3 option (b); single-host trust model |
+| Implementation | northstar-application #98 (`b7df16b`); northstar-infrastructure #68 (`dd6a434`) |
+| Engineering acceptance | Local Windows PASS WITH DOCUMENTED LIMITATIONS (northstar-docs #67) |
+| D6B-7 | **SATISFIED**, 2026-11-15: Application run `43623021952` (job `132532666955`), 4,726 passed; Infrastructure run `43643943540` (job `132597422331`), 3,415 passed, 24 skipped of 3,439; Core `29bd34a` for both; Application `b7df16b` for Infrastructure. Workflow identity established from the workflow inventory |
+| Acceptance matrix (22) | **20 VERIFIED, 2 VERIFIED WITH LIMITATION (RR-05, LS-17), 0 NOT VERIFIED**; the earlier 15/7/0 classification is preserved in the record |
+| Accepted limitations | RR-05 (D6B-4: no fingerprint; a canonical, Core-valid privileged rewrite is not detected); LS-17 (the stored `WINDOW` path is proved by a test seam; a forged-disposition route remains untested); E1 to E6, E8, E9; commit-uncertainty retry accepted under the single-host SQLite model; the carried-forward limitations of section 19.5 |
+
+### 21.2 Status
+
+| Item | Status |
+| --- | --- |
+| D6B-1 to D6B-7; clarifications 1 to 3 | **APPROVED** (2026-11-14, unchanged) |
+| EI-6B | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-15) |
+| EI-6B acceptance scenarios (22) | 20 VERIFIED, 2 VERIFIED WITH LIMITATION, 0 NOT VERIFIED |
+| D6B-7 independent Linux CI | **SATISFIED** (2026-11-15; workflow-identity qualification) |
+| O-3 | **RESOLVED** (option (b), unchanged) |
+| Specification section 8.2, late gap-filling evidence | **DEFERRED** to a future EI-8 design |
+| O-2; EI3-D10 | **UNRESOLVED**; required before EI-6C |
+| EI-6A | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (2026-11-14, unchanged) |
+| EI-6C | **NOT AUTHORIZED**; needs its own architecture review and owner authorization |
+| EI-8 | **NOT AUTHORIZED** |
+| Core change | **NOT AUTHORIZED** |
+| EI-4 formal closure | **PENDING** (separate obligation) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| Operational or production authorization | **NOT GRANTED** |
