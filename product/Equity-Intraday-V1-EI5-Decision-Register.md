@@ -51,6 +51,12 @@
 
 > **Note, 2026-11-14 (EI-6A implemented; local engineering acceptance recorded).** The note above records the state at authorization and is not rewritten. The D6-5 Application prerequisite (northstar-application #97, `a17bd91`) and EI-6A (northstar-infrastructure #67, `63d2ab3`) are merged. Local engineering acceptance — **PASS WITH DOCUMENTED LIMITATIONS**, synthetic, local Windows real SQLite — is recorded in the [EI-6A Engineering Acceptance Record](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md) ([section 18](#18-ei-6a-implementation-and-engineering-acceptance-2026-11-14)). **D6-6 Linux CI is not verified, so EI-6A owner acceptance stays PENDING.** EI-6B and EI-6C stay not authorized.
 
+> **Note, 2026-11-14 (EI-6A accepted).** The note above records the state before this decision and is not rewritten.
+>
+> - **D6-6 satisfied.** Successful Linux `python-ci.yml` runs are recorded for northstar-application #97 (run `43599364295`) and northstar-infrastructure #67 (run `43604917993`).
+> - **Owner decision.** **EI-6A — ACCEPTED WITH DOCUMENTED LIMITATIONS, 2026-11-14** ([section 18.4](#184-owner-acceptance-of-ei-6a-2026-11-14)). The matrix is 25 VERIFIED and 1 VERIFIED WITH LIMITATION (HW-03 (S)).
+> - **Unchanged.** EI-6B and EI-6C stay **NOT AUTHORIZED**.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -1336,5 +1342,61 @@ D6-6 is not satisfied, so EI-6A **cannot** be owner-accepted on this evidence. T
 | EI-6B, EI-6C | **NOT AUTHORIZED** |
 | O-2, O-3; EI3-D10 | **DEFERRED**; pending |
 | EI-4 formal closure | **PENDING** independent CI verification (separate) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-14.** The D6-6, scenario and owner-acceptance rows above record the state before the owner's decision and are not rewritten. The current status is in [section 18.5](#185-status).
+
+### 18.4 Owner acceptance of EI-6A (2026-11-14)
+
+**OWNER APPROVED — 2026-11-14. EI-6A — Durable SQLite Recommendation Issuance and Declaration Authority: ACCEPTED WITH DOCUMENTED LIMITATIONS.**
+
+**Scope.** The durable SQLite MODELED recommendation issuance and completeness-declaration authority, exactly as authorized by D6-1 to D6-6 (section 17).
+
+| Item | Accepted |
+| --- | --- |
+| Implementation | northstar-application #97 (merge `a17bd91`), the D6-5 prerequisite; northstar-infrastructure #67 (merge `63d2ab3`) |
+| Local engineering acceptance | PASS WITH DOCUMENTED LIMITATIONS (Windows, real SQLite) |
+| D6-6 Linux CI | **SATISFIED.** Application run `43599364295` (job `132460599656`): Linux, Python 3.13.18, 4,674 passed. Infrastructure run `43604917993` (job `132477386762`): Linux, Python 3.13.18, 3,339 passed and 24 skipped of 3,363, at `63d2ab3` with Application `a17bd91` and Core `29bd34a` |
+| Workflow identity | `python-ci.yml`, the only workflow at both tested revisions; established from the repositories' workflow inventory, not from run metadata |
+| Acceptance matrix (26) | 25 VERIFIED, 1 VERIFIED WITH LIMITATION (HW-03 (S)), 0 NOT VERIFIED |
+| EI-5D HW-07 | The durable-reader verification gap is recognized as **addressed** through EI-6A SA-10. The EI-5D record and its owner acceptance (section 16.3) are preserved, with a dated cross-reference |
+
+**Accepted limitations:**
+
+- **HW-03 (S):** a later same-session issuance cannot be constructed under EI4-D8.
+- **Ledger:** orphan-ledger integrity relies partly on adapter checks.
+- **Issued instant:** checked against the proposal only by re-derivation on load.
+- **`GENERATION_ALREADY_ISSUED`:** Application-contract evidence only.
+- **Precondition:** the EI-4D generation tables are required first.
+- **Load-time verification:** level A plus re-derivation; levels B and C run before issuance.
+- **Test seams.**
+- **Workflow identity:** as stated above.
+- **Carried forward:** EI4-D8, VC-04, N6, I08, IS-16 and NB-04; EI-4 formal CI closure (separate); O-2, O-3 and EI3-D10 unresolved.
+
+The [EI-6A Engineering Acceptance Record, sections 11.3, 12.1 and 13.1](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md#131-owner-acceptance-2026-11-14) holds the evidence.
+
+**Not authorized by this acceptance:**
+
+- EI-6B lifecycle persistence and EI-6C monitoring;
+- the resolution of O-2, O-3 or EI3-D10;
+- ACTUAL issuance; broker orders or fills; real-money trading;
+- production deployment; API or Web exposure; composition roots or monitoring execution;
+- a relaxation of EI4-D8; a new canonical issuance format; changes to historical EI-4D evidence.
+
+It does not close EI-4. **EI-6B and EI-6C each need a separate owner authorization.**
+
+### 18.5 Status
+
+| Item | Status |
+| --- | --- |
+| D6-1 to D6-6 | **APPROVED** (2026-11-14, unchanged) |
+| EI-6A | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-14) |
+| EI-6A acceptance scenarios (26) | 25 VERIFIED, 1 VERIFIED WITH LIMITATION |
+| D6-6 independent Linux CI | **SATISFIED** (runs `43599364295`, `43604917993`; workflow identity from the repository inventory) |
+| EI-5D HW-07 limitation | **Addressed** through EI-6A SA-10 (owner approved); historical record preserved |
+| EI-6B, EI-6C | **NOT AUTHORIZED** |
+| O-2, O-3; EI3-D10 | **DEFERRED**; pending |
+| EI-4 formal closure | **PENDING** (EI4-C4; separate obligation) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |

@@ -280,6 +280,8 @@ Three existing assertions conflicted with the governed change and were updated i
 - **HW-07:** the watermark-beyond-current refusal was verified against the in-memory authority; durable-reader enforcement remains EI-6's responsibility.
 - **NB-04:** no-position behaviour was established within the synthetic integration environment, without a real paper-trading store.
 
+> **Cross-reference, 2026-11-14 (HW-07 subsequently verified).** The table above is preserved as accepted. HW-07's durable-reader gap was later addressed through EI-6A: `test_sa10_view_semantics_on_sqlite` shows the SQLite issuance authority refusing `session_view_at` beyond its current position, locally on Windows and in the Linux CI run `43604917993`. The owner approved recognizing the gap as addressed on 2026-11-14 ([EI-5 Decision Register, section 18.4](Equity-Intraday-V1-EI5-Decision-Register.md#184-owner-acceptance-of-ei-6a-2026-11-14); [EI-6A Engineering Acceptance Record, section 12.1](Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md#121-limitation-reconciliation-2026-11-14)). This record's verdict, totals and owner acceptance are unchanged.
+
 **Additional accepted limitations:**
 
 - the issuance authority is an in-memory, non-durable test implementation;

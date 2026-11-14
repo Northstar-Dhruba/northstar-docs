@@ -59,6 +59,8 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 
 > **Note, 2026-11-14 (EI-6A implemented).** The note above records the state at authorization. The EI-6A part of section 13 is merged in northstar-infrastructure #67 (`63d2ab3`), on the D6-5 Application prerequisite (northstar-application #97, `a17bd91`). Local engineering acceptance is PASS WITH DOCUMENTED LIMITATIONS ([EI-6A Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md)). D6-6 Linux CI is not verified, so **EI-6A owner acceptance is PENDING**. The EI-6B and EI-6C parts of section 13 are neither implemented nor authorized.
 
+> **Note, 2026-11-14 (EI-6A accepted).** The note above records the state before this decision. With D6-6 Linux CI recorded (runs `43599364295` and `43604917993`), the owner **accepted EI-6A with documented limitations on 2026-11-14** ([EI-5 Decision Register, section 18.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#184-owner-acceptance-of-ei-6a-2026-11-14)). This ADR is unchanged in substance. The EI-6B and EI-6C parts of section 13 stay neither implemented nor authorized.
+
 ## Date
 
 2026-11-12
