@@ -54,6 +54,13 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **EI-6B and EI-6C: NOT AUTHORIZED.** O-3 before EI-6B; O-2 and EI3-D10 before EI-6C (D6-3). None is resolved.
 > - **Where it is marked.** Sections 9, 10, 11, 12.11, 13 and 17.2, each marked "amended 2026-11-14 (EI-6)". The record is the [EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14).
 
+> **Status update, 2026-11-14: EI-6A implemented; local engineering acceptance recorded.** The update above records the state at authorization and is not rewritten.
+>
+> - **Merged.** The issuance and declaration part of section 10 is merged in northstar-infrastructure #67 (`63d2ab3`), on northstar-application #97 (`a17bd91`).
+> - **Acceptance.** PASS WITH DOCUMENTED LIMITATIONS, local Windows real SQLite, in the [EI-6A Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-Engineering-Acceptance-Record.md#9-acceptance-evidence-matrix): CC-01 to CC-06, RR-03, RR-04 (views) and the S parts of ID-02, ID-03, BD-01, HW-03 and HW-08 are evidenced. The section 12 Status columns keep their 2026-11-12 plan.
+> - **Pending.** D6-6 Linux CI is not verified; **EI-6A owner acceptance is PENDING**.
+> - **Unchanged.** The EI-6B rows (RR-01, the state part of RR-04, RR-05, RR-06) stay PLANNED, and EI-6B and EI-6C are not authorized.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
