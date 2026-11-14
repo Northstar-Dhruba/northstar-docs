@@ -4,6 +4,17 @@
 
 **Engineering acceptance record, 2026-11-15.** This is Docs PR-3 of the EI-6B plan authorized in the [EI-5 Decision Register, section 19](Equity-Intraday-V1-EI5-Decision-Register.md#19-owner-authorization-of-ei-6b-2026-11-14).
 
+**EI-6B — ACCEPTED WITH DOCUMENTED LIMITATIONS, 2026-11-15 (owner).** See [section 17.1](#171-owner-acceptance-2026-11-15).
+
+> **Note, 2026-11-15 (D6B-7 evidence and owner acceptance).** The headline and bullets below record the state at engineering acceptance (Docs PR-3, northstar-docs #67) and are not rewritten. Since then:
+>
+> - **Linux CI recorded.** Successful Linux runs exist for northstar-application #98 (run `43623021952`) and northstar-infrastructure #68 (run `43643943540`) ([section 15.3](#153-verified-linux-ci-evidence-2026-11-15)). **D6B-7: SATISFIED**, with the workflow-identity qualification stated there.
+> - **Skip counts reconciled.** Windows 3,412 passed and 27 skipped; Linux 3,415 passed and 24 skipped; 3,439 collected on both ([section 15.4](#154-windows-and-linux-skip-reconciliation)).
+> - **Reclassified.** The five rows limited only by Windows-only separate-process evidence are VERIFIED. The matrix is now **20 VERIFIED, 2 VERIFIED WITH LIMITATION (RR-05, LS-17), 0 NOT VERIFIED** ([section 13.4](#134-reclassification-after-linux-ci-2026-11-15)).
+> - **Limitations reconciled** in [section 16.3](#163-limitation-reconciliation-2026-11-15).
+> - **Owner decision.** The owner accepted EI-6B with documented limitations on 2026-11-15 ([section 17.1](#171-owner-acceptance-2026-11-15)).
+> - **Unchanged.** EI-6C and EI-8 stay NOT AUTHORIZED; O-2 and EI3-D10 stay unresolved.
+
 **EI-6B — ENGINEERING IMPLEMENTATION MERGED; LOCAL ACCEPTANCE RECORDED; D6B-7 LINUX CI EVIDENCE PENDING; FINAL OWNER ACCEPTANCE PENDING.**
 
 - **Verdict:** EI-6B LOCAL ENGINEERING ACCEPTANCE: **PASS WITH DOCUMENTED LIMITATIONS — synthetic, local Windows, Application contract and real-SQLite engineering acceptance** ([section 17](#17-engineering-verdict-and-milestone-status)).
@@ -334,6 +345,32 @@ No restatement event is fabricated and no terminal state reopens. Specification 
 
 **Also tested, outside the matrix:** A `test_the_append_rule_refuses_another_parent_or_window_as_an_invalid_write`, `test_snapshot_rules_are_ei5cs_…`, `test_a_missing_disposition_…`, `test_e2e_…` and two architecture tests; S `test_a_write_lock_not_obtained_…`, `test_e2e_the_real_sqlite_vertical_slice` (empty lifecycle, opened, activated, `EQUIVALENT` retry, stale `CONFLICT`, reopen, target, terminal, fresh process, no order, fill, position, cursor or monitor object) and three architecture tests.
 
+### 13.4 Reclassification after Linux CI (2026-11-15)
+
+Sections 13.1 to 13.3 record the classification at engineering acceptance and are not rewritten.
+
+**Why exactly five rows change.** Their only limitation was Windows-only separate-process evidence (WL). Their S tests are in `tests/test_sqlite_equity_recommendation_lifecycle.py`, which has no platform conditional, skip or xfail marker, and spawns processes with the `spawn` start method on every platform. The Infrastructure Linux run (section 15.3) executed that module with successful progress and no skip or failure displayed in its section. All 76 cases, including the spawned-process and fresh-interpreter ones, therefore ran and passed on Linux as well as on Windows. The GitHub log shows the module's progress, not each test name.
+
+| ID | Tests (unchanged mapping) | Before | After | Remark |
+| --- | --- | --- | --- | --- |
+| RR-04 (state) | S `test_ls16_rr01_rr04_…`; `test_e2e_…` | VERIFIED WITH LIMITATION | **VERIFIED** | Fresh interpreter, now on Linux too |
+| RR-06 | A `test_ls13_…`, `test_ls14_rr06_…`; S `test_ls13_rr06_…`, `test_ls14_rr06_…` | VERIFIED WITH LIMITATION | **VERIFIED** | Spawned identical and conflicting races, now on Linux too |
+| LS-13 | A `test_ls13_…`; S `test_ls13_an_identical_retry_…`, `test_ls13_rr06_…` | VERIFIED WITH LIMITATION | **VERIFIED** (owner) | E4 is retained as an accepted architectural boundary, not a scenario limitation: authorizations are process-local and are never portable between processes; the exact `EQUIVALENT` retry after restart is shown with new adapter instances, and a fresh process re-evaluates from the durable history (`NO_NEW_EVENTS`) |
+| LS-14 | A `test_ls14_rr06_…`, `test_ls14_a_prior_history_…`; S `test_ls14_a_stale_writer_…`, `test_ls14_rr06_…` | VERIFIED WITH LIMITATION | **VERIFIED** | Spawned conflicting race, now on Linux too |
+| LS-16 | S `test_ls16_the_schema_…`; `test_ls16_rr01_rr04_…` | VERIFIED WITH LIMITATION | **VERIFIED** | Fresh interpreter, now on Linux too |
+| RR-05 | Section 13.1 | VERIFIED WITH LIMITATION | **Unchanged: VERIFIED WITH LIMITATION** | D6B-4 boundary (section 11.1) |
+| LS-17 | Section 13.2 | VERIFIED WITH LIMITATION | **Unchanged: VERIFIED WITH LIMITATION** | `WINDOW` on load by test seam only (section 11.2) |
+
+**Final totals:**
+
+| Group | Rows | VERIFIED | VERIFIED WITH LIMITATION | NOT VERIFIED |
+| --- | --- | --- | --- | --- |
+| EI-5 matrix rows | 5 | 4 (RR-01, RR-04 (state), RR-06, RV-04) | 1 (RR-05) | 0 |
+| LS scenarios | 17 | 16 | 1 (LS-17) | 0 |
+| **Total** | **22** | **20** | **2** | **0** |
+
+Arithmetic: 15 VERIFIED + 5 reclassified = 20; 7 VERIFIED WITH LIMITATION − 5 = 2.
+
 ## 14. Targeted mutations
 
 Run on the pre-merge working trees (same files and line counts as the change commits). Sources were restored byte for byte after each run.
@@ -403,6 +440,64 @@ All Windows 11; Python 3.13.15; SQLite 3.53.1; dependencies resolved by `uv`.
 
 **D6B-7: NOT SATISFIED.**
 
+### 15.3 Verified Linux CI evidence (2026-11-15)
+
+Section 15.2 records the state before this evidence and is not rewritten.
+
+**Source of the evidence.** The run and job identifiers, URLs, revisions and results were supplied and screenshot-verified by the owner on 2026-11-15. They were reconciled for this record against local Git and the repositories' workflow definitions. They were not fetched from this environment, which has no GitHub CLI or API access; no additional run metadata was viewed, and no CI run was repeated.
+
+| Item | northstar-application #98 | northstar-infrastructure #68 |
+| --- | --- | --- |
+| Run ID | `43623021952` | `43643943540` |
+| Job ID | `132532666955` | `132597422331` |
+| URL | <https://github.com/Northstar-Dhruba/northstar-application/actions/runs/43623021952/job/132532666955> | <https://github.com/Northstar-Dhruba/northstar-infrastructure/actions/runs/43643943540/job/132597422331> |
+| Tested revision | `b7df16b8f3348672627b4f692660d9fa844e03ef` (the #98 merge; local `develop` HEAD) | `dd6a434368bfa7124f33381c38bc52c65ab4efde` (the #68 merge; local `develop` HEAD) |
+| Application dependency | — | `b7df16b8f3348672627b4f692660d9fa844e03ef` (contains #98) |
+| Core dependency | `29bd34ac97810e6b471ed6c2ba4618ebaa57d9c6` | `29bd34ac97810e6b471ed6c2ba4618ebaa57d9c6` |
+| Platform; Python | Linux; 3.13.18 | Linux; 3.13.18 |
+| Test job | SUCCESS | SUCCESS |
+| Pytest | **4,726 collected, 4,726 passed**, no failures or skips; 42.33 s | **3,439 collected; 3,415 passed, 24 skipped**, no failures; 216.67 s |
+| EI-6B module | `tests/application_services/test_record_equity_recommendation_lifecycle.py` (52 cases) in the pytest output | `tests/test_sqlite_equity_recommendation_lifecycle.py` (76 cases) shown with successful progress and no displayed skip or failure |
+
+**Consistency checks:**
+
+- **Revisions.** All three SHAs exist locally and equal the `develop` HEADs of their repositories. The #98 and #68 merge subjects name those PRs.
+- **Dependencies.** Each workflow checks out its dependencies at `develop`; the recorded commits are those `develop` HEADs. The Infrastructure run's Application checkout is the #98 merge.
+- **Counts.** Application's 4,726 equals the local full-suite count (section 15.1). Infrastructure's 3,439 collected equals the local Windows total (3,412 + 27); section 15.4 reconciles the skips.
+- **Modules.** The 52-case and 76-case EI-6B modules hold no skip or platform marker. Their execution is recorded at module level; individual scenario names are not claimed to appear in the GitHub log.
+
+**Workflow identity.** At both tested revisions, `.github/workflows/python-ci.yml` is the **only** workflow file. It is named "Python CI" and has one job, `test`, which runs on `ubuntu-latest`, installs Python 3.13 with `uv`, checks out its dependencies at `develop`, and runs `ruff check`, `ruff format --check` and `pytest`. The evidence (a Linux test job, Python 3.13.18, these dependency commits) matches it, so the runs are `python-ci.yml` runs.
+
+- **Qualification.** This identity is established from the repositories' workflow inventory, not from run metadata displaying the filename, which the supplied screenshots did not show and this environment cannot access.
+- **Ruff.** The supplied evidence shows the pytest step; the Ruff steps are covered by the job's SUCCESS, not shown individually.
+
+**D6B-7: SATISFIED, 2026-11-15** (owner accepted the reviewed evidence):
+
+- local Windows synthetic and real-SQLite acceptance: sections 13 and 15.1;
+- independently verified successful Linux CI for the Application and Infrastructure implementation PRs, at their actual merged revisions, with their dependency commits: this section;
+- evidence that the EI-6B tests executed, including the spawned-process and fresh-process cases: this section and section 13.4;
+- reconciled Linux and Windows skip totals: section 15.4.
+
+The workflow-identity qualification is the only residual one. EI-4 formal CI closure (EI4-C4) stays a separate obligation; these runs do not close it unless they meet the [EI-4 Decision Register, section 15.3](Equity-Intraday-V1-EI4-Decision-Register.md#153-what-closes-ei-4).
+
+### 15.4 Windows and Linux skip reconciliation
+
+| Environment | Passed | Skipped | Collected |
+| --- | --- | --- | --- |
+| Windows local (section 15.1) | 3,412 | 27 | 3,439 |
+| Linux CI (section 15.3) | 3,415 | 24 | 3,439 |
+
+**Source-supported reconciliation.** The Linux skip identities are not listed individually in the supplied CI evidence. The explanation below is reconciled from the test sources at `dd6a434` and the workflow definition, not a verbatim Linux skip-reason report. The Windows skips are from the local `-rs` report.
+
+| Skip condition | Source | Windows | Linux |
+| --- | --- | --- | --- |
+| Opt-in live Databento acceptance | `tests/test_live_databento_futures_acceptance.py`: module-level `skipif(not os.environ.get("NORTHSTAR_LIVE_DATABENTO"))` | 23 skipped | 23 skipped (the flag is not set in the workflow) |
+| POSIX timezone | `tests/test_nse_futures_session.py`: `test_the_host_timezone_does_not_move_a_session`, `skipif(not hasattr(time_module, "tzset"))`, 4 zones (America/Chicago, Asia/Kolkata, Pacific/Kiritimati, UTC) | 4 skipped (no `time.tzset`) | Eligible and counted as passed; the module showed successful progress |
+| Docs approval-record cross-check | `tests/test_nse_equity_session_reference.py`: `test_production_evidence_matches_the_owner_approval_record_in_the_register`, `skipif(not _REGISTER.is_file())`, reading `../northstar-docs/research/NSE-Cash-Equity-Session-Evidence-Register.md` | Runs (Docs is checked out beside) | 1 skipped: the workflow checks out Infrastructure, Core and Application only; the earlier Linux log showed a skipped case in this module |
+| **Total** | | **27** | **24** |
+
+Linux therefore passes three more cases than Windows (4 − 1). No other skip, platform or xfail condition exists in the Infrastructure tests. The Docs cross-check skip is unrelated to EI-6B and is not a failed or skipped EI-6B test.
+
 ## 16. Limitations and verification gaps
 
 ### 16.1 Remaining EI-6B limitations
@@ -437,6 +532,36 @@ All Windows 11; Python 3.13.15; SQLite 3.53.1; dependencies resolved by `uv`.
 
 **No new blocker** is raised. The acceptance blocker is D6B-7 (section 15.2).
 
+### 16.3 Limitation reconciliation (2026-11-15)
+
+Sections 16.1 and 16.2 record the state at engineering acceptance and are not rewritten.
+
+**Resolved or addressed:**
+
+| Item | Disposition | Evidence |
+| --- | --- | --- |
+| D6B-7 Linux CI | **RESOLVED**; workflow identity qualified as stated | Section 15.3 |
+| Windows-only separate-process evidence (five rows) | **RESOLVED**: RR-04 (state), RR-06, LS-13, LS-14 and LS-16 also ran and passed on Linux | Run `43643943540`; section 13.4 |
+| E7 — No full suite on the merged commits | **ADDRESSED**: the full Application suite passed on Linux at merged `b7df16b` and the full Infrastructure suite at merged `dd6a434`. No full local Windows run on the merged commits is recorded; none is now required | Runs `43623021952`, `43643943540` |
+
+**Remaining (accepted by the owner):**
+
+| Item | Limitation |
+| --- | --- |
+| E1 | No lifecycle-event content fingerprint (D6B-4); RR-05 does not detect a canonical, column-consistent, Core-valid privileged rewrite; no cryptographic tamper detection |
+| E2 | The stored `WINDOW` integrity path is proved by a disclosed test seam; a planted real-SQLite record reaching it was not constructed. A possible forged-disposition route (recomputed fingerprints with matching raw EI-6A rows) remains untested and is not claimed impossible (LS-17) |
+| E3 | No persisted quiet-evaluation cursor; no exactly-once snapshot processing |
+| E4 | Process-local append authorizations: never portable between processes; a fresh process reconstructs the durable history and re-evaluates from it |
+| E5 | Reuse of EI-4D and EI-6A module-private helpers |
+| E6 | Some evidence relies on test seams and TEST-ONLY raw SQL on disposable files |
+| E8 | The EI-6A tables must exist before EI-6B storage initialization; the lifecycle store never creates or repairs EI-6A objects |
+| E9 | Redundant defence-in-depth guards (the adapter contiguity check duplicates Core: the equivalent mutant of section 14.2) |
+| — | D6B-7 workflow identity: established from the workflow inventory, not from run metadata (section 15.3) |
+
+**Carried forward, unchanged:** C1 to C10 of section 16.2 — EI4-D8; VC-04; N6; I08; IS-16; NB-04; EI-6A HW-03 and its adapter-enforced ledger checks; EI-4 formal CI closure (EI4-C4), separately outstanding; O-2 and EI3-D10 unresolved, EI-6C not authorized; single host, MODELED-only issuance, synthetic-evidence-only lifecycle recording.
+
+**Commit uncertainty (section 10), accepted under the single-host SQLite model.** No blind retry follows a missing acknowledgement: the failed transaction is rolled back and its connection closed; the authoritative history is reloaded; a further write is made only when the stored history is exactly the authorized prior; the same content-bound compare-and-append prevents duplicate writes; unresolved uncertainty stays a typed failure. No implementation was changed.
+
 ## 17. Engineering verdict and milestone status
 
 **EI-6B LOCAL ENGINEERING ACCEPTANCE: PASS WITH DOCUMENTED LIMITATIONS — synthetic, local Windows, Application contract and real-SQLite engineering acceptance.**
@@ -456,9 +581,34 @@ All Windows 11; Python 3.13.15; SQLite 3.53.1; dependencies resolved by `uv`.
 2. Reclassify the Windows-only process rows if those runs show the modules executed without skips.
 3. Then decide on acceptance with the documented limitations of section 16, including E2.
 
+### 17.1 Owner acceptance (2026-11-15)
+
+**OWNER APPROVED — 2026-11-15.**
+
+**EI-6B — Durable Equity Recommendation Lifecycle Persistence: ACCEPTED WITH DOCUMENTED LIMITATIONS.**
+
+**Scope accepted:** durable lifecycle events for authoritative MODELED recommendations; controlled synthetic evidence; the Application-owned lifecycle-store contract; versioned canonical event documents (`northstar.equity-recommendation-lifecycle-event/1`); content-bound verified append authorization; same-file SQLite lifecycle storage; atomic compare-and-append; deterministic Core replay; restart and cross-process persistence verification; O-3 option (b); the single-host trust model — exactly as authorized by D6B-1 to D6B-7.
+
+| Stage | Record |
+| --- | --- |
+| 1. Implementation merged | northstar-application #98 (`b7df16b`); northstar-infrastructure #68 (`dd6a434`) |
+| 2. Local Windows engineering acceptance | PASS WITH DOCUMENTED LIMITATIONS (sections 13 and 15.1; Docs PR-3, northstar-docs #67) |
+| 3. Independent Linux CI | Runs `43623021952` and `43643943540`, SUCCESS (section 15.3) |
+| 4. D6B-7 | **SATISFIED**, 2026-11-15, with the workflow-identity qualification |
+| 5. Final owner acceptance | **ACCEPTED WITH DOCUMENTED LIMITATIONS**, 2026-11-15 |
+| 6. Remaining documented limitations | Scenario level: RR-05 and LS-17. Architectural and carried forward: section 16.3 |
+| Acceptance matrix (22) | 20 VERIFIED, 2 VERIFIED WITH LIMITATION (RR-05, LS-17), 0 NOT VERIFIED (section 13.4) |
+| Mutations | Application 6 of 6 detected; Infrastructure 10 of 11 detected, 1 equivalent survivor (the adapter contiguity check; Core replay refuses the same histories) |
+
+**Not authorized by this acceptance:** EI-6C monitoring; automatic snapshot selection; the resolution of O-2 or EI3-D10; scheduled lifecycle evaluation; market-data polling; EI-8 restatement; ACTUAL issuance; broker execution; orders, fills or positions; real-money trading; production deployment; API or Web integrations; a relaxation of EI4-D8; terminal-state reopening; historical lifecycle rewriting. It does not close EI-4 and does not reopen EI-6A or EI-5. **EI-6C needs its own architecture review and owner authorization.**
+
+The owner record is the [EI-5 Decision Register, section 21](Equity-Intraday-V1-EI5-Decision-Register.md#21-owner-acceptance-of-ei-6b-2026-11-15).
+
 ## 18. Non-authorizations
 
 This record authorizes nothing: not EI-6C monitoring, automatic snapshot selection, scheduling, polling or a monitoring cursor; the resolution of O-2 or EI3-D10; EI-8 restatement or any new Core event kind; terminal-state reopening or historical lifecycle rewriting; ACTUAL issuance; broker orders or fills; real-money trading; real or live market data; production deployment; API or Web exposure; composition roots; a relaxation of EI4-D8. It does not close EI-4 and does not reopen EI-6A. EI-6B remains single-host, MODELED-only and synthetic-evidence-only.
+
+Neither this record nor the owner acceptance of section 17.1 authorizes anything further. O-3 stays resolved as option (b); specification section 8.2's audited-event requirement for late gap-filling evidence stays deferred to a future EI-8 design, which is not authorized.
 
 ## 19. Related documents
 

@@ -27,6 +27,8 @@
 > - **Pending.** D6B-7 Linux CI (section 13) is not verified; **EI-6B owner acceptance is PENDING**.
 > - **Recorded qualifications.** The stored `WINDOW` category is proved by a test seam only; RR-05 does not detect a canonical, Core-valid privileged rewrite (D6B-4).
 
+> **Status update, 2026-11-15: EI-6B complete and accepted.** The update above records the state before this decision and is not rewritten. D6B-7 is **SATISFIED** (Linux runs `43623021952` and `43643943540`), and the owner **accepted EI-6B with documented limitations on 2026-11-15**: of the 22 rows of section 12, 20 VERIFIED and 2 VERIFIED WITH LIMITATION (RR-05, LS-17) ([EI-6B Engineering Acceptance Record, section 17.1](../product/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md#171-owner-acceptance-2026-11-15)). Section 12 keeps its PLANNED text as historical design context. EI-6C stays not authorized.
+
 Code was read at:
 
 | Repository | Branch | Commit |
