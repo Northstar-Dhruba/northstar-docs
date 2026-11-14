@@ -398,6 +398,8 @@ Missing, corrupted, inconsistent or unsupported historical evidence fails closed
 > - **Unchanged.**
 >   - EI4-D9-I's other requirements, and the historical EI-4 version-1 acceptance.
 >   - EI-4's formal closure stays **PENDING** independent CI verification ([section 15](#15-ei-4-closure-dispositions-2026-11-12)).
+>
+> *2026-11-14:* the two-version verification is now implemented and merged, its engineering acceptance is recorded, and the owner accepted it with documented limitations on 2026-11-14 ([section 16](#16-ei-4c-versioned-history-compatibility-engineering-acceptance-record-2026-11-14)). The "Not implemented" bullet above records the 2026-11-13 state.
 
 #### EI4-D9-J -- EI-4D versus EI-5 and EI-6 responsibilities
 
@@ -986,3 +988,28 @@ A run that fails, is skipped, or cannot be identified is not closure evidence.
   EI4-D5 and EI0-D9 are now approved, in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md).
 - **EI-5 sequencing.** The owner approved on 2026-11-12 that EI-5B may begin after the EI-5A documentation PR is merged ([EI-5 Decision Register, section 12.5](Equity-Intraday-V1-EI5-Decision-Register.md#125-ei-5b-sequencing-and-the-revised-sequence)). This does not close EI-4 and does not waive EI4-C4: formal closure still needs the recorded CI evidence of [section 15.3](#153-what-closes-ei-4).
 - **Non-authorizations.** The non-authorizations of [section 13.5](#135-unchanged) and the restrictions of [section 7](#7-production-readiness-restrictions) still apply. Nothing here authorizes production use, real data, issuance beyond EI-5's synthetic scope, execution or trading.
+
+## 16. EI-4C versioned history compatibility engineering acceptance record (2026-11-14)
+
+This section records engineering acceptance evidence dated **2026-11-14** for the EI-4C versioned history compatibility prerequisite (ADR-025), which implements the closed two-version meaning of EI4-D9-I item 9, and points to the owner's acceptance of the same date. It is not itself an owner approval, and it does not rewrite sections 1 to 15. The evidence is in the [EI-4C Versioned History Compatibility Engineering Acceptance Record](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md); the owner records, including the N9 sequencing amendment of 2026-11-14, are in the [EI-5 Decision Register, section 14](Equity-Intraday-V1-EI5-Decision-Register.md#14-ei-4c-compatibility-implementation-and-engineering-acceptance-2026-11-14).
+
+### 16.1 Status
+
+| Item | Status |
+| --- | --- |
+| EI4-D9-I, item 9 (closed two-version verification) | **IMPLEMENTED** (application #95, merge `d908674`) |
+| Version-1 records, fingerprints and replay | **PRESERVED**: goldens unchanged since slice 1 (`a867248`) and slice 2 (`7cfd4d8`); levels A to C verified |
+| EI-4D-B SQLite store with version 2 | **VERIFIED**, no migration (infrastructure #66, merge `f71f8f7`; Windows local) |
+| EI-4C compatibility engineering acceptance | **PASS WITH DOCUMENTED LIMITATIONS -- synthetic engineering acceptance** (2026-11-14). 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED, 3 PLANNED. CI is not independently verified |
+| Owner acceptance of the prerequisite (slice 5) | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-14; [EI-5 Decision Register, section 14.4](Equity-Intraday-V1-EI5-Decision-Register.md#144-owner-acceptance-of-slice-5-2026-11-14)). VC-04 stays NOT VERIFIED; rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is not authorized without separate verification |
+
+### 16.2 Relationship to the EI-4 closure dispositions
+
+- **EI4-C3 (replay from a separate OS process).** Slice 4's `test_ps04_vc15_a_mixed_file_reloads_and_verifies_each_version_in_a_fresh_process` reloads and verifies stored dispositions at levels A to C in a separate interpreter, on Windows. This is new evidence relevant to EI4-C3. The owner disposition of section 15.1 is unchanged; the owner may revisit it.
+- **EI4-C2 (POSIX separate processes).** Slice 4's concurrent-process test is again Windows-only. The limitation is unchanged.
+- **EI4-C4 (independent CI).** Still **NOT VERIFIED.** No CI result was inspected for this record; the owner reported a CI failure on application #95 before the four-digit-year fixes (core #40, application `9ccfd77`), and no later CI result is recorded.
+- **Formal EI-4 milestone closure.** Still **PENDING** under [section 15.3](#153-what-closes-ei-4). This record does not close EI-4.
+
+### 16.3 Unchanged
+
+Every decision of sections 1 to 15, every verdict of the EI-4E, EI4-D10 and EI4-D11 records, EI4-D8's conservative open-state treatment and every pending decision keep their status. The owner acceptance of 2026-11-14 does not close EI-4 and does not complete EI4-C4. Nothing here authorizes EI-5D implementation, MODELED or ACTUAL issuance, real data, new historical data writes, broker execution or production deployment; EI-5D requires a separate owner milestone authorization.

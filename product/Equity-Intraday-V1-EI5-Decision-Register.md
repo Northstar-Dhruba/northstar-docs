@@ -30,6 +30,14 @@
 > - **Milestone status corrected.** Section 13.6 corrects the stale milestone status: EI-5A, EI-5B, the EI5-D7 addendum and EI-5C are merged.
 > - **Unchanged.** EI-4's formal closure stays pending independent CI verification.
 
+> **Note, 2026-11-14 (EI-4C compatibility implemented and accepted with documented limitations).** The bullets of the 2026-11-13 note record the state on that date and are not rewritten. Since then:
+>
+> - **N9 sequencing amendment.** The owner approved implementing slices 3a and 3b as one combined Application PR ([section 14.1](#141-n9-sequencing-amendment-combined-slices-3a--3b-owner-approved-2026-11-14)). Packaging only; N1 to N8 and N10 are unchanged.
+> - **Implemented.** Slices 1, 2, 3a + 3b and 4 have merged ([section 14.2](#142-merged-implementation)).
+> - **Engineering acceptance.** PASS WITH DOCUMENTED LIMITATIONS, recorded in the [EI-4C Engineering Acceptance Record](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md).
+> - **Owner acceptance, 2026-11-14.** EI-4C versioned history compatibility is **ACCEPTED WITH DOCUMENTED LIMITATIONS** ([section 14.4](#144-owner-acceptance-of-slice-5-2026-11-14)). VC-04 stays NOT VERIFIED, and rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is not authorized without separate verification.
+> - **Unchanged.** EI-5D is **not authorized** and needs a separate owner milestone authorization. EI-4's formal closure stays pending independent CI verification.
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -907,5 +915,102 @@ The earlier entries stay as recorded.
 | Compatibility acceptance scenarios (52) | **PLANNED** |
 | EI-5 acceptance scenarios (119) | **PLANNED** |
 | EI-5D | **NOT AUTHORIZED**; requires slice 5 |
+| EI-4 formal closure | **PENDING** independent CI verification |
+| Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-14.** The table above records the status on 2026-11-13 and is not rewritten. The current status is in [section 14.5](#145-status).
+
+## 14. EI-4C compatibility implementation and engineering acceptance (2026-11-14)
+
+This section records an **owner-approved sequencing amendment** (section 14.1), the **engineering acceptance evidence** of the merged EI-4C compatibility slices, and the **owner's acceptance of slice 5** on 2026-11-14 (section 14.4). The evidence is in the [EI-4C Versioned History Compatibility Engineering Acceptance Record](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md). The acceptance record is not an owner approval, and this section does not rewrite section 13.
+
+### 14.1 N9 sequencing amendment: combined slices 3a + 3b (owner approved, 2026-11-14)
+
+**OWNER APPROVED, 2026-11-14,** before the combined implementation began.
+
+N9 (section 13.5) approved two Application slices: 3a, two-version verification, and 3b, version-2 generation, with 3b requiring 3a merged. That approval stands as the governance of record for the slices' content. The owner subsequently approved delivering both as **one Application feature: Combined Slices 3a + 3b — Closed Two-Version Verification and Version-2 Generation**.
+
+- **What changed.** PR packaging and workflow only: one branch, one implementation commit (`713954e`), one PR (#95), instead of two PRs in sequence.
+- **What stayed binding.** Every decision N1 to N8 and N10, the case-C classification, the scope of 3a and of 3b, their gates (version-1 goldens unchanged; Application suite green; the full Infrastructure suite run against the Application head) and every acceptance scenario assigned to them. No decision is reinterpreted.
+- **Engineering basis for the packaging change.**
+  - Both slices change the same Application modules: decoding, records, evidence, the verifier, the recorder and the generator.
+  - Until 3b, version-2 verification could be exercised only on hand-resealed documents; together, it is tested on genuine version-2 records.
+  - The label-format pairing that 3a introduces needed one coordinated Infrastructure test change, which a single Application PR required only once.
+- **Prerequisites, as executed** (local merge history, IST):
+  - slices 1 (#94, 01:08) and 2 (#64, 02:06) merged before the combined implementation commit (04:53);
+  - the Infrastructure evaluator-set correction (#65, 03:42) merged before the combined Application PR (#95, 13:45). It accepts exactly `{/1}` or `{/1, /2}`, so it satisfied the design's cross-repository constraint before, not after, the Application merge;
+  - the combined Application PR merged before slice 4 (#66, 14:30).
+- **Unchanged.** Slices 0, 1, 2, 4, 5 and 6 and their prerequisites; slice 6 (EI-5D) still requires slice 5 accepted.
+
+The original N9 row and section 13.5 are kept as approved on 2026-11-13.
+
+### 14.2 Merged implementation
+
+| Slice | Repository | PR | Change commit | Merge commit |
+| --- | --- | --- | --- | --- |
+| 1. Version-1 golden-vector freeze | northstar-application | #94 | `a867248` | `ba79805` |
+| 2. Test hygiene and version-1 persisted replay | northstar-infrastructure | #64 | `7cfd4d8` | `efe2d7b` |
+| Evaluator-set transition correction | northstar-infrastructure | #65 | `dedd36e` | `d8a911f` |
+| Combined 3a + 3b | northstar-application | #95 | `713954e`, `9ccfd77` | `d908674` |
+| 4. Mixed-version SQLite acceptance | northstar-infrastructure | #66 | `e1f9b83` | `f71f8f7` |
+| 5. Acceptance record | northstar-docs | — | This section and the acceptance record, uncommitted | — |
+
+Core #40 (`29bd34a`) and Application `9ccfd77` fix platform-dependent four-digit year formatting, after the owner reported a CI failure on #95. They change no EI-4C contract.
+
+### 14.3 Engineering acceptance summary
+
+- **Verdict:** PASS WITH DOCUMENTED LIMITATIONS — synthetic engineering acceptance.
+- **Matrix (52):** 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED (VC-04), 3 PLANNED (VC-21 to VC-23, owned by EI-5D).
+- **SQLite:** the existing schema accepts version-2 records with no migration (verified on real SQLite, Windows). The pairing trigger stays **DEFERRED** (N6).
+- **I08:** an equivalent mutant under the accepted contracts, not killed.
+- **CI:** not independently verified.
+
+### 14.4 Owner acceptance of slice 5 (2026-11-14)
+
+**OWNER APPROVED, 2026-11-14. EI-4C Versioned History Compatibility: ACCEPTED WITH DOCUMENTED LIMITATIONS.**
+
+The owner approved the slice-5 acceptance recommendation of the [acceptance record, section 14](Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#14-engineering-verdict-and-recommended-status). The owner accepts:
+
+- the completed slices 0 to 5 compatibility implementation and engineering evidence;
+- the 40 VERIFIED scenarios;
+- the eight VERIFIED WITH LIMITATION scenarios (VC-06, VC-07, VC-12, VC-15, VC-25, HB-09, PS-04, PS-05), retaining every limitation;
+- VC-04 as NOT VERIFIED (below);
+- VC-21 to VC-23 as PLANNED for EI-5D;
+- the deferred N6 SQLite label-format pairing trigger;
+- the I08 equivalent-mutant qualification;
+- Windows-only evidence where Linux verification is unavailable;
+- the existing EI4-D8 restrictions and the other previously deferred decisions.
+
+**VC-04 — explicit owner disposition.**
+
+| Item | Owner decision, 2026-11-14 |
+| --- | --- |
+| Status | Remains **NOT VERIFIED** |
+| Legacy readers | Compatibility of pre-3a Application implementations with stored evaluator-v2 records is **not guaranteed**. No claim of legacy-reader compatibility is approved |
+| Rollback or downgrade | To a pre-3a Application version against stored evaluator-v2 records: **NOT AUTHORIZED** without separate compatibility verification |
+| Disposition | Accepted as a documented limitation; no additional testing required before slice-5 acceptance |
+
+**Boundaries.**
+
+- **EI-4 formal CI closure** stays **PENDING** independently verified evidence ([EI-4 Decision Register, section 15.3](Equity-Intraday-V1-EI4-Decision-Register.md#153-what-closes-ei-4)). EI4-C4 stays **NOT VERIFIED**; no CI run is recorded.
+- **Not authorized by this acceptance:** EI-5D implementation, MODELED issuance, ACTUAL issuance, production deployment, broker execution and new historical data writes. **EI-5D requires a separate owner milestone authorization.**
+- **No new decision.** The acceptance changes no architecture decision, no scenario status and no evidence. Decisions N1 to N10 and the N9 amendment of section 14.1 are unchanged.
+
+### 14.5 Status
+
+| Item | Status |
+| --- | --- |
+| R-1, R-2, N1 to N10, N10 case C | **APPROVED** (2026-11-13, unchanged) |
+| N9 sequencing amendment (combined 3a + 3b) | **APPROVED** (2026-11-14) |
+| Slices 1, 2, 3a + 3b, 4 | **MERGED** |
+| Existing SQLite schema compatibility | **VERIFIED** (slice 4, 2026-11-14; Windows local; no migration) |
+| SQLite label-format pairing trigger | **DEFERRED** |
+| Compatibility acceptance scenarios (52) | 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED, 3 PLANNED |
+| Slice 5 engineering acceptance | **PASS WITH DOCUMENTED LIMITATIONS** (2026-11-14) |
+| Slice 5 owner acceptance; EI-4C versioned history compatibility | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-14; section 14.4) |
+| VC-04 | **NOT VERIFIED**; accepted as a documented limitation; rollback or downgrade to a pre-3a Application against stored evaluator-v2 records **NOT AUTHORIZED** without separate verification |
+| EI-5 acceptance scenarios (119) | **PLANNED** |
+| EI-5D | **NOT AUTHORIZED**; slice 5 is accepted, and EI-5D requires a separate owner milestone authorization |
+| MODELED and ACTUAL issuance, new historical data writes, broker execution | **NOT AUTHORIZED** |
 | EI-4 formal closure | **PENDING** independent CI verification |
 | Operational or production authorization | **NOT GRANTED** |

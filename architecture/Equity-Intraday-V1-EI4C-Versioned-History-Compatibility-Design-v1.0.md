@@ -8,6 +8,15 @@ Status: **Approved governance; implementation not started** (2026-11-13). Versio
 - **Acceptance.** Every scenario in section 12 is **PLANNED**.
 - **Location.** `architecture/` holds design specifications, and the README's Architecture row already links the folder. A revised design is a new version; this file is not rewritten.
 
+> **Status update, 2026-11-14 (implemented; engineering acceptance recorded).** The status lines above and in section 1 record the state on 2026-11-13 and are not rewritten. Since then:
+>
+> - **Sequencing (N9).** Slices 3a and 3b were delivered as one combined Application PR, owner approved 2026-11-14; packaging only (section 13).
+> - **Implemented.** Slices 1, 2, the combined 3a + 3b and 4 are merged. The design's contracts were implemented as specified: the field name `history_boundary`, its value `"STRICTLY_BEFORE_MODELED_ISSUANCE"` and the case-C reason are used exactly, so no design amendment was needed for them.
+> - **SQLite.** Section 11's compatibility is **VERIFIED** on real SQLite, with no migration.
+> - **Acceptance.** Section 12's scenarios are reconciled in the [EI-4C Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#10-acceptance-evidence-matrix): 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED, 3 PLANNED. Engineering verdict PASS WITH DOCUMENTED LIMITATIONS.
+> - **Owner acceptance, 2026-11-14.** EI-4C versioned history compatibility is **ACCEPTED WITH DOCUMENTED LIMITATIONS** ([EI-5 Decision Register, section 14.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#144-owner-acceptance-of-slice-5-2026-11-14)). VC-04 stays NOT VERIFIED; rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is not authorized without separate compatibility verification.
+> - **Unchanged.** EI-5D is not authorized and requires a separate owner milestone authorization; EI-4 formal closure is pending independent CI verification.
+
 Source paths are relative to each repository root. Code was read at:
 
 | Repository | Branch | Commit |
@@ -31,6 +40,8 @@ Source paths are relative to each repository root. Code was read at:
 | Existing SQLite schema compatibility | **EXPECTED, NOT VERIFIED** |
 | EI-5D | **NOT AUTHORIZED** |
 | EI-4 formal closure | **PENDING** independent CI verification |
+
+*2026-11-14:* slices 1, 2, 3a + 3b (combined) and 4 are merged, SQLite compatibility is **VERIFIED**, and slice 5 is recorded and **accepted by the owner with documented limitations on 2026-11-14** (status update above). The table records the 2026-11-13 state.
 
 In scope:
 
@@ -331,10 +342,19 @@ Source: `northstar-infrastructure/src/northstar_infrastructure/persistence/sqlit
 - **Finding.** By inspection, no existing constraint conflicts with the version-2 shape of section 5. The one restriction found is the status set, and section 7 respects it.
 - **Status.** **EXPECTED, NOT VERIFIED.** Only slice 4's real mixed-version acceptance (PS-01 to PS-08) can verify it.
 - **If a constraint fails.** The failure is reported and governed separately, never worked around, and no migration is run without its own approval.
+- *Amended 2026-11-14 — status: **VERIFIED** (slice 4, infrastructure #66, merge `f71f8f7`).* Real mixed-version SQLite acceptance (PS-01 to PS-08) passed against the existing schema and adapter with **no migration and no production change**:
+  - every row of the table above held for version-2 records as expected; no constraint failed;
+  - `sqlite_master`, `PRAGMA user_version` and both tables' column definitions are identical before and after version-2 writes;
+  - foreign-key provenance, the source trigger, the insert-only and no-replace triggers, `BEGIN IMMEDIATE` atomicity and authorized writes behave for version 2 as for version 1;
+  - version-1 rows stay byte-identical, and version-1 and version-2 rows coexist and replay under their own labels, including in a fresh process.
+
+  **Limitations.** Windows local evidence only; no CI result is recorded. The `evaluator_version` row is unchanged: SQLite does not enforce label-format pairing, and the pairing trigger stays deferred (N6). Evidence: [acceptance record, section 9](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#9-sqlite-compatibility).
 
 ## 12. Acceptance matrix
 
 **Every scenario is PLANNED.** None is executed, and existing version-1 tests are not evidence of version-2 behaviour.
+
+*Note, 2026-11-14.* The Status columns below record the plan of 2026-11-13 and are not rewritten. The executed statuses, with evidence for each of the 52 scenarios, are in the [EI-4C Engineering Acceptance Record, section 10](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#10-acceptance-evidence-matrix): 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED (VC-04), 3 PLANNED (VC-21 to VC-23, EI-5D).
 
 **Columns.** Each scenario states the expected behaviour at each stage: decoding, historical verification, generation, recording and issuance eligibility.
 
@@ -471,6 +491,15 @@ These are additional to the 119 scenarios of the [EI-5 design](Equity-Intraday-V
 
 This is a sequencing constraint, not an architecture change.
 
+*Amended 2026-11-14 (owner approved): combined slices 3a + 3b.* The table above remains the sequence approved on 2026-11-13. Slices 3a and 3b were delivered as one Application PR, **"Combined Slices 3a + 3b — Closed Two-Version Verification and Version-2 Generation"** (application #95, merge `d908674`). Only packaging changed:
+
+- both rows' scope, gates and acceptance scenarios stayed binding, and the gate "the full Infrastructure suite run against the slice-3a head" was applied to the combined head (3,267 passed, 27 skipped, local);
+- slices 1 (#94) and 2 (#64) merged first;
+- the paired Infrastructure PR was not needed after the Application merge: the evaluator-set correction (#65) merged **before** #95 and accepts exactly `{/1}` or `{/1, /2}`;
+- slice 4 (#66) followed the combined merge.
+
+The owner record is the [EI-5 Decision Register, section 14.1](../product/Equity-Intraday-V1-EI5-Decision-Register.md#141-n9-sequencing-amendment-combined-slices-3a--3b-owner-approved-2026-11-14). The test-label inventory above was resolved by slices 1 and 2 (TH-01 to TH-03), and slice 4 replaced the removed premises with pairing-refusal and real cross-version tests.
+
 ## 14. Deferred work and limitations
 
 **Resolved, 2026-11-13.** The N10 case-C refusal classification is owner approved (section 7); it no longer blocks slice 3b.
@@ -499,6 +528,11 @@ This is a sequencing constraint, not an architecture change.
 - Items 3, 12, 13 and 14 are deferred **policies or products**.
 - The slice 2 and 3a test sequencing (section 13) is the only remaining **pre-implementation constraint**.
 - Nothing listed blocks the architecture.
+
+*Update, 2026-11-14.* The list above is kept as recorded.
+- **Resolved:** limitation 10 (slices 1 and 2 replaced the `/2` test label), and the pre-implementation sequencing constraint (met; section 13).
+- **Added by the acceptance record:** I08 is an equivalent mutant, not killed, and depends on the Application's pairing and construction invariants; the cross-process SQLite evidence is Windows-only; VC-04 is NOT VERIFIED, accepted by the owner as a documented limitation on 2026-11-14, so rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is not authorized without separate compatibility verification. See the [acceptance record, section 13](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#13-remaining-limitations).
+- **Still deferred:** the SQLite pairing trigger (N6). Limitations 1 to 9 and 11 to 14 remain.
 
 ## 15. Related documents
 

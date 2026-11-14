@@ -29,6 +29,12 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Milestones.** EI-5B (northstar-core #39) and EI-5C (northstar-application #93) have merged. That is a status correction only, with no acceptance record ([EI-5 Decision Register, section 13.6](../product/Equity-Intraday-V1-EI5-Decision-Register.md#136-milestone-status-correction)).
 > - **Unchanged.** The prerequisite's implementation is NOT STARTED; EI-5D is not authorized; this design's lifecycle and issuance architecture and its 119 scenarios are unchanged.
 
+> **Status update, 2026-11-14: EI-4C versioned compatibility implemented.** The 2026-11-13 update above is kept as recorded.
+>
+> - **Implemented.** The prerequisite's slices 1, 2, 3a + 3b (combined, owner approved 2026-11-14) and 4 are merged. Version-2 generation and verification exist; EI-5D composition must still select evaluator `/2` explicitly.
+> - **Acceptance.** Engineering acceptance PASS WITH DOCUMENTED LIMITATIONS is recorded in the [EI-4C Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md). The owner accepted the prerequisite **with documented limitations on 2026-11-14** ([EI-5 Decision Register, section 14.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#144-owner-acceptance-of-slice-5-2026-11-14)).
+> - **Unchanged.** EI-5D is **not authorized**: slice 5 is accepted, and EI-5D needs a separate owner milestone authorization. This design's architecture and its 119 PLANNED scenarios are unchanged; IS-16 stays PLANNED until EI-5D.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -788,7 +794,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 | --- | --- |
 | Architecture and engineering design | **APPROVED** (2026-11-12, with amendments) |
 | Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED** |
-| EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2). *Amended 2026-11-13: design approved (ADR-025); implementation NOT STARTED* |
+| EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2). *Amended 2026-11-13: design approved (ADR-025); implementation NOT STARTED.* *Amended 2026-11-14: implemented and merged; engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-5D still needs a separate owner milestone authorization* |
 | Acceptance scenarios | **PLANNED** (119; none executed) |
 | O-2, O-3 | **DEFERRED** |
 | EI-4 formal closure | **PENDING** independent CI verification |
