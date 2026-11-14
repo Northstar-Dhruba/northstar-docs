@@ -66,6 +66,8 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 > - **Authorized.** **EI-6B — AUTHORIZED, NOT IMPLEMENTED, OWNER ACCEPTANCE PENDING** (D6B-1 to D6B-7; [EI-5 Decision Register, section 19](../product/Equity-Intraday-V1-EI5-Decision-Register.md#19-owner-authorization-of-ei-6b-2026-11-14)), with the [EI-6B Lifecycle Persistence Design addendum](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md).
 > - **O-3: option (b).** No lifecycle event for late gap-filling evidence; the specification section 8.2 requirement is deferred to a future EI-8 design.
 > - **Unchanged.** The staged architecture of section 13 and sections 8 to 11 (no Core change). EI-6C stays not authorized; O-2 and EI3-D10 stay unresolved.
+>
+> **Note, 2026-11-15 (EI-6B implemented).** The note above records the state at authorization. The EI-6B part of section 13 is merged in northstar-application #98 (`b7df16b`) and northstar-infrastructure #68 (`dd6a434`). Local engineering acceptance is PASS WITH DOCUMENTED LIMITATIONS: 15 VERIFIED and 7 VERIFIED WITH LIMITATION of 22 rows ([EI-6B Engineering Acceptance Record](../product/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Engineering-Acceptance-Record.md)). D6B-7 Linux CI is pending, so **EI-6B owner acceptance is PENDING**. This ADR is unchanged in substance; EI-6C stays not authorized.
 
 ## Date
 
