@@ -35,6 +35,12 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Acceptance.** Engineering acceptance PASS WITH DOCUMENTED LIMITATIONS is recorded in the [EI-4C Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md). The owner accepted the prerequisite **with documented limitations on 2026-11-14** ([EI-5 Decision Register, section 14.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#144-owner-acceptance-of-slice-5-2026-11-14)).
 > - **Unchanged.** EI-5D is **not authorized**: slice 5 is accepted, and EI-5D needs a separate owner milestone authorization. This design's architecture and its 119 PLANNED scenarios are unchanged; IS-16 stays PLANNED until EI-5D.
 
+> **Status update, 2026-11-14: EI-5D and EI-5E authorized (owner approved).** The update above records the state before this authorization and is not rewritten.
+>
+> - **Authorized.** EI-5D (sections 7 and 8) and EI-5E are authorized as one synthetic, Application-only northstar-application PR, against a labelled in-memory authority test double ([EI-5 Decision Register, section 15](../product/Equity-Intraday-V1-EI5-Decision-Register.md#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)).
+> - **Recorded here.** D5D-2 (combined packaging) in section 11; D5D-3 (the authority reference) in section 7.1; D5D-4 (BD-04) in section 12.10. Each is marked "amended 2026-11-14".
+> - **Unchanged.** The architecture, the 119 scenarios and every non-authorization of section 15. Only MODELED issuance is authorized; the SQLite authority and monitoring stay EI-6, which needs its own authorization. **Not implemented yet.**
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -336,6 +342,8 @@ For every interval cited as `ACCEPTABLE` evidence by an earlier event, a later s
    - the session's current greatest declared `complete_through` to be exactly `t − 1 µs`. A greater one is `BACKDATED_ISSUANCE`.
 
    This step depends on the EI-4C compatibility prerequisite, which is not implemented.
+
+   *Amended 2026-11-14 (D5D-3, owner approved).* The authority's issued-history `reference` is the fixed, versioned text `northstar.equity-recommendation-issuance-authority/1`. "Names this authority" means the frozen evidence's `reference` equals it. Version-2 frozen inputs embed the reference, so it is identity-bearing; changing it needs a new version. The EI-4C prerequisite is implemented and accepted (2026-11-14).
 5. **Derive the record and identity.** Derive the issued record (section 7.2) and its identity (section 7.4).
 6. **Authorize and write.** Produce a content-bound `VerifiedEquityRecommendationIssuance` authorization, and call the writer once.
 7. **Map the writer's outcome.** `ISSUED` with its sequence, `EQUIVALENT`, or a typed refusal (section 8.3).
@@ -513,6 +521,8 @@ EI-5 depends on EI-4, whose formal closure is pending CI verification ([EI-4 Dec
 >   6. a Docs acceptance record (5).
 > - **EI-5D** follows only after that acceptance.
 
+> **Amended 2026-11-14 (D5D-2, owner approved).** The EI-4C prerequisite is accepted. EI-5D and EI-5E are authorized and are delivered in **one northstar-application implementation PR**. This is packaging only: both rows above keep their scope and their acceptance scenarios, and EI-6 still follows EI-5E under its own authorization ([EI-5 Decision Register, section 15](../product/Equity-Intraday-V1-EI5-Decision-Register.md#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)).
+
 ## 12. Acceptance matrix
 
 **Status for every row: PLANNED.** Nothing here is executed or verified. *Amended 2026-11-12:* no row is blocked by an undecided C-1, C-2 or O-1. RV-04 is marked "DEFERRED: awaits O-3", and IS-16 "requires the EI-4C versioned compatibility prerequisite".
@@ -671,7 +681,7 @@ The shared synthetic example is that of [EI-5 Decision Register, section 4.1](..
 | BD-01 | `issued_at` 10:10; declared through 10:30 | `BACKDATED_ISSUANCE` | C, S | EI-5D, EI-6 | PLANNED |
 | BD-02 | `issued_at` exactly equal to `complete_through` | `BACKDATED_ISSUANCE` | C | EI-5D | PLANNED |
 | BD-03 | `issued_at` 10:40, declared through 10:30; and (amended 2026-11-12, C-2) `issued_at` `t`, declared through exactly `t − 1 µs` | `ISSUED` in both cases | C | EI-5D | PLANNED |
-| BD-04 | No declaration for the session | `ISSUED`; no completeness claimed | C | EI-5D | PLANNED |
+| BD-04 | No declaration for the session | `ISSUED`; no completeness claimed. *Amended 2026-11-14 (D5D-4): a writer-contract scenario; at the issuer, a request without the required declaration (exactly `t − 1 µs`) stays ineligible (section 7.1, IS-16)* | C | EI-5D | PLANNED |
 | HW-01 | No declaration | `session_history` is `None`, never empty | C | EI-5D | PLANNED |
 | HW-02 | A declaration and no issuance | An explicit empty tuple | C | EI-5D | PLANNED |
 | HW-03 | The A, B, declaration, C example of EI5-D4 | The view at watermark 3 lists exactly A and B, before and after C | C, S | EI-5D, EI-6 | PLANNED |
@@ -793,7 +803,7 @@ The 09:15 to 15:00 IST research window is not a production entry, exit or tradin
 | Item | Status |
 | --- | --- |
 | Architecture and engineering design | **APPROVED** (2026-11-12, with amendments) |
-| Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED** |
+| Engineering implementation (EI-5B to EI-5E, EI-6) | **NOT STARTED**. *Amended 2026-11-14: EI-5B and EI-5C merged; EI-5D and EI-5E authorized (one Application PR), not started; EI-6 not authorized* |
 | EI-4C versioned compatibility prerequisite | **NOT STARTED**; own design and approval needed (R-1, R-2). *Amended 2026-11-13: design approved (ADR-025); implementation NOT STARTED.* *Amended 2026-11-14: implemented and merged; engineering acceptance PASS WITH DOCUMENTED LIMITATIONS; owner acceptance: ACCEPTED WITH DOCUMENTED LIMITATIONS (2026-11-14). EI-5D still needs a separate owner milestone authorization* |
 | Acceptance scenarios | **PLANNED** (119; none executed) |
 | O-2, O-3 | **DEFERRED** |

@@ -43,6 +43,12 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 >   They have no Docs acceptance record and no recorded independent CI evidence.
 > - **Status table.** The table and paragraph above record the status on 2026-11-12.
 
+> **Note, 2026-11-14 (EI-4C accepted; EI-5D and EI-5E authorized).** This ADR stays **accepted** and unchanged in substance.
+>
+> - **Prerequisite accepted.** The EI-4C versioned compatibility prerequisite is implemented, merged and owner accepted with documented limitations ([EI-5 Decision Register, section 14](../product/Equity-Intraday-V1-EI5-Decision-Register.md#14-ei-4c-compatibility-implementation-and-engineering-acceptance-2026-11-14)).
+> - **Authorized.** EI-5D (sections 2 to 7 and 12) and EI-5E are authorized as one synthetic, Application-only northstar-application PR, against an in-memory authority test double ([EI-5 Decision Register, section 15](../product/Equity-Intraday-V1-EI5-Decision-Register.md#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)). The authoritative history `reference` is `northstar.equity-recommendation-issuance-authority/1` (D5D-3).
+> - **Unchanged.** Section 13 is unchanged: the SQLite issuance authority belongs to EI-6, which is not authorized. Only MODELED issuance is authorized; ACTUAL issuance stays unauthorized. **Not implemented yet.**
+
 ## Date
 
 2026-11-12

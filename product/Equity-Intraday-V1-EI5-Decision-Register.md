@@ -38,6 +38,8 @@
 > - **Owner acceptance, 2026-11-14.** EI-4C versioned history compatibility is **ACCEPTED WITH DOCUMENTED LIMITATIONS** ([section 14.4](#144-owner-acceptance-of-slice-5-2026-11-14)). VC-04 stays NOT VERIFIED, and rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is not authorized without separate verification.
 > - **Unchanged.** EI-5D is **not authorized** and needs a separate owner milestone authorization. EI-4's formal closure stays pending independent CI verification.
 
+> **Note, 2026-11-14 (EI-5D and EI-5E authorized).** The last bullet of the note above records the state before this authorization and is not rewritten. Later on 2026-11-14 the owner **authorized EI-5D (MODELED recommendation issuance) and EI-5E (synthetic end-to-end integration)**, combined in one northstar-application implementation PR, as a synthetic, Application-only milestone, with decisions D5D-1 to D5D-5 ([section 15](#15-owner-authorization-of-ei-5d-and-ei-5e-2026-11-14)). Only MODELED issuance is authorized. No SQLite issuance authority, ACTUAL issuance, execution, deployment or API and Web expansion is authorized; EI-6 needs its own authorization. **Nothing in EI-5D or EI-5E is implemented yet.**
+
 ## 1. Purpose
 
 This register records the owner decisions that govern EI-5: the issuance of a synthetic recommendation from a verified EI-4 generation record, and its intraday lifecycle.
@@ -1013,4 +1015,58 @@ The owner approved the slice-5 acceptance recommendation of the [acceptance reco
 | EI-5D | **NOT AUTHORIZED**; slice 5 is accepted, and EI-5D requires a separate owner milestone authorization |
 | MODELED and ACTUAL issuance, new historical data writes, broker execution | **NOT AUTHORIZED** |
 | EI-4 formal closure | **PENDING** independent CI verification |
+| Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-14.** The EI-5D and MODELED-issuance rows above record the state before the owner's authorization later that day, and are not rewritten. The current status is in [section 15.4](#154-status).
+
+## 15. Owner authorization of EI-5D and EI-5E (2026-11-14)
+
+**OWNER APPROVED, 2026-11-14,** subject to the existing ADR-024 and EI-5 governance.
+
+The owner authorizes the combined implementation of **EI-5D — MODELED Recommendation Issuance** and **EI-5E — Synthetic End-to-End Integration** in northstar-application. The authorization follows the EI-5D authorization review of 2026-11-14 and its decisions D5D-1 to D5D-5. It approves implementation scope and records interpretation; it adds no architecture decision. Every decision of sections 4, 12, 13 and 14, of [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md) and of the [EI-5 design](../architecture/Equity-Intraday-V1-EI5-Issuance-and-Lifecycle-Design-v1.0.md) stays binding.
+
+### 15.1 Approved decisions D5D-1 to D5D-5
+
+| ID | Decision | Governance reference | Status |
+| --- | --- | --- | --- |
+| D5D-1 | EI-5D is authorized as an **Application-only, synthetic** milestone: the verified issuer, the `eiris1` issuance identity, content-bound issuance and declaration authorizations, the declaration use case, the issuance reader and writer ports and the authoritative history source, exercised against a labelled in-memory authority test double that implements the writer invariants exactly | ADR-024 sections 2 to 7 and 12; design sections 7 and 8 | **APPROVED** |
+| D5D-2 | EI-5D and EI-5E are delivered in **one Application implementation PR**. Packaging only: both milestones' scope and acceptance criteria stay binding | Design section 11 | **APPROVED** |
+| D5D-3 | The authoritative issued-history `reference` is the fixed, versioned text **`northstar.equity-recommendation-issuance-authority/1`**. It is how issued-history evidence "names this authority" (design section 7.1, step 4). Because version-2 frozen inputs embed it, it is identity-bearing (`eiri1`, `eira1`); a change needs a new version | Design sections 7.1 and 8.1; ADR-024 section 14 | **APPROVED** |
+| D5D-4 | **BD-04** ("no declaration for the session: `ISSUED`") is a **writer-contract** scenario: the writer's no-backdating invariant alone does not refuse it. At the issuer, a request without the required authoritative completeness declaration (greatest declared `complete_through` exactly `t − 1 µs`, with reproducible history evidence) stays **ineligible** (design section 7.1 step 4; IS-16) | Design sections 7.1, 8.2 and 12.10 | **APPROVED** (interpretation) |
+| D5D-5 | EI-4 formal CI closure stays a **separate outstanding obligation** and does not block this milestone. EI4-C4 stays mandatory for formal EI-4 closure | [EI-4 Decision Register, section 15](Equity-Intraday-V1-EI4-Decision-Register.md#15-ei-4-closure-dispositions-2026-11-12); design section 11 | **APPROVED** |
+
+### 15.2 Binding requirements
+
+The implementation must preserve:
+
+- issuance only of a re-verified (levels A to C), evaluator-`/2`, `PROPOSED` disposition; version-1 dispositions stay verifiable and non-issuable;
+- exact history completeness at `t − 1 µs`: the session's greatest declared `complete_through` exactly `b`, and frozen history evidence that names the authority and reproduces at its recorded watermark;
+- no backdating, one monotone recording sequence, and the uniqueness rules per issuance identity, per generation key and per (strategy, listing, trading date);
+- deterministic `eiris1` identities, with a golden vector;
+- content-bound authorization, refused before any write when missing, foreign or changed;
+- append-only semantics; EI-4D dispositions and attempts unchanged;
+- EI4-D8's conservative open-state treatment, unchanged;
+- MODELED issuance only; synthetic and non-actionable records.
+
+### 15.3 Not authorized
+
+- A SQLite issuance authority or any schema (EI-6);
+- ACTUAL issuance, actionable recommendations, orders, broker execution, real fills, positions or P&L;
+- production deployment, composition roots or monitoring jobs;
+- API or Web expansion, real or live data, external publication;
+- relaxation of EI4-D8 or of any previously approved restriction; resolution of O-2 or O-3.
+
+**EI-6 requires separate authorization.** The EI-4C limitations, including VC-04's rollback restriction, remain in force.
+
+### 15.4 Status
+
+| Item | Status |
+| --- | --- |
+| EI-5D and EI-5E | **AUTHORIZED** (2026-11-14), combined in one northstar-application PR; **NOT STARTED** |
+| D5D-1 to D5D-5 | **APPROVED** (2026-11-14) |
+| Authoritative history reference | `northstar.equity-recommendation-issuance-authority/1` |
+| MODELED issuance | Authorized **within EI-5D and EI-5E only**: synthetic, against the test-double authority |
+| ACTUAL issuance; SQLite issuance authority; EI-6 | **NOT AUTHORIZED** |
+| EI-5 acceptance scenarios (119) | **PLANNED** |
+| EI-4 formal closure | **PENDING** independent CI verification; does not block EI-5D or EI-5E |
 | Operational or production authorization | **NOT GRANTED** |
