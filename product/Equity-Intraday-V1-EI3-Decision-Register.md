@@ -15,6 +15,8 @@
 
 > **Note, 2026-11-07 (EI-3C, engineering acceptance).** EI-3C passed final synthetic acceptance on 2026-11-07 with the verdict PASS WITH DOCUMENTED LIMITATIONS, recorded in the [EI-3C Synthetic Acceptance Record](Equity-Intraday-V1-EI3C-Synthetic-Acceptance-Record.md). That record is engineering evidence, not an owner approval: no decision status changes, and nothing authorizes real data, execution or production use.
 
+> **Note, 2026-11-15 (EI3-D10, owner decision).** The owner **APPROVED** EI3-D10 **option (a)** on 2026-11-15: EI-3A's strict rejection of an evaluation whose latest ended candle is not yet final is retained. Earlier entries recording EI3-D10 as PENDING describe the state before this decision and are not rewritten. See [section 12](#12-ei3-d10-owner-decision-2026-11-15).
+
 ## 1. Purpose
 
 This register records the owner decisions that govern the first Equity Intraday V1 research implementation, EI-3A, before any EI-3A code is written.
@@ -324,6 +326,8 @@ These are **not** approved by this record:
 
 - EI3-D10 is first recorded here. EI-3B keeps EI-3A's strict evidence-completeness behaviour (EI3-D2). That EI-3A already rejects such evaluations is implementation, not an approval of EI3-D10.
 - Under the strict behaviour, sustained finality latency of five minutes or more can prevent evaluations during the active research session: while candles keep ending, the latest ended candle is not yet final at any decision instant. After the window closes no further candle ends, so a post-window evaluation may still become possible once every required candle through 15:00 IST is final (EI3-D6). Such an evaluation is not an actionable intraday signal. This does not affect synthetic fixtures. EI3-D10 must be decided before real-data readiness.
+
+> **Note, 2026-11-15.** EI3-D10 is now **APPROVED, option (a)** ([section 12](#12-ei3-d10-owner-decision-2026-11-15)). The table and bullets above record 2026-11-06.
 - Every other decision listed as pending or proposed in section 5.2, and CE-D8, CE-D9, CE-D10 and CE-D15 (section 5.3), keeps its status.
 
 ### 10.3 Earlier approvals unchanged
@@ -450,6 +454,8 @@ These are **not** approved by this record:
 | EI0-D21 | Revision materiality: whether a correction may withdraw or restate a decision | PENDING |
 
 - An append-only contested-evidence annotation is deferred (EI3-D12).
+
+> **Note, 2026-11-15.** EI3-D10 is now **APPROVED, option (a)** ([section 12](#12-ei3-d10-owner-decision-2026-11-15)); the table above records 2026-11-07.
 - Persisting refused or duplicate outcomes is not part of EI-3C and is not decided here.
 - Every other decision listed as pending or proposed in section 5.2, and CE-D8, CE-D9, CE-D10 and CE-D15 (section 5.3), keeps its status.
 
@@ -487,3 +493,19 @@ Throughout, EI-3C is synthetic-only research. It changes no Core model, API or W
 - Nothing here authorizes execution, a recommendation, a paper fill, production use, real market data or a real data provider.
 - An authoritative `CANDIDATE` is still a research label. It is not a recommendation, an order or a trade.
 - The production-readiness restrictions in [section 8](#8-production-readiness-restrictions) all still apply.
+
+## 12. EI3-D10 owner decision (2026-11-15)
+
+**OWNER APPROVED — 2026-11-15: EI3-D10, option (a).** Approved with the EI-6C governance as EI6C-P3 ([EI-5 Decision Register, section 22](Equity-Intraday-V1-EI5-Decision-Register.md#22-owner-authorization-of-ei-6c-governance-2026-11-15)). Sections 5.1, 10.2 and 11.2, which list EI3-D10 as PENDING, record the state before this decision and are not rewritten.
+
+**Approved rule.** When the latest ended candle is not yet final at the decision instant, the research evaluation is **rejected**, as EI-3A does (EI3-D2). The candle is not treated as temporarily not required.
+
+- **Unchanged:** the EI-3A evaluator, its rejection reasons (an unfinalized ended candle is `UNFINALIZED_CANDLE`), EI-3B scheduling, the EI-3C timeline contracts and the EI-4 generation inputs and fingerprints. No new evaluator version is created.
+- **Consequence recorded in section 10.2:** with real finality latency of five minutes or more, the strict rule can prevent in-session research evaluations. This stays a **future real-data readiness concern**; this decision authorizes no real data and no latency policy.
+- **EI-6C:** EI-6C does not orchestrate research (EI6C-P1); this decision only rules out any relaxation through monitoring.
+
+| Item | Status |
+| --- | --- |
+| EI3-D10 | **APPROVED**, option (a) (2026-11-15) |
+| Every other EI-3 decision and pending item | Unchanged |
+| Real data, execution, production use | **NOT AUTHORIZED** |

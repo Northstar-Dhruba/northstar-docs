@@ -437,6 +437,8 @@ These were found by reading the current code and documents while recording the a
 - **Not resolved by the exact-boundary clarification (2026-11-12).** The EI5-D7 clarification ([section 12.8](#128-ei5-d7-exact-boundary-finality-clarification)) covers only `as_of` exactly at the boundary. A snapshot even one microsecond later still decides by the rule as approved, and O-2 stays **DEFERRED**.
 - **Timing clarification, 2026-11-14 (D6-3, owner approved).** The text above is preserved. "Before EI-6 monitoring" means before **EI-6C** (monitoring and operational snapshot policy), and O-2 is decided together with EI3-D10. O-2 does not block EI-6A or EI-6B. O-2 itself stays **DEFERRED** ([section 17.3](#173-d6-3--o-2-o-3-and-ei3-d10-timing)).
 
+- **Owner decision, 2026-11-15 (EI6C-P2): RESOLVED, option A.** The entries above are preserved. EI-6C selects snapshots explicitly and deterministically with **no** evidence-settlement allowance (Δ = 0). The owner accepts that, when synthetic evidence models delayed finality, selection can produce terminal `INCOMPLETE_EVIDENCE` before later evidence arrives; no finite allowance is a finality bound (EI3-D6). A provider-based allowance is deferred to future real-data governance ([section 22](#22-owner-authorization-of-ei-6c-governance-2026-11-15)).
+
 ### O-3 — Late evidence after terminal `INCOMPLETE_EVIDENCE`
 
 - **Evidence.** The [specification, section 8.2](Equity-Intraday-V1-Product-Specification.md#82-lifecycle-states), says evidence that arrives after a terminal state, such as "a late bar that fills a gap", is recorded as an explicit audited event. EI5-D8 approves revision events for corrections to cited evidence. A late arrival is not a correction.
@@ -1218,6 +1220,8 @@ The historical wording is preserved in [O-2](#o-2--terminal-incomplete_evidence-
 
 O-2, O-3 and EI3-D10 are **not resolved** and keep their status (DEFERRED or pending). The lifecycle-event vocabulary is unchanged.
 
+> **Note, 2026-11-15.** The table and sentence above record the state on 2026-11-14 and are not rewritten. O-3 was resolved on 2026-11-14 (option (b), section 19.3). O-2 (option A) and EI3-D10 (option (a)) were resolved on 2026-11-15, before EI-6C, as this table required ([section 22](#22-owner-authorization-of-ei-6c-governance-2026-11-15)).
+
 ### 17.4 D6-4 — Storage model and integrity requirements
 
 The binding design is the [EI-6A storage design addendum](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md). In summary:
@@ -1594,5 +1598,90 @@ D6B-1 to D6B-7, clarifications 1 to 3 and the O-3 approval of section 19 are unc
 | EI-8 | **NOT AUTHORIZED** |
 | Core change | **NOT AUTHORIZED** |
 | EI-4 formal closure | **PENDING** (separate obligation) |
+| ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
+| Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-15 (later).** The EI-6C, O-2 and EI3-D10 rows above record the state before the EI-6C governance approval and are not rewritten. The current status is in [section 22.8](#228-status).
+
+## 22. Owner authorization of EI-6C governance (2026-11-15)
+
+**OWNER APPROVED — 2026-11-15:** decisions **EI6C-P1 to EI6C-P12**, with the owner's final corrections, following the EI-6C governance discovery and its two reconciliation reviews of 2026-11-15.
+
+- **What is approved:** the EI-6C governance and architecture — **Monitoring and Snapshot Selection** — in the [EI-6C Lifecycle Monitoring and Snapshot Selection Design v1.0](../architecture/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Design-v1.0.md).
+- **What is not approved:** EI-6C **implementation**. Governance approval is not implementation authorization or acceptance; implementation needs a separate owner authorization.
+- **Still binding:** every earlier decision of this register, ADR-024, the EI-5 design, EI5-D5 to EI5-D8, O-3 option (b), and the owner acceptances of EI-6A (section 18.4) and EI-6B (section 21), which are not reopened.
+- **Historical packages.** The three discovery and reconciliation reports that preceded this decision are design discussion, not decisions. Where they differ from this section, this section governs.
+
+### 22.1 Approved decisions EI6C-P1 to EI6C-P12
+
+| ID | Decision | Design | Status |
+| --- | --- | --- | --- |
+| EI6C-P1 | **Scope L1.** EI-6C monitors the lifecycles of existing authoritative MODELED issuances. It does not orchestrate EI-3 research, EI-4 generation, EI-6A declarations or issuance, EI-2 snapshot creation, market-data collection, API or Web operations, scheduling, polling or broker execution. A deterministic Application operation invoked explicitly with a caller-supplied monitoring instant; no clock read; no second lifecycle state machine or competing issuance authority | Section 1 | **APPROVED** |
+| EI6C-P2 | **O-2 option A, Δ = 0** (section 22.2) | Section 8 | **APPROVED** |
+| EI6C-P3 | **EI3-D10 option (a):** strict EI-3A rule retained (section 22.2) | Section 8.3 | **APPROVED** |
+| EI6C-P4 | **Read-only Application-owned snapshot catalog** over the existing snapshot authority, with **dual-timestamp eligibility** (section 22.3); scope, synthetic class, venue (from authenticated contents), timeframe and version checks; verified identity and manifest; parsed-instant ordering with same-instant groups processed completely; one consistent read view; a typed resource-limit refusal, never silent truncation. No snapshot schema rewrite, second journal, clock authority or creation-time guarantee | Sections 4, 5 | **APPROVED** |
+| EI6C-P5 | **Selection and recording:** ascending parsed `as_of`; equivalent same-instant manifests resolved deterministically; conflicting same-instant evidence refused; watermark and chronology checked against durable history, including the last event's cited snapshot; **one snapshot per recorder call** as the reference behaviour; every write through the EI-6B recorder; earlier committed events preserved when a later snapshot is refused; an unexpected Core or append-verification error fails that issuance closed; no thinning; no batch-recording optimization in v1; late historical snapshots never reinterpret history; no universal run-frequency independence | Sections 5, 6 | **APPROVED** |
+| EI6C-P6 | **K1:** no durable monitoring checkpoint, run ledger or quiet-evaluation cursor; progress derived from the authoritative lifecycle history, the last event, its cited snapshot and watermark, and the eligible catalog; repeated evaluation accepted; a finite governed catalog limit with a typed error. The numerical limit is fixed during governed Application design, from actual synthetic fixtures, measurements and a documented acceptance test; no illustrative value is approved | Section 6.4 | **APPROVED** |
+| EI6C-P7 | **Issuance discovery** through existing EI-6A authorities only: EXPLICIT, STRATEGY_LISTING, DECLARED_SESSION. No new EI-6A list-all interface. DECLARED_SESSION may omit issuances not yet covered by a declaration (accepted completeness limitation). Unknown or corrupt authority keeps typed failures | Section 7 | **APPROVED** |
+| EI6C-P8 | **Conflicts and revisions:** equivalent same-instant manifests deduplicated to a deterministic representative of the currently eligible group; distinct same-instant manifests never arbitrarily resolved; later-instant corrections keep the EI-5C/EI-6B revision behaviour; committed events stay authoritative; a later-eligible same-`as_of` snapshot never rewrites history | Section 5.4 | **APPROVED** |
+| EI6C-P9 | **Per-issuance failure isolation**, preserving the classifications for corruption, snapshot refusal, catalog limit, regression, conflict, unavailability, commit uncertainty and unexpected failure. Untyped evaluator errors become a typed issuance-level fail-closed result at the EI-6C boundary, without changing the EI-6B public contract; errors are never turned into quiet outcomes | Section 9 | **APPROVED** |
+| EI6C-P10 | **Concurrency** through EI-6B's atomic compare-and-append only; no new durable lock or write authority. Outcomes may include `APPENDED`, `EQUIVALENT`, `NO_NEW_EVENTS`, `CONFLICT`, `STORE_UNAVAILABLE` or an unresolved typed failure, depending on when each caller reads the history; no scheduling-independent winner | Section 6.3 | **APPROVED** |
+| EI6C-P11 | **Typed per-issuance results:** `APPENDED`, `EQUIVALENT`, `CONFLICT`, `NO_NEW_EVENTS`, `NO_ELIGIBLE_SNAPSHOT`, `STOPPED_AT_CONFLICT`, `STOPPED_AT_REGRESSION`, `STOPPED_AT_SNAPSHOT_REFUSAL`, `CATALOG_LIMIT_EXCEEDED`, `ISSUANCE_EVALUATION_FAILED`, `REFUSED`, `UNRESOLVED`, and the non-durable diagnostic `LATE_HISTORICAL_SNAPSHOT_IGNORED`. EI-6B-inherited and EI-6C-specific classifications stay distinct; successful no-ops are never conflated with failures. Exact names and shape verified at implementation without weakening the semantics | Section 9 | **APPROVED** |
+| EI6C-P12 | **Non-durable selection-policy provenance** accepted for synthetic EI-6C v1 (section 22.5) | Section 11 | **APPROVED** |
+
+### 22.2 O-2 and EI3-D10 resolved
+
+- **O-2: option A (EI6C-P2).** Explicit deterministic snapshot selection without a synthetic evidence-settlement allowance: **Δ = 0**. No five-, ten- or fifteen-minute allowance and no deferral window. EI5-D7, including its exact-boundary clarification, is unchanged. The owner accepts that, when synthetic evidence models delayed finality, selection can produce terminal `INCOMPLETE_EVIDENCE` before later evidence becomes available. No finite allowance is a guaranteed finality bound under EI3-D6. An allowance based on actual provider characteristics is deferred to future real-data governance and is not authorized.
+- **O-3 stays option (b)** (section 19.3): after terminal `INCOMPLETE_EVIDENCE`, later gap-filling evidence neither reopens the lifecycle nor produces an event.
+- **EI3-D10: option (a) (EI6C-P3).** EI-3A's strict rule is retained: an ended but unfinalized research candle rejects the evaluation. It is not treated as temporarily not required. No new EI-3 evaluator version; no change to EI-3C timeline contracts or EI-4 generation fingerprints. Real-data finality latency stays a future readiness concern. Recorded in the [EI-3 Decision Register, section 12](Equity-Intraday-V1-EI3-Decision-Register.md#12-ei3-d10-owner-decision-2026-11-15).
+
+### 22.3 Temporal eligibility
+
+For a monitoring instant `T`, a snapshot is eligible only when **`as_of <= T` and `issued_at <= T`**, compared as parsed, timezone-aware instants (never lexical SQLite text order); equality is eligible. `issued_at` is caller-supplied under the EI-2B contract: the guard refuses snapshots that **declare** issuance after `T`, but it does **not** prove historical availability or prevent privileged backdating.
+
+### 22.4 Determinism boundaries
+
+**Guaranteed:**
+
+1. Identical authoritative history, eligible catalog, monitoring instant and policy produce deterministic selection and idempotent behaviour, subject to unchanged authoritative inputs.
+2. Successful lifecycle appends remain authoritative.
+3. Replay from the same stored inputs is deterministic.
+4. Atomic compare-and-append prevents duplicate or divergent committed lifecycle authority.
+5. Core preserves terminal-state immutability.
+
+**Conditional:** run-frequency equivalence may hold when the catalog is unchanged, the eligible snapshot sets form stable ordered prefixes, same-instant groups stay stable and complete, the recorder's preconditions hold, no failure interrupts the comparison and the same policy is used. **These conditions are not guaranteed for arbitrary monitoring instants.**
+
+**Not guaranteed:** run-frequency independence for all valid catalogs; equality between one late run and several earlier runs; knowledge-time accuracy from caller-supplied timestamps; convergence after late historical snapshots; identical outcomes under different process interleavings; reconstruction of quiet evaluations after restart; durable proof of monitoring-policy identity.
+
+Existing EI-6B events are never rewritten in pursuit of these properties.
+
+### 22.5 Policy provenance (EI6C-P12)
+
+The lifecycle event ledger proves its stored events, evidence references, chronology and replay validity. It does not necessarily prove which monitoring policy selected a snapshot, the run identity, the caller's monitoring instant, which quiet snapshots were considered, or a historical policy-version change. This is accepted. For EI-6C v1: one fixed governed policy; no operator-selectable allowance; no mid-issuance policy switching; no change to accepted EI-6B event fields; no durable policy-authority table; no retroactive rejection of legitimate EI-6B histories produced before EI-6C. A future policy change requires new governance and compatibility analysis.
+
+### 22.6 Acceptance scenarios
+
+The design's [section 12](../architecture/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Design-v1.0.md#12-acceptance) defines **exactly 40 scenarios, MS-01 to MS-40, all PLANNED.** None is executed. EI-6B's accepted scenarios and totals are unchanged.
+
+### 22.7 Not authorized
+
+EI-6C implementation code; research, generation, declaration or issuance orchestration; new snapshot issuance behaviour; background polling or scheduling; live or real market data and provider integration; ACTUAL issuance; broker orders or fills; position management; real-money trading; production deployment; API or Web integration; EI-8 restatement; terminal-state reopening; historical lifecycle rewriting; EI4-D8 relaxation; multi-host durability; changes to the EI-6A or EI-6B persistence contracts. The EI-6B limitations stay in force.
+
+### 22.8 Status
+
+| Item | Status |
+| --- | --- |
+| EI6C-P1 to EI6C-P12 | **APPROVED** (owner, 2026-11-15) |
+| EI-6C governance and design | **APPROVED** (2026-11-15) |
+| EI-6C implementation | **NOT AUTHORIZED** |
+| EI-6C acceptance scenarios (40) | **PLANNED** |
+| O-2 | **RESOLVED** (option A, Δ = 0, 2026-11-15) |
+| EI3-D10 | **RESOLVED** (option (a), 2026-11-15) |
+| O-3 | **RESOLVED** (option (b), 2026-11-14, unchanged) |
+| Specification section 8.2, late gap-filling evidence | **DEFERRED** to a future EI-8 design |
+| EI-6A; EI-6B | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (unchanged) |
+| EI-8 | **NOT AUTHORIZED** |
+| Core change | **NOT AUTHORIZED** |
+| EI-4 formal closure (EI4-C4) | **PENDING** (separate obligation) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |

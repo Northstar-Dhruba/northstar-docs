@@ -71,6 +71,8 @@ This is a design decision. **Nothing in it is implemented**, and nothing in it h
 >
 > **Note, 2026-11-15 (EI-6B accepted).** The note above records the state before this decision. With D6B-7 Linux CI recorded (runs `43623021952` and `43643943540`), the owner **accepted EI-6B with documented limitations on 2026-11-15**: 20 VERIFIED and 2 VERIFIED WITH LIMITATION (RR-05, LS-17) of 22 rows ([EI-5 Decision Register, section 21](../product/Equity-Intraday-V1-EI5-Decision-Register.md#21-owner-acceptance-of-ei-6b-2026-11-15)). This ADR is unchanged in substance. The EI-6C part of section 13 stays not authorized; O-2 and EI3-D10 stay unresolved.
 
+> **Note, 2026-11-15 (EI-6C governance approved).** The note above records the state before this approval. The owner approved the EI-6C governance and architecture on 2026-11-15 (EI6C-P1 to EI6C-P12; O-2 option A, Δ = 0; EI3-D10 option (a); [EI-5 Decision Register, section 22](../product/Equity-Intraday-V1-EI5-Decision-Register.md#22-owner-authorization-of-ei-6c-governance-2026-11-15)), with the [EI-6C Lifecycle Monitoring and Snapshot Selection Design](../architecture/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Design-v1.0.md). EI-6C monitors existing issuances' lifecycles only. **EI-6C implementation is not authorized.** This ADR is unchanged in substance.
+
 ## Date
 
 2026-11-12
@@ -359,6 +361,8 @@ EI-5 implements none of it. Monitoring runs and any operational composition root
 Composition roots stay outside EI-6A. The record is the [EI-5 Decision Register, section 17](../product/Equity-Intraday-V1-EI5-Decision-Register.md#17-owner-authorization-of-ei-6a-2026-11-14).
 
 *Amended 2026-11-14 (later; D6B-1).* The EI-6A row is accepted (EI-5 Decision Register, section 18.4). The EI-6B row is **AUTHORIZED, NOT IMPLEMENTED**: O-3 is decided (option (b)), and its design is the [EI-6B Lifecycle Persistence Design addendum](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md). The EI-6C row stays not authorized.
+
+*Amended 2026-11-15 (EI-6C governance; EI6C-P1).* The table above is preserved. The EI-6A and EI-6B rows are accepted (EI-5 Decision Register, sections 18.4 and 21). The EI-6C row's governance is **APPROVED** (2026-11-15) as lifecycle monitoring of existing issuances with explicit snapshot selection, per the [EI-6C design](../architecture/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Design-v1.0.md); O-2 and EI3-D10 are decided. EI-6C **implementation is not authorized**. Composition roots, scheduling and upstream orchestration stay outside EI-6C.
 
 ### 14. Trust model
 
