@@ -21,6 +21,22 @@ This ADR **amends** [ADR-021, section 10](ADR-021-Equity-Intraday-V1-Recommendat
 | EI-4 formal closure | **PENDING** independent CI verification |
 | Operational or production authorization | **NOT GRANTED** |
 
+> **Status update, 2026-11-14 (implementation and engineering acceptance).** The table above and the paragraph below record the state on 2026-11-13 and are not rewritten. Since then:
+>
+> | Item | Status |
+> | --- | --- |
+> | N9 sequencing | **AMENDED, owner approved 2026-11-14:** slices 3a and 3b delivered as one combined Application PR; packaging only ([section 13](#13-implementation-sequence-n9)) |
+> | Implementation (slices 1, 2, combined 3a + 3b, 4) | **MERGED** (application #94, #95; infrastructure #64, #65, #66) |
+> | Existing SQLite schema compatibility with version 2 | **VERIFIED** on real SQLite by slice 4, with no migration (Windows local evidence; [section 11](#11-existing-sqlite-schema-compatibility-n3)) |
+> | Acceptance (52 scenarios) | 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED (VC-04), 3 PLANNED (EI-5D-owned) |
+> | Slice 5 engineering acceptance | **PASS WITH DOCUMENTED LIMITATIONS** |
+> | EI-4C versioned history compatibility (owner acceptance of slice 5) | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-14). VC-04 stays NOT VERIFIED; rollback or downgrade to a pre-3a Application against stored evaluator-v2 records is **not authorized** without separate compatibility verification |
+> | EI-5D | **NOT AUTHORIZED**; requires a separate owner milestone authorization |
+> | MODELED and ACTUAL issuance, production deployment, broker execution, new historical data writes | **NOT AUTHORIZED** |
+> | EI-4 formal closure | **PENDING** independent CI verification |
+>
+> The evidence is in the [EI-4C Engineering Acceptance Record](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md), and the owner records are in the [EI-5 Decision Register, section 14](../product/Equity-Intraday-V1-EI5-Decision-Register.md#14-ei-4c-compatibility-implementation-and-engineering-acceptance-2026-11-14). Every decision in this ADR is unchanged.
+
 This is a design decision. **Nothing in it is implemented.** Evaluator version 2, the `/2` document formats, the version table, label-format pairing and the history-boundary field do not exist in code. Today's EI-4C still reads the issued history as of the modeled issuance `t`, and today's verifier replays only `northstar.equity-recommendation-evaluator/1`. It records no Architecture Review or Engineering Review sign-off.
 
 ## Date
@@ -242,6 +258,8 @@ The detailed inventory is in the [design, section 11](../architecture/Equity-Int
 
 This is **expected, not verified**. It becomes verified only when real mixed-version SQLite acceptance (slice 4) passes. If an actual constraint conflicts with the version-2 shape, the conflict is reported and governed separately. It is never worked around silently.
 
+*Verified 2026-11-14 (slice 4, infrastructure #66).* Real mixed-version SQLite acceptance passed with **no schema migration and no production change**. Version-2 rows satisfy every existing check, trigger and foreign key; the schema objects, `user_version` and column definitions are identical before and after version-2 writes; version-1 rows are unchanged. The evidence was produced on Windows only. SQLite still does **not** enforce label-format pairing (section 6; N6 trigger deferred). Details: [acceptance record, section 9](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#9-sqlite-compatibility).
+
 ### 12. Authorized writer boundaries and issuance safety
 
 **Writers.** EI4-D11 and ADR-023 are unchanged:
@@ -280,6 +298,14 @@ The issuance authority's serialized transaction enforces uniqueness and no-backd
 | 6 | northstar-application | EI-5D issuance, a separately scoped milestone, after slice 5 | — |
 
 Slices 1 and 2 may proceed independently after this governance is approved, but both must merge before slice 3a. Core, API and Web have no slice. Gates and the cross-repository test dependency are in the [design, section 13](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md#13-implementation-sequence).
+
+*Amended 2026-11-14 (owner approved): combined slices 3a + 3b.* The table above remains the sequence approved on 2026-11-13. The owner subsequently approved delivering slices 3a and 3b as **one Application feature, "Combined Slices 3a + 3b — Closed Two-Version Verification and Version-2 Generation"** (application #95). The change concerns PR packaging and workflow only:
+- the scope, gates and acceptance scenarios of both slices stayed binding, and N1 to N8 and N10 are unchanged;
+- slices 1 (#94) and 2 (#64) merged before the combined implementation;
+- the cross-repository Infrastructure evaluator-set correction (#65) merged before the combined Application PR;
+- the combined Application PR merged before slice 4 (#66).
+
+The record, with merge commits and times, is in the [EI-5 Decision Register, section 14.1](../product/Equity-Intraday-V1-EI5-Decision-Register.md#141-n9-sequencing-amendment-combined-slices-3a--3b-owner-approved-2026-11-14).
 
 ## Relationship to Earlier ADRs
 
@@ -348,6 +374,8 @@ The acceptance matrix of the [compatibility design, section 12](../architecture/
 - mixed-version persistence, restart, concurrency and commit-uncertain reconciliation on real SQLite.
 
 Every scenario is **PLANNED**. Existing version-1 tests are not evidence of version-2 behaviour.
+
+*Status 2026-11-14.* The 52 scenarios are reconciled to evidence in the [acceptance record, section 10](../product/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Engineering-Acceptance-Record.md#10-acceptance-evidence-matrix): 40 VERIFIED, 8 VERIFIED WITH LIMITATION, 1 NOT VERIFIED (VC-04) and 3 PLANNED (VC-21 to VC-23, owned by EI-5D). The prerequisite is accepted only by the owner's acceptance of slice 5. *Accepted 2026-11-14 with documented limitations* ([EI-5 Decision Register, section 14.4](../product/Equity-Intraday-V1-EI5-Decision-Register.md#144-owner-acceptance-of-slice-5-2026-11-14)): every limitation is retained, VC-04 is accepted as NOT VERIFIED, and no scenario status changes.
 
 ## Scope
 
