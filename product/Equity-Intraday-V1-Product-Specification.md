@@ -584,6 +584,8 @@ Rules:
 >
 > See the [EI-5 Decision Register, section 19.3](Equity-Intraday-V1-EI5-Decision-Register.md#193-d6b-2--o-3-resolved-option-b).
 
+> **Note, 2026-11-15 (O-2 and EI3-D10 decided for EI-6C, owner approved).** The notes above are not rewritten, and no product behaviour changes. For synthetic EI-6C monitoring, snapshots are selected explicitly with no settlement allowance (O-2 option A), and EI-3A keeps rejecting an ended but unfinalized candle (EI3-D10 option (a)). The "configured settle delay" of section 6.6 stays PENDING; no real-data settlement policy is authorized ([EI-5 Decision Register, section 22](Equity-Intraday-V1-EI5-Decision-Register.md#22-owner-authorization-of-ei-6c-governance-2026-11-15)).
+
 ### 8.3 Intrabar ambiguity
 
 - When a single 5-minute bar contains both stop and target, or entry and an exit, the order of those events is unknowable from OHLC data.

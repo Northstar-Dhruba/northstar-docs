@@ -86,6 +86,12 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 
 > **Status update, 2026-11-15: EI-6B accepted.** The update above records the state before this decision and is not rewritten. D6B-7 Linux CI is recorded, and the owner **accepted EI-6B with documented limitations on 2026-11-15**: 20 VERIFIED and 2 VERIFIED WITH LIMITATION (RR-05, LS-17) ([EI-5 Decision Register, section 21](../product/Equity-Intraday-V1-EI5-Decision-Register.md#21-owner-acceptance-of-ei-6b-2026-11-15)). The section 12 Status columns keep their 2026-11-12 plan. EI-6C is not authorized; O-2 and EI3-D10 stay unresolved.
 
+> **Status update, 2026-11-15: EI-6C governance approved (EI6C-P1 to EI6C-P12).** The update above records the state before this approval and is not rewritten.
+>
+> - **Scope.** EI-6C (section 11) is **lifecycle monitoring of existing authoritative MODELED issuances** with explicit, deterministic snapshot selection, per the [EI-6C Lifecycle Monitoring and Snapshot Selection Design](./Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Design-v1.0.md). It does **not** orchestrate research, generation, declarations, issuance or snapshot creation; the section 14 note on declaring and issuing in ascending order concerns a future orchestration milestone, not EI-6C.
+> - **Decided.** O-2: option A, Δ = 0. EI3-D10: option (a). O-3 option (b) unchanged ([EI-5 Decision Register, section 22](../product/Equity-Intraday-V1-EI5-Decision-Register.md#22-owner-authorization-of-ei-6c-governance-2026-11-15)).
+> - **Not authorized.** EI-6C implementation. The 40 EI-6C scenarios are PLANNED; this design's section 12 Status columns keep their 2026-11-12 plan.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
@@ -831,6 +837,8 @@ They are recorded with evidence, options and recommendations in the [EI-5 Decisi
 
 *Amended 2026-11-14 (EI-6B; D6B-2).* **O-3 is RESOLVED** as option (b): no lifecycle event for late gap-filling evidence after terminal `INCOMPLETE_EVIDENCE`, and the specification section 8.2 requirement is deferred to a future EI-8 design. O-2 stays **DEFERRED** and, with EI3-D10, blocks EI-6C.
 
+*Amended 2026-11-15 (EI-6C; EI6C-P2, EI6C-P3).* **O-2 is RESOLVED** as option A: explicit deterministic snapshot selection with no settlement allowance (Δ = 0), and EI3-D10 is resolved as option (a) ([EI-5 Decision Register, section 22](../product/Equity-Intraday-V1-EI5-Decision-Register.md#22-owner-authorization-of-ei-6c-governance-2026-11-15)). The Blocks column above is preserved.
+
 ## 14. Risks and limitations
 
 - **Snapshot selection** decides terminal `INCOMPLETE_EVIDENCE` (O-2). EI-5 tests use explicit synthetic snapshots only.
@@ -841,6 +849,8 @@ They are recorded with evidence, options and recommendations in the [EI-5 Decisi
 - **Strict issuance protocol** (amended 2026-11-12). A proposal at `t` is issuable only while its session is declared complete through exactly `t − 1 µs`. EI-6 monitoring must declare and issue in ascending modeled-issuance order, or proposals become permanently non-issuable, failing closed.
 - **Two-version verification** (amended 2026-11-12, R-1). The EI-4C prerequisite must keep version-1 records verifiable. That is not yet supported, and ADR-021, section 10 excludes an evaluator registry today, so the prerequisite's design needs explicit architecture approval for it. *Amended 2026-11-13: approved as a closed two-version table, not a registry ([ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)); still not implemented.*
 - **Gap-through scope** (amended 2026-11-12). The pre-entry use of the stop predicate (PE-04) follows from option (a) as approved. If the owner limits gap-through to `ACTIVE` recommendations, PE-04 changes to "no event".
+
+*Amended 2026-11-15 (EI-6C).* The first two bullets above are now governed by the [EI-6C design](./Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Design-v1.0.md): snapshot selection is explicit and deterministic (O-2 option A), and snapshots are found through a read-only catalog with dual-timestamp eligibility (`as_of <= T` and `issued_at <= T`), without claiming proof of historical availability. The bullets are not rewritten.
 
 ## 15. Explicit non-authorizations
 
