@@ -30,6 +30,14 @@ Code was read at:
 | northstar-infrastructure | `develop` | `dd6a434` (#68) |
 | northstar-docs | `develop` | `5c7ddca` (#68) |
 
+> **Status update, 2026-11-15: EI-6C implemented and accepted with documented limitations.** The table and bullets above record the state at governance approval and are not rewritten; their "implementation NOT AUTHORIZED", "PLANNED" and "Not implemented" statements are superseded by the dated decisions below.
+>
+> - **Authorized and merged.** Implementation was authorized on 2026-11-15 and merged as northstar-application #99 (`617b538`) and northstar-infrastructure #69 (`9d9c960`) ([EI-5 Decision Register, section 23](../product/Equity-Intraday-V1-EI5-Decision-Register.md#23-ei-6c-implementation-and-acceptance-2026-11-15)). The contracts of section 4 now exist under the names in the [acceptance record](../product/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#5-application-implementation-99).
+> - **Clarifications.** V1 (additive read-only lifecycle reader), V2 (qualified, non-durable late-history diagnostic) and V3 (catalog limit **300** eligible snapshots) are approved; so are I2-1 to I2-3 (near-limit performance and the corrupt-anchor classification accepted with limitations; both verification layers retained).
+> - **Evidence.** The four Linux CI jobs concluded SUCCESS, and their owner-supplied pytest summaries close gate EI6C-CI: **CLOSED — PASS** ([acceptance record, section 7.3](../product/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#73-acceptance-gate-ei6c-ci)).
+> - **Owner acceptance.** **ACCEPTED WITH DOCUMENTED LIMITATIONS**, 2026-11-15 (EI6C-FINAL-ACCEPTANCE): **36 VERIFIED, 4 VERIFIED WITH LIMITATION** (MS-02, MS-20, MS-21, MS-36) of section 12's 40 rows; the limitations of section 13 and of the acceptance record are accepted, not corrected ([acceptance record, section 14.1](../product/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#141-final-owner-decision-2026-11-15)).
+> - **Unchanged.** Synthetic-only and MODELED-only. No follow-up implementation, real data, ACTUAL issuance, scheduling, broker execution, EI-7 or EI-8 work is authorized, and no operational or production authorization is granted.
+
 ## 1. Scope (EI6C-P1)
 
 **In scope:** a deterministic Application-layer operation, invoked explicitly with a caller-supplied monitoring instant `T`, that monitors the lifecycles of **existing authoritative MODELED issuances** by selecting EI-2B snapshots and delegating every lifecycle write to the EI-6B recording use case.
@@ -192,6 +200,8 @@ No durable monitoring checkpoint, run ledger or quiet-evaluation cursor exists. 
 
 The catalog has a finite, governed limit on candidates per issuance per run. Exceeding it raises a typed error; a candidate prefix is never silently truncated (without a checkpoint, a truncated quiet prefix would be re-read forever). **The numerical limit is not yet fixed.** It is set during the governed Application design from the actual synthetic fixtures, measured cost and a documented acceptance test (MS-30); no illustrative value is approved.
 
+*Amended 2026-11-15 (V3).* The limit is fixed at **300 eligible snapshots** per issuance per run (`EQUITY_LIFECYCLE_MONITORING_CATALOG_LIMIT`), approved by the owner as V3 ([EI-5 Decision Register, section 23.2](../product/Equity-Intraday-V1-EI5-Decision-Register.md#232-implementation-clarifications)) and verified by MS-30. Its measured near-limit cost is in the [acceptance record, section 9](../product/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#9-performance-evidence). The paragraph above is not rewritten.
+
 ## 7. Issuance scope (EI6C-P7)
 
 | Mode | Existing authority | Behaviour | Completeness |
@@ -271,56 +281,63 @@ The lifecycle event ledger proves its stored events, their evidence references, 
 
 **Status for every row: PLANNED.** Layers: C (Application contract), S (real SQLite), P (separate OS processes), A (architecture scan). Inherited evidence (EI-5C, EI-6A, EI-6B) is not re-counted; these rows are new EI-6C requirements.
 
-| ID | Requirement | Layer | Status |
-| --- | --- | --- | --- |
-| MS-01 | No eligible snapshot at `T`: `NO_ELIGIBLE_SNAPSHOT`; nothing written | C, S | PLANNED |
-| MS-02 | Temporal eligibility: only snapshots with both `as_of <= T` and `issued_at <= T` are eligible; equality is eligible; comparisons on parsed instants; the documented limitation that the guard does not detect backdated issuance | C, S | PLANNED |
-| MS-03 | Same-instant groups: equivalent manifests deduplicated to the lowest eligible `snapshot_id`; conflicting eligible manifests refused at that instant (`STOPPED_AT_CONFLICT`); earlier committed events preserved | C, S | PLANNED |
-| MS-04 | Conditional run-frequency equivalence: several runs equal one later run **only** when the eligible sets form stable ordered prefixes and every section 10 condition holds | C, S | PLANNED |
-| MS-05 | An identical rerun with unchanged inputs writes nothing | C, S | PLANNED |
-| MS-06 | A run at a smaller `T` after a larger-`T` run, with an unchanged catalog, writes nothing | C, S | PLANNED |
-| MS-07 | A quiet evaluation: `NO_NEW_EVENTS`; no lifecycle row; no checkpoint, cursor or run table | C, S | PLANNED |
-| MS-08 | An event-producing path through monitoring to a terminal state | C, S | PLANNED |
-| MS-09 | O-2 option A: no settlement allowance; EI5-D7's exact-boundary rule preserved; a post-boundary deficiency becomes terminal `INCOMPLETE_EVIDENCE`; entry-window and modeled-exit boundaries both covered | C, S | PLANNED |
-| MS-10 | No artificial deferral: an otherwise eligible snapshot is never postponed or suppressed through an invented Δ window; later-arriving evidence does not reopen a terminal lifecycle (O-3) | C, S | PLANNED |
-| MS-11 | EI3-D10 option (a): EI-3A still rejects an ended but unfinalized candle; EI-3C and EI-4 contracts and fingerprints unchanged (no-regression) | C | PLANNED |
-| MS-12 | A deficient or not-yet-final bar before the applicable boundary blocks temporarily, with no event | C, S | PLANNED |
-| MS-13 | A later-instant source revision is recorded once as `SOURCE_REVISION_RECORDED`; same-instant conflicts and late contradictory evidence do not rewrite earlier history | C, S | PLANNED |
-| MS-14 | A terminal lifecycle records no state change; only Core-permitted revisions; otherwise `NO_NEW_EVENTS` | C, S | PLANNED |
-| MS-15 | O-3 option (b) through monitoring: late gap-filling evidence after terminal `INCOMPLETE_EVIDENCE` records nothing; rows unchanged | C, S | PLANNED |
-| MS-16 | Concurrent monitors over the same scope: outcomes from {`APPENDED`, `EQUIVALENT`, `NO_NEW_EVENTS`, `CONFLICT`, `STORE_UNAVAILABLE`, unresolved}; no duplicate event; one committed history; no requirement that every second caller is `EQUIVALENT` | S, P | PLANNED |
-| MS-17 | Divergent concurrent monitors: the first commit wins; the loser is `CONFLICT`; the history is a Core-valid replay of the commit order; no scheduling-independent winner required | S, P | PLANNED |
-| MS-18 | A process that ends before COMMIT leaves nothing; a later run completes | S, P | PLANNED |
-| MS-19 | Commit uncertainty is reconciled through the recorder (`EQUIVALENT` reconciled, bounded retry, or `UNRESOLVED`) | C, S | PLANNED |
-| MS-20 | Corrupt issuance or lifecycle authority: a typed permanent failure for that issuance | C, S | PLANNED |
-| MS-21 | Snapshots of another listing, trading date, timeframe or window version are never candidates; another venue reference is a typed snapshot refusal | C, S | PLANNED |
-| MS-22 | A fresh process with identical authoritative inputs reproduces the selection and outcomes; it does not reconstruct past quiet runs or selection-policy identity | S, P | PLANNED |
-| MS-23 | Several issuances in one run are isolated: a failure for one does not suppress the others' results | C, S | PLANNED |
-| MS-24 | Architecture: no clock, network, scheduler or durable write outside the EI-6B recorder; the catalog is read-only; no direct lifecycle-row insert; no second state machine | A | PLANNED |
-| MS-25 | Non-`SYNTHETIC` snapshots are never selected | C, S | PLANNED |
-| MS-26 | No regression: the EI-5, EI-6A and EI-6B suites pass unchanged | C, S, P | PLANNED |
-| MS-27 | Watermark regression is detected relative to earlier selected evidence and to the last persisted event's cited snapshot | C, S | PLANNED |
-| MS-28 | Changing-catalog path dependence: an earlier committed event stays authoritative when late conflicting evidence appears; no convergence with a hypothetical single later run is required | C, S | PLANNED |
-| MS-29 | Parsed-instant ordering: fractional-second and whole-second ISO instants ordered chronologically (`…:00Z` before `…:00.5Z`) | C, S | PLANNED |
-| MS-30 | Candidate overflow raises a typed `CATALOG_LIMIT_EXCEEDED`; never silent truncation; the numerical limit fixed and verified during governed implementation | C, S | PLANNED |
-| MS-31 | One fixed policy for EI-6C v1: no operator-selectable Δ; no mid-issuance policy switching | C, A | PLANNED |
-| MS-32 | EXPLICIT, STRATEGY_LISTING and DECLARED_SESSION scope modes, including a newly issued recommendation not yet visible in a declaration view | C, S | PLANNED |
-| MS-33 | Historical compatibility: previously valid EI-6B history stays authoritative under the policy; no retrospective policy-consistency or deferral-window check invalidates it | C, S | PLANNED |
-| MS-34 | Fixed catalog, unstable eligibility: with differing `issued_at` values, a fixed catalog can produce different results across monitoring instants when the eligible sets are not stable ordered prefixes; accepted path dependence | C, S | PLANNED |
-| MS-35 | Regression coverage fails if the `issued_at <= T` requirement is removed; `as_of`-only eligibility is not approved | C | PLANNED |
-| MS-36 | A snapshot that becomes eligible after a later event is persisted is diagnosed (`LATE_HISTORICAL_SNAPSHOT_IGNORED`), not evaluated retroactively; history unchanged | C, S | PLANNED |
-| MS-37 | A newly eligible lower-ID equivalent snapshot does not rewrite an already committed event's reference | C, S | PLANNED |
-| MS-38 | A later EI-5C refusal preserves the events committed earlier through incremental recording | C, S | PLANNED |
-| MS-39 | An unexpected Core or verification error fails the issuance closed with `ISSUANCE_EVALUATION_FAILED`; earlier committed events stay authoritative | C, S | PLANNED |
-| MS-40 | A snapshot with `as_of <= T` but `issued_at > T` is not selected; a snapshot with `issued_at = T` is (exact equality); demonstrated by a retrospective monitoring call | C, S | PLANNED |
+*Amended 2026-11-15 (EI6C-FINAL-ACCEPTANCE).* The Status column is the planned-governance baseline and is not rewritten. The Accepted column records the owner-accepted engineering classification (see the note after the verification strategy).
+
+| ID | Requirement | Layer | Status | Accepted (2026-11-15) |
+| --- | --- | --- | --- | --- |
+| MS-01 | No eligible snapshot at `T`: `NO_ELIGIBLE_SNAPSHOT`; nothing written | C, S | PLANNED | VERIFIED |
+| MS-02 | Temporal eligibility: only snapshots with both `as_of <= T` and `issued_at <= T` are eligible; equality is eligible; comparisons on parsed instants; the documented limitation that the guard does not detect backdated issuance | C, S | PLANNED | VERIFIED WITH LIMITATION |
+| MS-03 | Same-instant groups: equivalent manifests deduplicated to the lowest eligible `snapshot_id`; conflicting eligible manifests refused at that instant (`STOPPED_AT_CONFLICT`); earlier committed events preserved | C, S | PLANNED | VERIFIED |
+| MS-04 | Conditional run-frequency equivalence: several runs equal one later run **only** when the eligible sets form stable ordered prefixes and every section 10 condition holds | C, S | PLANNED | VERIFIED |
+| MS-05 | An identical rerun with unchanged inputs writes nothing | C, S | PLANNED | VERIFIED |
+| MS-06 | A run at a smaller `T` after a larger-`T` run, with an unchanged catalog, writes nothing | C, S | PLANNED | VERIFIED |
+| MS-07 | A quiet evaluation: `NO_NEW_EVENTS`; no lifecycle row; no checkpoint, cursor or run table | C, S | PLANNED | VERIFIED |
+| MS-08 | An event-producing path through monitoring to a terminal state | C, S | PLANNED | VERIFIED |
+| MS-09 | O-2 option A: no settlement allowance; EI5-D7's exact-boundary rule preserved; a post-boundary deficiency becomes terminal `INCOMPLETE_EVIDENCE`; entry-window and modeled-exit boundaries both covered | C, S | PLANNED | VERIFIED |
+| MS-10 | No artificial deferral: an otherwise eligible snapshot is never postponed or suppressed through an invented Δ window; later-arriving evidence does not reopen a terminal lifecycle (O-3) | C, S | PLANNED | VERIFIED |
+| MS-11 | EI3-D10 option (a): EI-3A still rejects an ended but unfinalized candle; EI-3C and EI-4 contracts and fingerprints unchanged (no-regression) | C | PLANNED | VERIFIED |
+| MS-12 | A deficient or not-yet-final bar before the applicable boundary blocks temporarily, with no event | C, S | PLANNED | VERIFIED |
+| MS-13 | A later-instant source revision is recorded once as `SOURCE_REVISION_RECORDED`; same-instant conflicts and late contradictory evidence do not rewrite earlier history | C, S | PLANNED | VERIFIED |
+| MS-14 | A terminal lifecycle records no state change; only Core-permitted revisions; otherwise `NO_NEW_EVENTS` | C, S | PLANNED | VERIFIED |
+| MS-15 | O-3 option (b) through monitoring: late gap-filling evidence after terminal `INCOMPLETE_EVIDENCE` records nothing; rows unchanged | C, S | PLANNED | VERIFIED |
+| MS-16 | Concurrent monitors over the same scope: outcomes from {`APPENDED`, `EQUIVALENT`, `NO_NEW_EVENTS`, `CONFLICT`, `STORE_UNAVAILABLE`, unresolved}; no duplicate event; one committed history; no requirement that every second caller is `EQUIVALENT` | S, P | PLANNED | VERIFIED |
+| MS-17 | Divergent concurrent monitors: the first commit wins; the loser is `CONFLICT`; the history is a Core-valid replay of the commit order; no scheduling-independent winner required | S, P | PLANNED | VERIFIED |
+| MS-18 | A process that ends before COMMIT leaves nothing; a later run completes | S, P | PLANNED | VERIFIED |
+| MS-19 | Commit uncertainty is reconciled through the recorder (`EQUIVALENT` reconciled, bounded retry, or `UNRESOLVED`) | C, S | PLANNED | VERIFIED |
+| MS-20 | Corrupt issuance or lifecycle authority: a typed permanent failure for that issuance | C, S | PLANNED | VERIFIED WITH LIMITATION |
+| MS-21 | Snapshots of another listing, trading date, timeframe or window version are never candidates; another venue reference is a typed snapshot refusal | C, S | PLANNED | VERIFIED WITH LIMITATION |
+| MS-22 | A fresh process with identical authoritative inputs reproduces the selection and outcomes; it does not reconstruct past quiet runs or selection-policy identity | S, P | PLANNED | VERIFIED |
+| MS-23 | Several issuances in one run are isolated: a failure for one does not suppress the others' results | C, S | PLANNED | VERIFIED |
+| MS-24 | Architecture: no clock, network, scheduler or durable write outside the EI-6B recorder; the catalog is read-only; no direct lifecycle-row insert; no second state machine | A | PLANNED | VERIFIED |
+| MS-25 | Non-`SYNTHETIC` snapshots are never selected | C, S | PLANNED | VERIFIED |
+| MS-26 | No regression: the EI-5, EI-6A and EI-6B suites pass unchanged | C, S, P | PLANNED | VERIFIED |
+| MS-27 | Watermark regression is detected relative to earlier selected evidence and to the last persisted event's cited snapshot | C, S | PLANNED | VERIFIED |
+| MS-28 | Changing-catalog path dependence: an earlier committed event stays authoritative when late conflicting evidence appears; no convergence with a hypothetical single later run is required | C, S | PLANNED | VERIFIED |
+| MS-29 | Parsed-instant ordering: fractional-second and whole-second ISO instants ordered chronologically (`…:00Z` before `…:00.5Z`) | C, S | PLANNED | VERIFIED |
+| MS-30 | Candidate overflow raises a typed `CATALOG_LIMIT_EXCEEDED`; never silent truncation; the numerical limit fixed and verified during governed implementation | C, S | PLANNED | VERIFIED |
+| MS-31 | One fixed policy for EI-6C v1: no operator-selectable Δ; no mid-issuance policy switching | C, A | PLANNED | VERIFIED |
+| MS-32 | EXPLICIT, STRATEGY_LISTING and DECLARED_SESSION scope modes, including a newly issued recommendation not yet visible in a declaration view | C, S | PLANNED | VERIFIED |
+| MS-33 | Historical compatibility: previously valid EI-6B history stays authoritative under the policy; no retrospective policy-consistency or deferral-window check invalidates it | C, S | PLANNED | VERIFIED |
+| MS-34 | Fixed catalog, unstable eligibility: with differing `issued_at` values, a fixed catalog can produce different results across monitoring instants when the eligible sets are not stable ordered prefixes; accepted path dependence | C, S | PLANNED | VERIFIED |
+| MS-35 | Regression coverage fails if the `issued_at <= T` requirement is removed; `as_of`-only eligibility is not approved | C | PLANNED | VERIFIED |
+| MS-36 | A snapshot that becomes eligible after a later event is persisted is diagnosed (`LATE_HISTORICAL_SNAPSHOT_IGNORED`), not evaluated retroactively; history unchanged | C, S | PLANNED | VERIFIED WITH LIMITATION |
+| MS-37 | A newly eligible lower-ID equivalent snapshot does not rewrite an already committed event's reference | C, S | PLANNED | VERIFIED |
+| MS-38 | A later EI-5C refusal preserves the events committed earlier through incremental recording | C, S | PLANNED | VERIFIED |
+| MS-39 | An unexpected Core or verification error fails the issuance closed with `ISSUANCE_EVALUATION_FAILED`; earlier committed events stay authoritative | C, S | PLANNED | VERIFIED |
+| MS-40 | A snapshot with `as_of <= T` but `issued_at > T` is not selected; a snapshot with `issued_at = T` is (exact equality); demonstrated by a retrospective monitoring call | C, S | PLANNED | VERIFIED |
 
 | Count | Value |
 | --- | --- |
 | Scenario rows | 40 (MS-01 to MS-40, no gaps or duplicates) |
 | PLANNED | 40 |
 | Any other status | 0 |
+| Accepted VERIFIED (2026-11-15) | 36 |
+| Accepted VERIFIED WITH LIMITATION (2026-11-15) | 4 (MS-02, MS-20, MS-21, MS-36) |
+| Accepted NOT TESTED; BLOCKED | 0; 0 |
 
 **Verification strategy.** Local Windows synthetic and real-SQLite runs, then independent Linux CI for each implementation PR before owner acceptance, with the spawned-process and fresh-process rows (P) shown to execute on Linux. The gate's exact form is set at implementation authorization.
+
+> **Note, 2026-11-15 (owner acceptance).** The Status column above keeps the planned-governance baseline ([EI-5 Decision Register, section 22.6](../product/Equity-Intraday-V1-EI5-Decision-Register.md#226-acceptance-scenarios)). The Accepted column records the owner-accepted engineering classification of EI6C-FINAL-ACCEPTANCE: **36 VERIFIED and 4 VERIFIED WITH LIMITATION** (MS-02, MS-20, MS-21, MS-36), 0 NOT TESTED, 0 BLOCKED. Gate EI6C-CI, the verification strategy's Linux gate, is **CLOSED — PASS**. The evidence and each row's tests are in the [EI-6C Engineering Acceptance Record, section 8](../product/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#8-acceptance-evidence-matrix).
 
 ## 13. Limitations
 

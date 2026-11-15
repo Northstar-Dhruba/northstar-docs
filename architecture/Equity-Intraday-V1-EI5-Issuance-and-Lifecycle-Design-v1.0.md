@@ -92,6 +92,12 @@ Status at proposal (historical): **PROPOSED — FOR OWNER REVIEW** (2026-11-12).
 > - **Decided.** O-2: option A, Δ = 0. EI3-D10: option (a). O-3 option (b) unchanged ([EI-5 Decision Register, section 22](../product/Equity-Intraday-V1-EI5-Decision-Register.md#22-owner-authorization-of-ei-6c-governance-2026-11-15)).
 > - **Not authorized.** EI-6C implementation. The 40 EI-6C scenarios are PLANNED; this design's section 12 Status columns keep their 2026-11-12 plan.
 
+> **Status update, 2026-11-15: EI-6C implemented and accepted with documented limitations.** The update above records the state at governance approval and is not rewritten; its "Not authorized" and "PLANNED" statements for EI-6C are superseded by the dated decisions below.
+>
+> - **Merged.** Section 11's EI-6C stage is implemented in northstar-application #99 (`617b538`) and northstar-infrastructure #69 (`9d9c960`), authorized on 2026-11-15 ([EI-5 Decision Register, section 23](../product/Equity-Intraday-V1-EI5-Decision-Register.md#23-ei-6c-implementation-and-acceptance-2026-11-15)); the catalog limit is 300 eligible snapshots (V3).
+> - **Accepted.** Gate EI6C-CI is CLOSED — PASS, and the owner accepted EI-6C **with documented limitations** on 2026-11-15 (EI6C-FINAL-ACCEPTANCE): 36 VERIFIED and 4 VERIFIED WITH LIMITATION of 40 rows ([EI-6C Engineering Acceptance Record, section 14.1](../product/Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#141-final-owner-decision-2026-11-15)). This design's section 12 Status columns keep their 2026-11-12 plan.
+> - **Unchanged.** Synthetic-only and MODELED-only. No real data, ACTUAL issuance, scheduling, broker execution, EI-7 or EI-8 work, or operational or production use is authorized.
+
 - **Governance basis.** EI0-D9, EI4-D5 and EI5-D1 to EI5-D8 were **OWNER APPROVED, 2026-11-12** ([EI-5 Decision Register](../product/Equity-Intraday-V1-EI5-Decision-Register.md)).
 - **The approved decisions and this design are different things.** The decisions are approved; this design is a proposal. Every type, port, use case, table and test below is proposed, and none exists.
 - **Architecture record.** [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md), also proposed.
