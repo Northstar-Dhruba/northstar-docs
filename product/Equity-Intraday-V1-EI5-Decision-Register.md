@@ -1685,3 +1685,97 @@ EI-6C implementation code; research, generation, declaration or issuance orchest
 | EI-4 formal closure (EI4-C4) | **PENDING** (separate obligation) |
 | ACTUAL issuance; broker execution | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-15 (EI-6C implemented and accepted).** The EI-6C implementation and acceptance-scenario rows above record the state at governance approval and are not rewritten; they are superseded by the dated decisions of section 23. EI-6C implementation was later authorized and merged, and the owner accepted EI-6C with documented limitations (EI6C-FINAL-ACCEPTANCE); the current status is in [section 23.6](#236-status).
+
+## 23. EI-6C implementation and acceptance (2026-11-15)
+
+This section records the **implementation authorizations, owner clarifications, engineering acceptance evidence, the closure of gate EI6C-CI and the owner's final acceptance** of EI-6C. It does not rewrite section 22. The evidence is in the [EI-6C Lifecycle Monitoring and Snapshot Selection Engineering Acceptance Record](Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md). EI6C-P1 to EI6C-P12, O-2 option A, EI3-D10 option (a) and O-3 option (b) are unchanged.
+
+**OWNER APPROVED — 2026-11-15 (EI6C-FINAL-ACCEPTANCE).**
+
+**EI-6C — ACCEPTED WITH DOCUMENTED LIMITATIONS, 2026-11-15.**
+
+### 23.1 Implementation authorizations
+
+| Item | Decision | Date |
+| --- | --- | --- |
+| Application PR-1 | Lifecycle monitoring, snapshot selection and Application contracts: **APPROVED** | 2026-11-15 |
+| Infrastructure PR-2 | Read-only SQLite snapshot catalog, monitoring integration and process-level reliability: **APPROVED**, after Application PR-1 was merged | 2026-11-15 |
+
+Both authorizations kept every exclusion of section 22.7: no Core change, schema migration, checkpoint, scheduler, real data, ACTUAL issuance, broker execution, API or Web integration, or deployment.
+
+### 23.2 Implementation clarifications
+
+| ID | Decision | Status |
+| --- | --- | --- |
+| V1 | Additive read-only lifecycle reader protocol (`load_lifecycle` only), so the monitor never names the EI-6B store | **APPROVED**, 2026-11-15 (recorded in the Infrastructure PR-2 authorization) |
+| V2 | Non-durable late-historical diagnostic, emitted only for older snapshots whose declared `issued_at` follows the anchor snapshot's | **APPROVED WITH QUALIFICATION**, 2026-11-15 (recorded in the Infrastructure PR-2 authorization): best-effort, based on declared issuance chronology |
+| V3 | Fixed catalog limit of **300 eligible snapshots** per issuance per run; typed overflow refusal, never truncation. This fixes the number left open by EI6C-P6 and the design's section 6.4 | **APPROVED**, 2026-11-15 (recorded in the Infrastructure PR-2 authorization) |
+| I2-1 | Measured near-limit performance (about 158 s first run, about 128 s quiet rerun at 300 eligible, Windows, synthetic) accepted for synthetic v1 | **APPROVED WITH LIMITATION** — recorded from the owner's Docs PR-3 instruction, 2026-11-15 |
+| I2-2 | Retain both the catalog's EI-2B verification and the monitor's re-verification of every candidate | **APPROVED** — recorded from the owner's Docs PR-3 instruction, 2026-11-15 |
+| I2-3 | Inherited misclassification of corrupt anchor evidence as retryable `SNAPSHOT_STORE_UNAVAILABLE` accepted; it fails closed without writing; no unauthorized contract change | **APPROVED WITH LIMITATION** — recorded from the owner's Docs PR-3 instruction, 2026-11-15 |
+
+No thinning, batching or new checkpoint is authorized by these decisions.
+
+### 23.3 Implementation and evidence summary
+
+| Item | Value |
+| --- | --- |
+| Application (PR-1) | northstar-application #99, merge `617b538`, change commit `e13beb0`; 7 files (5 new, 2 modified), additive |
+| Infrastructure (PR-2) | northstar-infrastructure #69, merge `9d9c960`, change commit `889559d`; 6 files (5 new, 1 modified), additive |
+| Core | `29bd34a`, unchanged |
+| Local results | Application EI-6C module 73 passed and full suite 4,799 passed on merged `617b538`. Infrastructure EI-6C modules 117 passed and full suite 3,529 passed, 27 skipped (23 opt-in Databento, 4 POSIX timezone) on a tree identical to `889559d`. Mutations: Application 12 of 12; Infrastructure 16 of 19 with 3 equivalent survivors |
+| Linux CI | Application jobs `132680399843` (PR, `e13beb0`) and `132712777880` (post-merge, `617b538`); Infrastructure jobs `132740839995` (PR, `889559d`) and `132742128997` (post-merge, `9d9c960`): **all SUCCESS**, every step including Ruff, format and pytest. Owner-supplied log excerpts: Application 4,799 passed of 4,799 in each job; Infrastructure 3,532 passed, 24 skipped of 3,556 in each job; 0 failed; Python 3.13.18, pytest 9.1.1 |
+| Scenario rows (40) | 36 VERIFIED, 4 VERIFIED WITH LIMITATION (MS-02, MS-20, MS-21, MS-36), 0 NOT TESTED, 0 BLOCKED |
+| Engineering verdict | **PASS WITH DOCUMENTED LIMITATIONS**; recommendation **ACCEPTED WITH DOCUMENTED LIMITATIONS**, adopted by the owner (section 23.5) |
+
+### 23.4 Gate EI6C-CI
+
+**CLOSED — PASS, 2026-11-15.** Section 22's verification strategy requires independent Linux CI before owner acceptance, with the separate-process rows shown to execute on Linux. The gate was OPEN when the engineering record was first prepared, because the job logs needed authentication.
+
+- **Evidence source:** **owner-supplied GitHub Actions log excerpts**, 2026-11-15, for the four SUCCESS jobs above; job conclusions read from the GitHub REST API.
+- **Verified:** the collected, passed, failed and skipped counts, the durations (48.34 s, 66.88 s, 287.07 s, 277.82 s) and Python 3.13.18 in every job.
+- **Derived, not observed:** the Infrastructure skip breakdown, 23 opt-in Databento cases and 1 missing-Docs-checkout case, from the test declarations; the Linux `SKIPPED` lines were not supplied.
+- **Not verified (provenance limitation):** the Core and Application commits checked out by the jobs.
+
+The reconciliation is in the [acceptance record, section 7.3](Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#73-acceptance-gate-ei6c-ci).
+
+### 23.5 Owner acceptance of EI-6C (EI6C-FINAL-ACCEPTANCE)
+
+| Item | Value |
+| --- | --- |
+| Decision ID | **EI6C-FINAL-ACCEPTANCE** |
+| Date | 2026-11-15 |
+| Status | **APPROVED** |
+| Verdict | **ACCEPTED WITH DOCUMENTED LIMITATIONS** |
+| Scope accepted | Synthetic-only, MODELED-only EI-6C lifecycle monitoring and snapshot selection |
+| Implementation | EI-6C Docs governance northstar-docs #69; Application northstar-application #99; Infrastructure northstar-infrastructure #69; all merged |
+| Acceptance matrix (40) | **36 VERIFIED, 4 VERIFIED WITH LIMITATION, 0 NOT TESTED, 0 BLOCKED** |
+| Accepted scenario limitations | MS-02 (the declared issuance timestamp does not independently prove creation time); MS-20 (corrupt issuance authority lacks end-to-end SQLite monitoring-composition evidence); MS-21 (venue mismatch not directly exercised in real-SQLite monitoring integration); MS-36 (the late-history diagnostic is best-effort and non-durable) |
+| Other accepted limitations | The architectural, performance and operational limitations L1 to L13 of the [acceptance record, section 11](Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#11-limitations), accepted without being treated as corrected; the catalog limit stays 300 with no batching, thinning or new checkpoint |
+| Not authorized by this decision | The deferred follow-ups F1 to F10; real market data or provider data; new issuance functionality; ACTUAL issuance; an automated monitoring scheduler; trading or broker integration; production deployment; terminal-history rewriting or EI-8 restatement; EI-7 |
+| Record | [Acceptance record, section 14.1](Equity-Intraday-V1-EI6C-Lifecycle-Monitoring-and-Snapshot-Selection-Engineering-Acceptance-Record.md#141-final-owner-decision-2026-11-15) |
+
+EI-6C monitors existing authoritative MODELED issuances; the existing EI-6A synthetic MODELED issuance authority is not revoked.
+
+### 23.6 Status
+
+| Item | Status |
+| --- | --- |
+| EI6C-P1 to EI6C-P12 | **APPROVED** (2026-11-15, unchanged) |
+| EI-6C implementation | **AUTHORIZED** (2026-11-15) and **MERGED** (#99, #69) |
+| V1; V2; V3 | **APPROVED**; **APPROVED WITH QUALIFICATION**; **APPROVED** (limit 300) |
+| I2-1; I2-2; I2-3 | **APPROVED WITH LIMITATION**; **APPROVED**; **APPROVED WITH LIMITATION** |
+| EI-6C acceptance scenarios (40) | **36 VERIFIED, 4 VERIFIED WITH LIMITATION** (owner-accepted, 2026-11-15); the planned baseline of section 22.6 is preserved |
+| Linux CI job conclusions (4) | **SUCCESS** |
+| Gate EI6C-CI (Linux test-execution figures) | **CLOSED — PASS** (2026-11-15; owner-supplied log excerpts) |
+| EI-6C | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (owner, 2026-11-15; EI6C-FINAL-ACCEPTANCE) |
+| Deferred follow-ups F1 to F10 | **NOT AUTHORIZED** |
+| O-2; EI3-D10; O-3 | **RESOLVED** (option A, Δ = 0; option (a); option (b); unchanged) |
+| EI-6A; EI-6B | **ACCEPTED WITH DOCUMENTED LIMITATIONS** (unchanged) |
+| EI-7; EI-8 | **NOT AUTHORIZED** |
+| Core change; EI-2B, EI-6A or EI-6B contract change | **NOT AUTHORIZED** |
+| EI-4 formal closure (EI4-C4) | **PENDING** (separate obligation) |
+| Real data; new issuance functionality; ACTUAL issuance; broker execution; scheduling | **NOT AUTHORIZED** |
+| Operational or production authorization | **NOT GRANTED** |
