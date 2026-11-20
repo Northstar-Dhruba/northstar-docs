@@ -25,6 +25,8 @@ This document proposes the smallest product definition for Northstar's first act
 >
 > They are recorded in the [EI-5 Decision Register](Equity-Intraday-V1-EI5-Decision-Register.md), with the architecture in [ADR-024](../adr/ADR-024-Equity-Intraday-V1-Recommendation-Issuance-and-Lifecycle-Architecture.md). The owner accepted ADR-024 on 2026-11-12, with the approved amendments C-1, C-2 and O-1. Dated notes in sections 6.7, 8.2 to 8.4, 10.3, 12.1 and 14 point there. Nothing in EI-5 is implemented. Every other decision keeps its status, and the rest of this document remains a draft.
 
+> **Note, 2026-11-15 (EI-7 architectural directions, owner approval).** On 2026-11-15 the owner **APPROVED** the twelve EI-7 architectural directions R-1 to R-12, for a private, read-only, synthetic-only API and Web recommendation-inspection experience. They are recorded in the [EI-7 Decision Register](Equity-Intraday-V1-EI7-Decision-Register.md), with the design draft in the [EI-7 Private API and Web Design](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md). Their exact contracts are pending owner approval, and no EI-7 implementation is authorized. Section 11's screens remain proposals; a dated note there points to the register. Every other decision keeps its status, and the rest of this document remains a draft.
+
 Statements about NSE market structure use three labels:
 
 | Label | Meaning |
@@ -782,6 +784,8 @@ Not in V1:
 - notifications to anyone else.
 
 The Futures dashboard is the integration pattern: an API read model over persisted state, and web cards. Its components are not reused for equities until direct reuse is shown to be safe.
+
+> **Note, 2026-11-15 (EI-7).** The screens above are not rewritten and stay proposals. The approved EI-7 directions ([EI-7 Decision Register, section 4](Equity-Intraday-V1-EI7-Decision-Register.md#4-approved-decisions)) limit EI-7 to inspecting persisted synthetic research, generation, issuance, lifecycle and evidence records (R-1, R-12). The Performance screen's statistics are EI-8 metrics and are excluded (R-9). No authoritative listing universe exists today, so the Universe screen has no source. The integration pattern above corresponds to the approved direction R-2: Application-owned read views behind thin API controllers.
 
 ---
 
