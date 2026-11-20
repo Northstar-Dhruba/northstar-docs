@@ -377,6 +377,8 @@ Composition roots stay outside EI-6A. The record is the [EI-5 Decision Register,
 - **Not protected against.** Privileged Python, direct SQL or file modification, malicious code, forged capability objects and multi-host writers.
 - **What declarations certify.** A completeness declaration is trusted because the declaring workflow is trusted within that boundary; it is not a cryptographic proof. The authority guarantees only what section 7 states about sequences, regressions and backdating.
 
+*Clarification, 2026-11-15 (EI-7 R-7; recorded 2026-11-16).* The text above is not rewritten. "One SQLite file" above, and "the same SQLite database authority" in section 13, mean the single authoritative **Equity** database file: the EI-2B evidence, the EI-3C timelines, the EI4-D10 policy catalog, the EI-4D generation records and the EI-6A and EI-6B issuance and lifecycle tables, linked by foreign keys. Every document stating the single-file rule lists only these Equity objects (ADR-021; ADR-022 DQ4; the EI-6A storage design); none places Futures or Options tables in it. The owner's EI-7 decision R-7 ([EI-7 Decision Register, section 4.7](../product/Equity-Intraday-V1-EI7-Decision-Register.md#47-r-7-equity-and-futures-database-separation)) keeps Equity and Futures in separate SQLite files, with no cross-database transaction. This clarification changes no issuance, lifecycle, schema or trust-model contract: the Equity authority stays one file on one host, and the rejected alternative "a separate database file for the issuance authority" stays rejected. It authorizes no migration, file move or deployment change.
+
 ## Relationship to Earlier ADRs
 
 - **ADR-017.** The layering is unchanged: Core ← Application ← Infrastructure.
@@ -490,3 +492,4 @@ This ADR records an accepted architecture. It does not:
 - [EI-4C Versioned History Compatibility Design v1.0](../architecture/Equity-Intraday-V1-EI4C-Versioned-History-Compatibility-Design-v1.0.md) (added 2026-11-13)
 - [EI-6A Durable Issuance Authority SQLite Storage Design v1.0](../architecture/Equity-Intraday-V1-EI6A-Durable-Issuance-Authority-SQLite-Storage-Design-v1.0.md) (added 2026-11-14)
 - [EI-6B Durable Recommendation Lifecycle Persistence Design v1.0](../architecture/Equity-Intraday-V1-EI6B-Durable-Recommendation-Lifecycle-Persistence-Design-v1.0.md) (added 2026-11-14)
+- [EI-7 Decision Register](../product/Equity-Intraday-V1-EI7-Decision-Register.md) (added 2026-11-16; section 14 clarification)

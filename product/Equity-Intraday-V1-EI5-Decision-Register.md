@@ -1779,3 +1779,5 @@ EI-6C monitors existing authoritative MODELED issuances; the existing EI-6A synt
 | EI-4 formal closure (EI4-C4) | **PENDING** (separate obligation) |
 | Real data; new issuance functionality; ACTUAL issuance; broker execution; scheduling | **NOT AUTHORIZED** |
 | Operational or production authorization | **NOT GRANTED** |
+
+> **Note, 2026-11-15 (EI-7 architectural directions).** The "EI-7; EI-8" row above is not rewritten. On 2026-11-15 the owner approved the EI-7 architectural directions R-1 to R-12, recorded in the separate [EI-7 Decision Register](Equity-Intraday-V1-EI7-Decision-Register.md), which now holds EI-7 governance. **EI-7 implementation remains NOT AUTHORIZED**, and EI-8 is unchanged. Nothing in EI-7 changes EI6C-P1 to EI6C-P12, EI6C-FINAL-ACCEPTANCE or any other row above.
