@@ -12,6 +12,8 @@
 - The [Equity Intraday V1 Product Specification](Equity-Intraday-V1-Product-Specification.md) remains a draft wherever no owner decision approves it. Its section 11 screens stay proposals. [ADR-017](../adr/ADR-017-Repository-Layering-and-Futures-Recommendation-Domain-Boundary.md) stays Proposed.
 - This record has not been through Architecture Review or Engineering Review.
 
+> **Note, 2026-11-21 (EI-7B Docs PR-1).** The bullets above record the state on 2026-11-16 and are not rewritten. Since then the owner has approved **EI7-CF1, EI7-CF2 and EI7-CF4 on 2026-11-20**, and the refinements **EI7-P1 to EI7-P8**, the evidence-class decision **EI7-EC1** and the final confirmations **EI7-FC1 to EI7-FC6 on 2026-11-21**. The governing contracts are in [section 13](#13-approved-contracts-ei7-cf1-ei7-cf2-and-ei7-cf4-2026-11-20-and-2026-11-21), which prevails over the proposal text of section 8 and of the design wherever they differ. EI7-CF3, EI7-CF5, EI7-CF6 and EI7-CF7 stay **PROPOSED — PENDING OWNER APPROVAL**. **No EI-7 implementation is authorized**, and EI7-N01 to EI7-N24 stay **PLANNED — NOT TESTED**.
+
 **Source of the decisions.** The owner's EI-7B instruction of 2026-11-15, which reproduces the approved directions. The owner's working document, `Northstar_EI7B_Governance_Decision_Register_OWNER_APPROVED_2026-11-15.md`, was not available in this repository or on the engineering machine when this record was prepared. The decisions below are recorded from the instruction text; nothing is added to them.
 
 ## 1. Purpose and identifiers
@@ -21,13 +23,20 @@ This register is the authoritative record of the owner's EI-7 decisions. It chan
 | Identifier | Meaning |
 | --- | --- |
 | R-1 to R-12 | The approved EI-7 architectural directions of section 4. Outside this register they are cited as **EI-7 R-1** to **EI-7 R-12**, so that they are not confused with the EI-4C contract points R-1 and R-2 settled by [ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md) |
-| EI7-CF1 to EI7-CF7 | Contract-finalization decisions, pending (section 8) |
+| EI7-CF1 to EI7-CF7 | Contract-finalization decisions, pending (section 8). EI7-CF1, EI7-CF2 and EI7-CF4 approved 2026-11-20 (section 13) |
+| EI7-P1 to EI7-P8 | Owner-approved refinements of EI7-CF1, EI7-CF2 and EI7-CF4, 2026-11-21 ([section 13.5](#135-refinements-ei7-p1-to-ei7-p8)). Cited with the `EI7-` prefix so that they are not confused with EI6C-P1 to EI6C-P12 |
+| EI7-EC1 | Owner-approved SYNTHETIC evidence-class enforcement, 2026-11-21 ([section 13.6](#136-ei7-ec1-synthetic-evidence-class-enforcement)) |
+| EI7-FC1 to EI7-FC6 | The owner's six final confirmations of 2026-11-21, labelled C1 to C6 in the owner's instruction ([section 13.12](#1312-final-owner-confirmations-ei7-fc1-to-ei7-fc6-2026-11-21)). Cited with the `EI7-FC` prefix so that they are not confused with the EI-6B carried-forward limitations C1 to C10 or the EI-5 conflicts C-1 and C-2 |
 | EI7-N01 to EI7-N24 | Planned acceptance scenarios (section 10; design section 16) |
 | EI-7C to EI-7H | Proposed engineering slices (design section 18) |
 
 | Status | Meaning |
 | --- | --- |
 | **APPROVED — 2026-11-15** | An owner-approved architectural direction |
+| **APPROVED — 2026-11-20** | An owner-approved technical contract (EI7-CF1, EI7-CF2, EI7-CF4) |
+| **APPROVED — 2026-11-21** | An owner-approved refinement or final confirmation of an approved contract (EI7-P1 to EI7-P8, EI7-EC1, EI7-FC1 to EI7-FC4, EI7-FC6) |
+| **ACCEPTED — 2026-11-21** | The owner's acceptance of a stated fact about this record's sources (EI7-FC5) |
+| **PENDING TECHNICAL DETAIL** | A detail the approvals explicitly left open, to be settled before the named slice ([section 13.10](#1310-pending-technical-details-and-outstanding-decisions)) |
 | **ACCEPTED** (earlier) | An earlier owner decision or accepted milestone, unchanged by EI-7 |
 | **PROPOSED — PENDING OWNER APPROVAL** | An engineering recommendation for a technical contract |
 | **OPEN** | An unresolved point with no recommendation yet |
@@ -218,6 +227,9 @@ The EI-7A read-only reconnaissance (2026-11-15) read every repository at these c
 | EI-6C, EI6C-P1 to EI6C-P12, limit 300 | Unchanged. Monitoring is never invoked from HTTP; its policy, limit and no-checkpoint rule are untouched; monitoring runs stay non-durable |
 | EI6C-FINAL-ACCEPTANCE | Unchanged; it did not authorize EI-7, and this record authorizes no EI-7 implementation |
 | EI4-C4 | **PENDING**, unchanged |
+| EI-6A declared-session history (`equity_issuance_session_view`; `EquitySessionRecommendationHistory`) | Unchanged, including its ascending `(issued_at, recommendation_key)` order (EI7-P1, 2026-11-21; section 13) |
+| EI-4C versioned evaluation ([ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)) | Unchanged: the closed evaluator table and the evaluator-`/2`-only issuance rule are preserved by EI7-CF4 (section 13.4) |
+| EI3-D13 research rehydration (`rehydrate_equity_intraday_research_timeline`) | Decision semantics unchanged. EI7-P4 (2026-11-21) permits, within a separately authorized EI-7C only, a narrow reader-only Protocol adjustment of its snapshot dependency (section 13.5) |
 
 ## 6. Governance clarifications
 
@@ -263,16 +275,20 @@ EI-7 resolves none of these by presenting them. Each stays in force:
 - existing reliability and performance limits: every issuance read checks the whole ledger; a quiet monitoring rerun takes about 128 s at the limit of 300 (EI-6C L4); readers delay writers' commits under the rollback journal;
 - no authoritative listing universe or synthetic listing-eligibility source outside tests (findings A-8 and A-9).
 
+> **Note, 2026-11-21.** The approved contracts add accepted limitations of their own; they are listed in [section 13.9](#139-accepted-limitations). Every limitation above stays in force.
+
 ## 8. Contract-finalization decisions (pending)
 
 R-1 to R-12 are approved at the architectural level. The contracts below are engineering recommendations for the owner's decision. **None is approved by this record.**
 
+> **Note, 2026-11-21 (EI-7B Docs PR-1).** This section records the proposals as prepared on 2026-11-16 and is not rewritten. The owner approved **EI7-CF1, EI7-CF2 and EI7-CF4 on 2026-11-20**, refined by EI7-P1 to EI7-P8 and EI7-EC1 on 2026-11-21. Their governing text is [section 13](#13-approved-contracts-ei7-cf1-ei7-cf2-and-ei7-cf4-2026-11-20-and-2026-11-21); the proposal text superseded there is listed in [section 13.7](#137-superseded-proposal-text). EI7-CF3, EI7-CF5, EI7-CF6 and EI7-CF7 below stay **PROPOSED — PENDING OWNER APPROVAL**.
+
 | ID | Contract | Status |
 | --- | --- | --- |
-| EI7-CF1 | Session discovery contract | **PROPOSED — PENDING OWNER APPROVAL** |
-| EI7-CF2 | API contract freeze | **PROPOSED — PENDING OWNER APPROVAL** |
+| EI7-CF1 | Session discovery contract | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-20**; [section 13.2](#132-ei7-cf1-approved-session-discovery-contract) |
+| EI7-CF2 | API contract freeze | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-20**; [section 13.3](#133-ei7-cf2-approved-private-read-api-contract) |
 | EI7-CF3 | Private access enforcement | **PROPOSED — PENDING OWNER APPROVAL** |
-| EI7-CF4 | Integrity and lineage | **PROPOSED — PENDING OWNER APPROVAL** |
+| EI7-CF4 | Integrity and lineage | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-20**; [section 13.4](#134-ei7-cf4-approved-integrity-lineage-and-research-status-contract) |
 | EI7-CF5 | Database and ADR clarification | **PROPOSED — PENDING OWNER APPROVAL** (the ADR-024 clarification itself is recorded; section 6.1) |
 | EI7-CF6 | Web navigation and response presentation | **PROPOSED — PENDING OWNER APPROVAL** |
 | EI7-CF7 | Synthetic operator dependency | **PROPOSED — PENDING OWNER APPROVAL**; implementation **NOT AUTHORIZED** |
@@ -300,6 +316,8 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 - **Open questions:** the number; whether overflow maps to HTTP 422 or another status; whether a strategy filter is needed once a second strategy exists.
 - **Status:** **PROPOSED — PENDING OWNER APPROVAL.**
 
+> **Note, 2026-11-21.** **APPROVED — 2026-11-20**, refined 2026-11-21; the governing contract is [section 13.2](#132-ei7-cf1-approved-session-discovery-contract). Superseded or settled here: the recorded view is ordered by ascending `recording_sequence`, while the declared view keeps the `(issued_at, issuance_id)` order stated above (EI7-P1); the limit is 50 (approved); overflow is HTTP 409 (EI7-P2); every response states the recording position and the selected watermark, undeclared sessions included (section 13.2). The strategy-filter question stays open for a future strategy.
+
 ### 8.2 EI7-CF2: API contract freeze
 
 - **Approved direction:** R-1, R-2, R-9, R-10, R-11.
@@ -321,6 +339,8 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 - **Acceptance tests:** EI7-N05, N10 to N15, N17, N23, N24.
 - **Open questions:** whether the optional endpoints ship in V1; the overflow and refusal statuses; the contract identifier's exact text.
 - **Status:** **PROPOSED — PENDING OWNER APPROVAL.**
+
+> **Note, 2026-11-21.** **APPROVED — 2026-11-20**, refined 2026-11-21; the governing contract is [section 13.3](#133-ei7-cf2-approved-private-read-api-contract). Superseded or settled here: the identifier is `contract_id: "northstar.equity-private-read/1"`, not `contract: "northstar.equity-api/1"` (EI7-P8); every integer, not only prices, quantities and amounts, is a canonical decimal string, and the Equity read contract has no JSON numbers; overflow, watermark-ahead and evidence-class refusals are HTTP 409 (EI7-P2, EI7-P7, EI7-EC1); the three optional endpoints stay deferred.
 
 ### 8.3 EI7-CF3: private access enforcement
 
@@ -360,6 +380,8 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 - **Acceptance tests:** EI7-N03, N04, N10, N11, N21, N24.
 - **Open questions:** whether the policy-set version for N03 is a request parameter or configuration; whether a corrupt research origin should fail the detail rather than its panel.
 - **Status:** **PROPOSED — PENDING OWNER APPROVAL.**
+
+> **Note, 2026-11-21.** **APPROVED — 2026-11-20**, refined 2026-11-21; the governing contract is [section 13.4](#134-ei7-cf4-approved-integrity-lineage-and-research-status-contract). Superseded or settled here: generation status without an issuance is not derived from a policy-set version in EI-7C, neither by request parameter nor by configuration; it is `NOT_QUERYABLE`, distinct from UNKNOWN (EI7-P3). A corrupt primary research timeline fails the whole research response; in a recommendation detail, optional research context degrades to a panel only while the required lineage stays authoritative (EI7-P5). A non-SYNTHETIC snapshot refuses the affected response with HTTP 409 and is never reported as a panel (EI7-EC1).
 
 ### 8.5 EI7-CF5: database and ADR clarification
 
@@ -438,6 +460,17 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 | EI-8 metrics; EI-8 restatement | — | **NOT AUTHORIZED** |
 | EI-6C follow-ups F1 to F10 | — | **NOT AUTHORIZED** |
 
+> **Note, 2026-11-21.** Rows added by EI-7B Docs PR-1. The rows above are unchanged: the approval of EI7-CF1, EI7-CF2 and EI7-CF4 satisfies a contract dependency of EI-7C, EI-7D and EI-7E but authorizes none of them.
+
+| Item | Repository | Status |
+| --- | --- | --- |
+| EI-7B Docs PR-1 (record of EI7-CF1, EI7-CF2, EI7-CF4, EI7-P1 to EI7-P8 and EI7-EC1) | northstar-docs | **AUTHORIZED, 2026-11-21** (documentation only); uncommitted for owner review |
+| EI7-P4 reader-only Protocol adjustment of the EI-3C research rehydration dependency | northstar-application | **NOT AUTHORIZED** by EI-7B Docs PR-1; eligible for implementation within a separately owner-authorized EI-7C Application slice (EI7-FC6) |
+| Policy-set-based generation lookup or any generation-status search by candidate, policy set, strategy or date | — | **NOT AUTHORIZED**; deferred by EI7-P3 to separate governance |
+| `EquitySyntheticPolicyCatalogReader` or any catalog read in an EI-7 read path | northstar-application; northstar-infrastructure | **NOT AUTHORIZED**; deferred with the lookup above |
+| Giving the recorded-session discovery port to EI-6C monitoring | — | **NOT AUTHORIZED** (EI6C-P7 unchanged) |
+| Synthetic operator CLI | northstar-api | **NOT AUTHORIZED** (EI7-CF7 pending; EI-7G row above) |
+
 ## 10. Acceptance scenario register
 
 The 24 scenarios EI7-N01 to EI7-N24, their expected behaviours, verification layers and owning slices are defined in [design section 16](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#16-acceptance-scenarios).
@@ -448,6 +481,8 @@ The 24 scenarios EI7-N01 to EI7-N24, their expected behaviours, verification lay
 | PLANNED — NOT TESTED | 24 |
 | Conditional | EI7-N22, on separate authorization of the operator path (EI7-CF7) |
 | Evidence recorded | None |
+
+> **Note, 2026-11-21.** The scenarios were reconciled with the approved contracts in [design section 23.8](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#238-acceptance-reconciliation). No scenario was added or removed; the revised expected behaviours of EI7-N03, N04, N07, N10, N11, N14, N15 and N16 and the required coverage items are recorded there. All 24 stay **PLANNED — NOT TESTED**.
 
 ## 11. Decision-change and supersession rules
 
@@ -472,3 +507,274 @@ The 24 scenarios EI7-N01 to EI7-N24, their expected behaviours, verification lay
 - [ADR-023: Equity Intraday V1 Mandatory Operational Generation-Write Boundary Enforcement](../adr/ADR-023-Equity-Intraday-V1-Mandatory-Operational-Generation-Write-Boundary-Enforcement.md)
 - [EI4-D11 Operational Generation Write Boundary Enforcement Design](../architecture/Equity-Intraday-V1-EI4-D11-Operational-Generation-Write-Boundary-Enforcement-Design.md)
 - [Indian Futures Deployment Runbook](../operations/Indian-Futures-Deployment-Runbook.md), sections 1 and 8
+
+## 13. Approved contracts EI7-CF1, EI7-CF2 and EI7-CF4 (2026-11-20 and 2026-11-21)
+
+This section records owner approvals given after sections 1 to 12 were written. Sections 1 to 12 are not rewritten; dated notes there point here. Where the proposal text of section 8 or of the [design](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md) differs from this section, **this section governs**. Python names and response field names remain proposals (section 11); the semantics below are binding. **Nothing here is implemented, and nothing here authorizes an implementation.**
+
+### 13.1 Approval record
+
+| Date | Decision | Status |
+| --- | --- | --- |
+| 2026-11-15 | R-1 to R-12 (section 4) | **APPROVED — 2026-11-15**, unchanged |
+| 2026-11-20 | EI7-CF1, EI7-CF2 and EI7-CF4, approved as recommended, preserving the explicitly pending technical details | **APPROVED — 2026-11-20** |
+| 2026-11-21 | EI7-P1 to EI7-P8, as refined by the owner | **APPROVED — 2026-11-21** |
+| 2026-11-21 | EI7-EC1, SYNTHETIC evidence-class enforcement | **APPROVED — 2026-11-21** |
+| 2026-11-21 | EI7-FC1 to EI7-FC6, the owner's final confirmations (section 13.12) | **APPROVED — 2026-11-21** (EI7-FC5 **ACCEPTED — 2026-11-21**) |
+| — | EI7-CF3, EI7-CF5, EI7-CF6 and EI7-CF7 | **PROPOSED — PENDING OWNER APPROVAL** |
+
+- **Sources** (as accepted by the owner under EI7-FC5): the owner's explicit EI-7B decisions of 2026-11-20 (the CF1, CF2 and CF4 final contract feasibility audit instruction) and of 2026-11-21 (the EI-7B Docs PR-1 instruction and its finalization instruction); the source-feasibility audit; the merged EI-7B governance (this register and the design as merged at `d9bc867`); and the current source contracts verified at the commits of section 3. The owner-approved CF contract package is not present in the six local repositories. It was not opened, read or committed in preparing this record, and nothing here is attributed to its text. Its absence does not revoke the owner's decisions, which are recorded from the instruction text.
+- **Engineering evidence.** The EI-7B CF1, CF2 and CF4 read-only feasibility audit (2026-11-20) read all six repositories at the code commits of section 3, with northstar-docs at `d9bc867`. It found the contracts implementable without a schema change, a new Core model, a new write authority or any weakening of EI-6A verification, given the additive read-only ports of section 13.8. It ran no tests; its findings rest on source inspection only. Two of its recommendations were not adopted: the identifier `northstar.equity-api/1` (EI7-P8) and a panel-level evidence-class refusal (EI7-EC1).
+- **Mechanics.** The read sequence, presentation derivation, wire examples, use-case inventory and acceptance reconciliation are in [design section 23](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#23-approved-contract-reconciliation-2026-11-21).
+
+### 13.2 EI7-CF1: approved session discovery contract
+
+**APPROVED — 2026-11-20**; refined by EI7-P1, EI7-P2, EI7-P6 and EI7-P7 on 2026-11-21.
+
+1. **Scope.** One exchange (NSE in V1) and one trading date per request. No strategy filter, no global list-all, no date-range or cross-session discovery, no pagination and no continuation.
+2. **Bound.** At most **50** recorded issuances for the session at the selected watermark. The bound is fixed for `northstar.equity-private-read/1`; changing it needs a dated owner decision, and it must be revisited if EI0-D5 is approved with a larger universe. It restricts the new EI-7 presentation and query layer only, never the historical issuance authority: EI-6A records any number of issuances, and its `session_view` behaviour and canonical order are unchanged (EI7-FC1).
+3. **Complete or refused.** A successful response holds the complete, fully verified set. Otherwise **both** new EI-7 session projections, recorded and declared, refuse with HTTP 409 `DISCOVERY_LIMIT_EXCEEDED`: no partial authoritative list and no silent truncation (EI7-P2; EI7-FC1). An overflow refusal is **not a corruption verdict**: it says nothing about the integrity of the session's records. The refusal states the limit. It need not state a total count, and states one only where the count is established authoritatively.
+4. **Two presentations, one read.** Both presentations are derived from one bounded, verified read of the session at one recording watermark W, and each keeps its own order (EI7-P1):
+   - **recorded view** (new): every recorded issuance of the session with `recording_sequence <= W`, in ascending `recording_sequence`;
+   - **declared view** (existing EI-6A semantics): exactly the issuances that the existing rule `equity_issuance_session_view` admits at W (`recording_sequence <= W` and `issued_at <= complete_through(W)`), in that rule's existing order, ascending `(issued_at, recommendation_key)`. An EI-6A record's recommendation key is its `issuance_id`, so this is the `(issued_at, issuance_id)` order of section 8.1.
+
+   The two orders can differ: two issuances at one instant are ordered by identity, not by sequence (Infrastructure fixture `test_hw03_s_a_view_keeps_its_content_after_later_recording`).
+5. **Watermark.** Every response states the authority's recording position N at the read and the selected recording watermark W (N when none is requested). An optional `watermark` request value must satisfy W ≤ N; otherwise HTTP 409 `WATERMARK_AHEAD`. A syntactically valid non-negative decimal above 2^63−1 is ahead of the authority by definition and is refused with 409 `WATERMARK_AHEAD` before it is bound into SQLite (EI7-P7). Malformed, signed or non-canonical values are request-validation failures, HTTP 422 `UNSUPPORTED_SCOPE`.
+6. **Declaration at the same watermark.** The declaration state is evaluated at W by the existing EI-6A rule `equity_declared_complete_through`: `NONE`, or `DECLARED` with `complete_through`. An undeclared session is a successful response with `declaration: NONE` and N and W stated. It is not an error, not "no recommendations" and not complete. Recorded-view items carry `covered_by_declaration` (`issued_at <= complete_through(W)`). A session is only ever "declared complete through" a stated instant.
+7. **Discovery content and lifecycle per item** (list and detail consistency, 2026-11-21). The authoritative content of a discovery response is the issuance identities and the session recording facts at W: position, watermark, declaration state, recording sequences and coverage. The full lifecycle belongs to the verified recommendation detail. An item may carry an optional lifecycle summary, read by an **independent** `load_lifecycle` call per item, after the session read. Those summaries are not pinned to W, are not atomic with the session read or with one another, and must never be presented as one globally consistent lifecycle observation. Each summary carries its own status; a failed summary is shown as that item's `invalid` or `unavailable` status, never omitted, defaulted or disguised as a successful observation. An issuance-authority failure fails the whole response. The EI-6A and EI-6B transaction semantics are unchanged.
+8. **Verification and precedence (EI7-P6).** In order: (1) the whole-ledger check; (2) the recording position and the applicable watermark; (3) the declaration state; (4) the session's bounded recorded count at W; (5) above 50, the typed overflow refusal, before any per-issuance re-derivation; (6) otherwise every listed issuance re-derived and verified exactly as EI-6A verifies it today. A LEDGER failure always takes precedence over overflow. A successful response is never unverified.
+9. **EI-6A unchanged.** `EquityRecommendationIssuanceReader`, `session_view`, `session_view_at`, `EquitySessionRecommendationHistory` and their ordering invariants do not change. Today `session_view` returns `None`, with no watermark, for an undeclared session; the new read contract corrects that presentation gap without changing the EI-6A authority.
+10. **EI-6C unchanged.** The monitor is never given the discovery port; EI6C-P7 still governs monitoring discovery.
+
+### 13.3 EI7-CF2: approved private read API contract
+
+**APPROVED — 2026-11-20**; refined by EI7-P2, EI7-P7, EI7-P8 and EI7-EC1 on 2026-11-21.
+
+1. **Five essential GET route families:**
+   - `GET /equity/health`;
+   - `GET /equity/sessions/{exchange}/{date}/recommendations` (declared view);
+   - `GET /equity/sessions/{exchange}/{date}/recorded-issuances` (recorded view);
+   - `GET /equity/recommendations/{issuance_id}` (verified detail, including the complete authoritative lifecycle timeline);
+   - `GET /equity/research/{strategy}/{exchange}/{symbol}/{date}`.
+
+   **Deferred**, each needing a later dated decision: the lookup endpoint, a separate lifecycle endpoint and a generic snapshot endpoint.
+2. **Ownership.** Immutable, Application-owned query views. The Application classifies every domain error. API response models are mapped from the views. Equity route modules import no Infrastructure type and catch no Infrastructure error.
+3. **Contract identifier.** `contract_id: "northstar.equity-private-read/1"` at the **top level** of every equity success and error envelope, in every example and every contract test (EI7-P8; EI7-FC4). No other identifier is used.
+4. **Wire rules.**
+   - Every integer and decimal value is a string. No JSON number appears anywhere in the Equity V1 read contract.
+   - Integer strings are canonical non-negative base 10: `0`, or a non-zero digit followed by digits, with no sign, leading zero, exponent or separator. This covers recording positions, watermarks, recording sequences, lifecycle positions and event sequences, timeline sequences, quantities and counts. None may lose precision in JavaScript, whose exact range ends at 2^53−1 (9007199254740991), below the SQLite INTEGER maximum of 2^63−1.
+   - Decimals (prices, amounts, multipliers) are the exact canonical decimal text of the domain value, never a binary float.
+   - Instants are canonical UTC `PointInTime` text; dates are ISO `YYYY-MM-DD`; identifiers and enumeration names are opaque, verbatim strings.
+   - Unknown, unavailable, not declared and not queryable are explicit, typed states, never `null`, zero or an empty list. `null` means only "not applicable" or "not stored".
+   - No rationale prose is invented from structured data. No `recorded_at`, `last_monitored_at`, fill, execution price or performance figure is present or fabricated.
+   - Fixed labels: `evidence_class: "SYNTHETIC"`; `issuance_kind: "MODELED"` and `actionable: false` wherever an issuance is present.
+5. **Error envelope.** On equity routes only: `{"contract_id": "northstar.equity-private-read/1", "error": {"code", "message", "retryable", "scope"}}`. No traceback, SQLite text, file path, configuration value or raw request input is returned. Equity request validation must not use a handler that echoes input. Futures and legacy routes are unchanged.
+6. **Non-mutating.** GET and HEAD only. No DDL or schema initialization during a request or at equity startup. No generation, issuance, declaration, monitoring, scheduling or clock read. No broker execution and no performance claim.
+7. **Route encoding.** `StrategyIdentity` is opaque text and may contain characters, such as `/`, that do not survive as one path segment. The route encoding is a pending technical detail to verify before EI-7E (section 13.10). This record imposes no new, incompatible restriction on strategy identities.
+
+**Status mapping:**
+
+| Code | HTTP | Retryable | Meaning |
+| --- | --- | --- | --- |
+| `ISSUANCE_NOT_FOUND` | 404 | No | The authority holds no issuance with the requested identity |
+| `WATERMARK_AHEAD` | 409 | No | The requested watermark is above the recording position, including any value above 2^63−1 (EI7-P7) |
+| `DISCOVERY_LIMIT_EXCEEDED` | 409 | No | More than 50 recorded issuances at the watermark (EI7-P2) |
+| `EVIDENCE_CLASS_UNSUPPORTED` | 409 | No | A retrieved snapshot's class is not SYNTHETIC (EI7-EC1) |
+| `UNSUPPORTED_SCOPE` | 422 | No | A malformed or unsupported request: exchange, date, symbol, strategy, identity or watermark syntax |
+| `PERSISTED_AUTHORITY_INVALID` | 500 | No | A corrupt ledger, declaration or issuance; a failed lineage comparison; a missing or non-`PROPOSED` disposition for an issuance; an unverifiable primary research timeline |
+| `LIFECYCLE_HISTORY_INVALID` | 500 | No | Corrupt lifecycle history: fails a detail response; an item status in the lists |
+| `DEPENDENCY_UNAVAILABLE` | 503 | Yes | A required reader is unavailable, including missing tables or an unrecoverable hot journal under `mode=ro` |
+| `EQUITY_NOT_CONFIGURED` | 503 | No | The Equity read runtime is not configured, when applicable; the exact trigger depends on EI7-CF5 |
+
+- Further source-supported distinctions may be kept where needed, such as the panel statuses of section 13.6.
+- **Not errors:** a session with `declaration: NONE` (HTTP 200); a generation status of `NOT_QUERYABLE`, which is never an issuance failure; an UNKNOWN research timeline.
+
+### 13.4 EI7-CF4: approved integrity, lineage and research-status contract
+
+**APPROVED — 2026-11-20**; refined by EI7-P3, EI7-P5 and EI7-EC1 on 2026-11-21.
+
+**Source-verified facts (feasibility audit, 2026-11-20):**
+
+- The supported generation evaluators are a closed table, `northstar.equity-recommendation-evaluator/1` and `/2` ([ADR-025](../adr/ADR-025-Equity-Intraday-V1-Versioned-Evaluation-and-History-Compatibility.md)). Issuance accepts only `/2`, enforced by a database trigger and by issuance re-derivation on every read. Nothing is migrated; the frozen EI-4C compatibility rules are preserved.
+- The generation key is `eirk1`. It binds the strategy, research configuration version, listing, trading date, candidate entry fingerprint, policy-set version and `eirs1` policy-set fingerprint; the evaluator version is not part of it. The issuance identity is `eiris1`, binding the generation key, the proposal fingerprint and MODELED.
+- The issued recommendation is reconstructed canonically by `equity_issued_recommendation(disposition)`.
+- `load_lifecycle` already checks the whole ledger, re-derives the issuance from its stored disposition and replays the lifecycle in one read transaction, but does not return the disposition. A separate exact-key `load_disposition(issuance.generation_key)` supplies the structured sizing, version and research-reference facts.
+
+**Recommendation detail: required comparisons.** Each must hold, or the whole detail fails with `PERSISTED_AUTHORITY_INVALID` (`LIFECYCLE_HISTORY_INVALID` for lifecycle history):
+
+| # | Comparison |
+| --- | --- |
+| 1 | The issuance's generation key equals the exact-key disposition's key; the disposition exists and is `PROPOSED` |
+| 2 | Strategy |
+| 3 | Listing |
+| 4 | Trading date |
+| 5 | Policy-set version and `eirs1` fingerprint, and the component, timing, listing-eligibility, universe and research-configuration versions |
+| 6 | Research candidate reference: decision instant, research decision fingerprint, candidate entry fingerprint, evidence snapshot |
+| 7 | Levels and modeled timing |
+| 8 | Sizing and risk definition |
+| 9 | Evaluator compatibility: the disposition's evaluator is `/2` |
+| 10 | `equity_issued_recommendation(disposition)` equals the recorded issued recommendation, identity included |
+
+- **No re-evaluation.** A GET proves the lineage and integrity of stored facts. It does not re-evaluate market history or replay the generation (R-6).
+- **Consistency.** The issuance and lifecycle come from one read transaction. The disposition comes from a separate connection over insert-only rows, guarded by comparisons 1 to 10. No cross-connection atomicity is claimed.
+- **Exact identity only.** No latest or current policy-set version is inferred, configured or guessed. There is no broad generation-status search.
+- **Provenance limits**, stated in the source-of-truth rules and in every presentation of these facts:
+  - the historical publication of the policy set before generation cannot be established from persisted facts, because publication history is not stored; the detail shows the bound policy identity, never a publication time;
+  - the authenticity of the research candidate against its timeline is established only by the accepted EI-3 rehydration verification (EI3-D13). Without it, the detail shows the frozen candidate reference bound by `eirk1`, labelled as such.
+
+**Research view (EI7-P3, EI7-P5):**
+
+- The persisted research timeline is loaded and verified by EI3-D13 rehydration. If it cannot be verified or rehydrated, the whole research response fails with a typed integrity error; it is never downgraded to UNKNOWN.
+- Rehydration uses the stored, authoritative configuration document, never a current configuration or a client-supplied value. A missing or inconsistent required configuration fails the whole research response with a typed integrity error (EI7-FC3).
+- Every snapshot retrieved for the research response is gated on its evidence class **before** any research outcome is presented. A non-SYNTHETIC snapshot refuses the whole response with HTTP 409 `EVIDENCE_CLASS_UNSUPPORTED`. The existing evaluator's reconstruction of such a snapshot as a `REJECTED` decision is never presented as an ordinary research outcome, and no evidence payload is exposed (EI7-FC3).
+- Research outcomes and reasons are shown distinctly, as stored; persisted `NO_SIGNAL` and `REJECTED` outcomes show their authoritative reasons (EI7-FC2).
+- When the authority records an issuance for the strategy, listing and date, its exact generation key is used. The disposition must exist, be `PROPOSED` and cite the timeline's candidate entry; otherwise the response fails with `PERSISTED_AUTHORITY_INVALID`.
+- Otherwise the generation status is `NOT_QUERYABLE`, with a typed reason. No policy-set version is accepted as a request parameter or taken from configuration, and no disposition or attempt is scanned.
+- `NOT_ELIGIBLE` and `UNRESOLVED` are never inferred. They may be shown only when their exact dispositions are authoritatively discoverable; in the EI-7C scope no authorized exact lookup reaches them, so they are not shown (EI7-FC2).
+- The absence of generation attempts is never inferred: `NOT_QUERYABLE` says that no lookup was possible, not that nothing was attempted (EI7-FC2).
+- The statuses UNKNOWN, `NOT_QUERYABLE`, `PROPOSED`, `NOT_ELIGIBLE`, `UNRESOLVED` and `ISSUED` stay distinct in types, responses and labels.
+
+**UNKNOWN and NOT_QUERYABLE are distinct:**
+
+| State | Meaning |
+| --- | --- |
+| UNKNOWN | An authorized exact lookup was performed and the authoritative source holds no record; for example, no persisted research timeline for the strategy, listing and date |
+| `NOT_QUERYABLE` | The exact identity an authorized lookup needs is not available within the approved scope, so no lookup was performed; the response states why. Not an error and not an issuance failure |
+
+An exact-key lookup that finds nothing means UNKNOWN only where that exact lookup is authorized and available. For an issued recommendation, a missing required disposition is a persisted-authority integrity failure, never UNKNOWN.
+
+### 13.5 Refinements EI7-P1 to EI7-P8
+
+**APPROVED — 2026-11-21.**
+
+| ID | Decision | Supersedes or settles |
+| --- | --- | --- |
+| EI7-P1 | Recorded view in ascending `recording_sequence`. Declared view in the existing EI-6A order, ascending `(issued_at, recommendation_key)`, the key being the `issuance_id`; the EI-6A history invariants are unchanged. Both may be derived from one verified recording watermark; each keeps its order. Acceptance tests must prove the distinction | The section 8.1 sort key, for the recorded view |
+| EI7-P2 | Overflow is HTTP 409 `DISCOVERY_LIMIT_EXCEEDED`: no partial list, no silent truncation; an exact total need not be exposed if it cannot be established authoritatively. The limit of 50 is fixed for this contract version | The section 8.1 open status question; design section 12, "422 (open)" |
+| EI7-P3 | Policy-set-based generation lookup is deferred. The EI-7C research view supports a verified persisted timeline, the exact issuance-linked generation identity when an authoritative issuance exists, `NOT_QUERYABLE` otherwise, and distinct research outcomes and reasons. No policy-set request parameter; no scan of dispositions or attempts; no guessed current or latest version. Broader generation discovery needs separate governance | Section 8.4, generation status without an issuance, and its open question |
+| EI7-P4 | A narrowly scoped, reader-only Protocol for the snapshot dependency of the existing research rehydration, exposing only the read it needs. No fake `issue()` or other write method to satisfy an existing ABC; no change to the write-side contract or to research decision semantics. Whether the existing runtime `isinstance` validation can safely accept the structural Protocol, preserving every writer-capable implementation, is verified within a separately authorized EI-7C, which alone may make the limited change to EI-3C Application code | New |
+| EI7-P5 | A primary research timeline that cannot be verified or rehydrated fails the whole research response with a typed integrity error. In a recommendation detail, optional research context may show an `invalid` or `unavailable` panel only while the required issuance, lifecycle and generation lineage stays authoritative; evidence required for identity or lineage fails the whole detail. No invented provenance; required corruption is never UNKNOWN | The section 8.4 open question on research-origin corruption |
+| EI7-P6 | Discovery precedence: ledger; position and watermark; declaration state; bounded count; overflow before per-issuance re-derivation; otherwise complete verification. A LEDGER failure precedes overflow. Accepted limitation: overflow may be returned before an individual row's corruption is discovered; a success is never unverified; EI-6A verification of successful reads is not weakened | New |
+| EI7-P7 | A syntactically valid non-negative decimal watermark above 2^63−1 is ahead of the recorded authority: HTTP 409 `WATERMARK_AHEAD`, refused before SQLite binding, so no Python `OverflowError` escapes. Malformed, signed, non-canonical or unsupported syntax receives the request-validation error, HTTP 422 | Section 8.2, "watermarks as non-negative integers" (refined) |
+| EI7-P8 | The contract identifier is exactly `northstar.equity-private-read/1`, used consistently in response and error contracts, examples and contract tests | Section 8.2, `contract: "northstar.equity-api/1"`, and the feasibility audit's identical suggestion |
+
+### 13.6 EI7-EC1: SYNTHETIC evidence-class enforcement
+
+**APPROVED — 2026-11-21.** A refinement of R-10, enforced server-side:
+
+| Condition | Result |
+| --- | --- |
+| A cited optional snapshot cannot be found | An explicit `unavailable` evidence panel (`EVIDENCE_NOT_FOUND`), only while every mandatory issuance, lifecycle and generation fact is verified |
+| A cited ancillary snapshot is corrupt, and the corruption does not compromise required identity, lineage or domain authority | An explicit `invalid` evidence panel; its content withheld |
+| Corrupt evidence compromises required provenance | The whole response fails (`PERSISTED_AUTHORITY_INVALID`) |
+| A snapshot is retrieved and its class is not SYNTHETIC | The affected response is refused with HTTP 409 `EVIDENCE_CLASS_UNSUPPORTED`. Its contents are not exposed, its class is never converted to SYNTHETIC, and it is never presented as a missing optional snapshot |
+
+- An evidence-class refusal stays distinguishable from persisted-authority corruption (500) and from a missing snapshot (panel).
+- It is an evidence policy, not an access decision. The user-authentication boundary is EI7-CF3 and is unaffected.
+
+### 13.7 Superseded proposal text
+
+The text below stays in place, marked by dated notes, and no longer governs.
+
+| Location | Superseded text | Governing text |
+| --- | --- | --- |
+| Section 8.1, sort key | `(issued_at, issuance_id)` for both views; `recording_sequence` not the sort key | EI7-P1: the recorded view by `recording_sequence`; the declared view unchanged |
+| Section 8.1, open questions | The limit; the overflow status | 50; HTTP 409 (EI7-P2) |
+| Section 8.2, serializers | `contract: "northstar.equity-api/1"` | `contract_id: "northstar.equity-private-read/1"` (EI7-P8) |
+| Section 8.2, precision | Exact decimal strings for prices, quantities and amounts | Every integer and decimal a string; no JSON numbers (section 13.3) |
+| Section 8.2, request validation | Watermarks as non-negative integers | Canonical decimal strings; above 2^63−1 is 409 (EI7-P7) |
+| Section 8.4, generation status without an issuance | Derived from a policy-set version; otherwise UNKNOWN | `NOT_QUERYABLE` unless an issuance-linked key exists (EI7-P3) |
+| Section 8.4, optional-field degradation | Research-origin and snapshot panels report `invalid` or `unavailable` for any failure | EI7-P5 and EI7-EC1: an unverifiable primary timeline fails the research response; a non-SYNTHETIC snapshot refuses the response with 409 |
+| Design sections 6.1, 9, 11, 12, 16, 18, 19 and 20 | The corresponding proposals | [Design section 23](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#23-approved-contract-reconciliation-2026-11-21), through dated notes in each |
+
+### 13.8 Approved EI-7C scope and read-only ports
+
+**Minimal EI-7C scope (still NOT AUTHORIZED):** the Application views and query use cases behind the five route families; the recorded-session read port; the verified detail with the comparisons of section 13.4; the research view of EI7-P3; typed errors; test doubles; architecture tests.
+
+| Port (Application) | Kind | Purpose |
+| --- | --- | --- |
+| `EquityRecordedSessionIssuanceReader` | New, read-only | The bounded recorded-session read of section 13.2 |
+| `EquityIntradayResearchTimelineReader` | New, read-only | Load a stored research timeline; the existing timeline store also appends |
+| `EquityCandleEvidenceSnapshotReader` | New, read-only | Get a snapshot; the existing snapshot store also issues (EI7-P4) |
+| `EquityRecommendationLifecycleReader` | Existing, reused | The verified issuance and lifecycle |
+| `EquityRecommendationIssuanceReader` | Existing, reused | `load_issuance`; `load_session_issuance` |
+| `EquityRecommendationGenerationRecordReader` | Existing, reused | Exact-key `load_disposition` |
+| `EquitySyntheticPolicyCatalogReader` | **Deferred** (EI7-P3) | Only for a future, separately governed policy-set-based lookup |
+
+- Port names are proposals (section 11). The new ports are separate from the existing ones, so no existing implementation or test double must change.
+- **EI7-P4 authorization rule (EI7-FC6):** "The narrow P4 compatibility change is eligible for implementation within a separately owner-authorized EI-7C Application slice. It is not authorized by EI-7B Docs PR-1."
+- **EI-7D (still NOT AUTHORIZED)** supplies the read-only Infrastructure adapters: `mode=ro`; `PRAGMA query_only = ON`, confirmed; no DDL and no schema creation on any read; reuse of the existing verified decoders; typed unavailability and integrity failures; real-SQLite equivalence and restart tests. No write-capable reader adapter is introduced; the existing adapters stay the write authorities.
+
+### 13.9 Accepted limitations
+
+In addition to section 7, which stays in force:
+
+- an over-limit session may be refused for overflow before a corrupt individual issuance row is discovered (EI7-P6); a success is never unverified;
+- because both presentations come from one bounded read, a session with more than 50 recorded issuances at W is refused in the declared view too, even if fewer are declared (approved, EI7-FC1); such a session can be inspected only issuance by issuance through the detail read;
+- every discovery and detail read checks the whole ledger, so its cost grows with the ledger; optional per-item lifecycle summaries are up to 50 further independent reads, not atomic with the session read or with one another (section 13.2, item 7);
+- full unissued-generation history is not observable in EI-7C: `NOT_ELIGIBLE` and `UNRESOLVED` dispositions of unissued candidates, and every generation attempt, stay invisible (EI7-FC2);
+- the stored research configuration has no fingerprint of its own; its identity is verified through its canonical document, its strategy and version columns, the timeline identity document and the re-derived decision and entry fingerprints (EI7-FC3);
+- the disposition is read on a separate connection; no cross-connection atomicity;
+- the historical publication of a policy set cannot be established from persisted facts;
+- research-candidate authenticity requires EI3-D13 rehydration;
+- generation outcomes other than an issued `PROPOSED` disposition, and attempts without a disposition, are not discoverable in EI-7C;
+- lifecycles have no watermark; `position` lets a client detect change;
+- a `mode=ro` reader cannot recover a hot rollback journal (EI-6C L8);
+- no time of recording and no monitoring time exist, so none is shown.
+
+### 13.10 Pending technical details and outstanding decisions
+
+| Item | Status | Needed before |
+| --- | --- | --- |
+| Route encoding of `StrategyIdentity` as a path segment | PENDING TECHNICAL DETAIL | EI-7E |
+| Whether the runtime check in `rehydrate_equity_intraday_research_timeline` (today `isinstance` against `EquityCandleEvidenceSnapshotStore`) can accept the reader-only Protocol, with its compatibility tests (EI7-P4) | Direction **APPROVED — 2026-11-21** (EI7-FC6); the code-level verification stays a PENDING TECHNICAL DETAIL of the authorized slice | EI-7C research use case |
+| The research configuration identity that rehydration requires | **SETTLED — 2026-11-21** (EI7-FC3): the stored authoritative configuration document, verified; never a current or client-supplied configuration | — |
+| An explicit evidence-class check of the snapshots read for the research response | **SETTLED — 2026-11-21** (EI7-FC3): class gating before any outcome presentation; 409 on non-SYNTHETIC | — |
+| `contract_id` placement; `recording_position` and `recording_watermark` names and meaning; `EQUITY_NOT_CONFIGURED` retryability | **SETTLED — 2026-11-21** (EI7-FC4) | — |
+| The typed reasons of `NOT_QUERYABLE`; panel and item status names; the remaining response field names | PENDING TECHNICAL DETAIL (semantics approved) | EI-7C contract tests |
+| The trigger of `EQUITY_NOT_CONFIGURED` | Depends on EI7-CF5 | EI-7E |
+| A strategy filter once a second strategy exists; the limit if EI0-D5 approves a larger universe | **OPEN** | A future dated decision |
+| Policy-set-based generation lookup | Deferred by EI7-P3; separate governance | — |
+| EI7-CF3 private access enforcement; EI7-CF5 database runtime configuration and startup isolation | **PROPOSED — PENDING OWNER APPROVAL** | EI-7E |
+| EI7-CF6 Web navigation and presentation | **PROPOSED — PENDING OWNER APPROVAL** | EI-7F |
+| EI7-CF7 synthetic operator workflow | **PROPOSED — PENDING OWNER APPROVAL**; operator CLI **NOT AUTHORIZED** | EI-7G; EI7-N22 |
+| EI4-C4 | **PENDING** | — |
+
+### 13.11 Status
+
+| Item | Status |
+| --- | --- |
+| R-1 to R-12 | **APPROVED — 2026-11-15** |
+| EI7-CF1, EI7-CF2, EI7-CF4 | **APPROVED — 2026-11-20** |
+| EI7-P1 to EI7-P8; EI7-EC1 | **APPROVED — 2026-11-21** |
+| EI7-FC1 to EI7-FC6 | **APPROVED — 2026-11-21** (EI7-FC5 accepted) |
+| EI7-P4 code change | Eligible within a separately owner-authorized EI-7C; **NOT AUTHORIZED** by EI-7B Docs PR-1 |
+| EI7-CF3, EI7-CF5, EI7-CF6, EI7-CF7 | **PROPOSED — PENDING OWNER APPROVAL** |
+| EI-7C to EI-7H | **NOT AUTHORIZED** |
+| EI7-N01 to EI7-N24 | **PLANNED — NOT TESTED** (24) |
+| EI-6B E1 to E9; EI-6C L1 to L13 | In force |
+| EI-6C follow-ups F1 to F10 | **NOT AUTHORIZED** |
+| EI4-C4 | **PENDING** |
+| Unchanged boundaries | Single host; synthetic-only evidence; MODELED-only issuance; no cross-connection atomicity; no durable monitoring-run provenance; no broker execution, orders or fills; no real or provider market-data activation; no scheduler; no deployment change; no EI-8 performance claim |
+
+### 13.12 Final owner confirmations EI7-FC1 to EI7-FC6 (2026-11-21)
+
+The owner confirmed six points on **2026-11-21**, labelled C1 to C6 in the instruction. They are recorded here and applied in sections 13.1 to 13.11 and in [design sections 23.2 to 23.10](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2310-final-owner-confirmations-ei7-fc1-to-ei7-fc6). They change no R-1 to R-12, EI7-CF1, EI7-CF2, EI7-CF4, EI7-P1 to EI7-P8 or EI7-EC1 approval; they settle details those approvals left open.
+
+| ID | Owner confirmation | Status | Applied in |
+| --- | --- | --- | --- |
+| EI7-FC1 | **Discovery overflow scope.** At most 50 recorded issuances per session. Above 50, **both** new EI-7 session projections refuse with HTTP 409 `DISCOVERY_LIMIT_EXCEEDED`; no partial authoritative list. The 50-record restriction applies to the new EI-7 presentation and query layer, not to the historical issuance authority. EI-6A `session_view` behaviour and canonical order are unchanged. An overflow refusal is not a corruption verdict | **APPROVED — 2026-11-21** | Sections 13.2 and 13.9; design 23.2 |
+| EI7-FC2 | **Unissued generation visibility.** Persisted `NO_SIGNAL` and `REJECTED` research outcomes show their authoritative reasons. An unissued research candidate without exact generation identity is `NOT_QUERYABLE`. The absence of generation attempts is never inferred. `NOT_ELIGIBLE` and `UNRESOLVED` are shown only when their exact dispositions are authoritatively discoverable. EI-7C adds no policy-set-based generation search, no global disposition browsing and no attempt search. UNKNOWN, `NOT_QUERYABLE`, `PROPOSED`, `NOT_ELIGIBLE`, `UNRESOLVED` and `ISSUED` stay distinct. **Limitation, stated plainly: full unissued-generation history is not observable in EI-7C** | **APPROVED — 2026-11-21** | Sections 13.4 and 13.9; design 23.5 |
+| EI7-FC3 | **Research configuration identity and SYNTHETIC evidence.** Persisted research is rehydrated with the stored authoritative configuration document. Its identity, fingerprints and applicable historical relationships are verified. A current configuration or client-supplied guess is never substituted. Missing or inconsistent required configuration is a typed whole-response research integrity failure. A retrieved non-SYNTHETIC snapshot is refused explicitly with HTTP 409 `EVIDENCE_CLASS_UNSUPPORTED`; the existing evaluator's reconstruction of unsupported evidence as an ordinary `REJECTED` outcome is never displayed; evidence payloads are not leaked or reclassified as SYNTHETIC. Optional evidence-panel degradation stays permitted only while required provenance is intact. Future tests must prove class gating before outcome presentation | **APPROVED — 2026-11-21** | Sections 13.4, 13.9 and 13.10; design 23.5 and 23.8 |
+| EI7-FC4 | **Contract conventions.** `EQUITY_NOT_CONFIGURED` is HTTP 503 with `retryable: false`. `contract_id` is at the top level of success and error envelopes. The identifier is exactly `northstar.equity-private-read/1`. `recording_position` is the observed authoritative ledger position N. `recording_watermark` is the requested or selected replay boundary W. Both are canonical exact decimal strings on the JSON wire; the no-JSON-numbers rule stands | **APPROVED — 2026-11-21** | Sections 13.2, 13.3 and 13.10; design 23.1 and 23.3 |
+| EI7-FC5 | **Source-document provenance.** The owner-approved CF contract package is not present in the six local repositories. This record cites the explicit owner decisions of 2026-11-20 and 2026-11-21, the source-feasibility audit, the merged EI-7B governance and the verified current source contracts. It does not claim that the package was opened, read or committed | **ACCEPTED — 2026-11-21** | Section 13.1 |
+| EI7-FC6 | **P4 Protocol authorization.** A reader-only Protocol may be introduced for research rehydration. Existing valid writer-capable stores stay compatible. A fake `issue()` is forbidden. `runtime_checkable` Protocol validation alone does not prove runtime behaviour. Future EI-7C tests cover compliant and non-compliant implementations, structural acceptance and preserved rehydration semantics. Exact rule: "The narrow P4 compatibility change is eligible for implementation within a separately owner-authorized EI-7C Application slice. It is not authorized by EI-7B Docs PR-1." | **APPROVED — 2026-11-21** | Sections 9, 13.8 and 13.11; design 18 (note) and 23.6 |
+
+**Source facts behind EI7-FC3** (verified read-only at the commits of section 3):
+
+- the timeline row binds `strategy` and `configuration_version` to its canonical `configuration_document`, and its identity document embeds the same configuration (Infrastructure `sqlite_equity_intraday_research_timeline_schema.py`, lines 69 to 81);
+- the stored configuration has **no fingerprint of its own**. "Fingerprint" verification therefore means the decision and entry fingerprints that EI3-D13 rehydration re-derives, together with the exact canonical-document comparison that `rehydrate_equity_intraday_research_timeline` already performs (it raises `EquityIntradayResearchTimelineConfigurationConflictError` on a mismatch);
+- for an issued recommendation, the applicable historical relationship is the research configuration version bound into `eirk1` and the configuration in the disposition's decoded inputs, which must equal the stored timeline's;
+- the existing evaluator turns a non-SYNTHETIC snapshot into a `REJECTED` decision with reason `EVIDENCE_NOT_SYNTHETIC` (Application `evaluate_equity_intraday_research.py`, line 649), so the evidence-class gate must run before any re-derived outcome is used or presented.
+
+**List and detail consistency** (verified 2026-11-21 against section 13.2 and design sections 11.3, 13 and 23.2): no EI-7 text promises an atomic lifecycle snapshot across the listed issuances. Discovery is authoritative for issuance identity and session recording facts at W. The full lifecycle belongs to the verified detail, whose issuance and lifecycle come from one read transaction. Optional per-item summaries are independent reads, not atomic with W or with one another, and each failure is an explicit item status.
