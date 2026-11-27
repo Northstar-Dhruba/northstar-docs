@@ -14,6 +14,8 @@
 
 > **Note, 2026-11-21 (EI-7B Docs PR-1).** The bullets above record the state on 2026-11-16 and are not rewritten. Since then the owner has approved **EI7-CF1, EI7-CF2 and EI7-CF4 on 2026-11-20**, and the refinements **EI7-P1 to EI7-P8**, the evidence-class decision **EI7-EC1** and the final confirmations **EI7-FC1 to EI7-FC6 on 2026-11-21**. The governing contracts are in [section 13](#13-approved-contracts-ei7-cf1-ei7-cf2-and-ei7-cf4-2026-11-20-and-2026-11-21), which prevails over the proposal text of section 8 and of the design wherever they differ. EI7-CF3, EI7-CF5, EI7-CF6 and EI7-CF7 stay **PROPOSED — PENDING OWNER APPROVAL**. **No EI-7 implementation is authorized**, and EI7-N01 to EI7-N24 stay **PLANNED — NOT TESTED**.
 
+> **Note, 2026-11-28 (EI-7E governance documentation PR).** The bullets and the note above are not rewritten. Since 2026-11-21: EI-7C and EI-7D were separately authorized by the owner on 2026-11-21 and merged (northstar-application #100, `16bb21a`, 2026-11-21; northstar-infrastructure #70, `caa2c46`, 2026-11-28). On **2026-11-28** the owner approved **EI7-CF3** (private access), **EI7-CF5** (Equity runtime and database), **EI7-SI1** (storage-engine integrity classification) and **EI7-SI2** (integrity-check coverage), recorded in [section 14](#14-approved-contracts-ei7-cf3-ei7-cf5-ei7-si1-and-ei7-si2-2026-11-28). These are contract approvals only. **SI-A, SI-B, EI-7E, EI-7F, EI-7G and EI-7H stay NOT AUTHORIZED**, as does any deployment change. EI7-CF6 and EI7-CF7 stay **PROPOSED — PENDING OWNER APPROVAL**. EI7-N01 to EI7-N24 stay **PLANNED — NOT TESTED**.
+
 **Source of the decisions.** The owner's EI-7B instruction of 2026-11-15, which reproduces the approved directions. The owner's working document, `Northstar_EI7B_Governance_Decision_Register_OWNER_APPROVED_2026-11-15.md`, was not available in this repository or on the engineering machine when this record was prepared. The decisions below are recorded from the instruction text; nothing is added to them.
 
 ## 1. Purpose and identifiers
@@ -29,6 +31,9 @@ This register is the authoritative record of the owner's EI-7 decisions. It chan
 | EI7-FC1 to EI7-FC6 | The owner's six final confirmations of 2026-11-21, labelled C1 to C6 in the owner's instruction ([section 13.12](#1312-final-owner-confirmations-ei7-fc1-to-ei7-fc6-2026-11-21)). Cited with the `EI7-FC` prefix so that they are not confused with the EI-6B carried-forward limitations C1 to C10 or the EI-5 conflicts C-1 and C-2 |
 | EI7-N01 to EI7-N24 | Planned acceptance scenarios (section 10; design section 16) |
 | EI-7C to EI-7H | Proposed engineering slices (design section 18) |
+| EI7-CF3-A to EI7-CF3-H; EI7-CF5-A to EI7-CF5-H | The parts of the approved EI7-CF3 and EI7-CF5 contracts, 2026-11-28 ([sections 14.2](#142-ei7-cf3-approved-private-access-contract) and [14.3](#143-ei7-cf5-approved-equity-runtime-and-database-contract)); labelled CF3-A to CF3-H and CF5-A to CF5-H in the owner's instruction |
+| EI7-SI1, EI7-SI2 | The owner's storage-integrity decisions of 2026-11-28, labelled SI-1 and SI-2 in the owner's instruction ([sections 14.4](#144-ei7-si1-approved-storage-engine-integrity-classification) and [14.5](#145-ei7-si2-approved-integrity-check-coverage)). Cited with the `EI7-` prefix, as EI7-P and EI7-FC are |
+| SI-A, SI-B | The two implementation slices of EI7-SI1: SI-A in northstar-application, SI-B in northstar-infrastructure ([section 14.6](#146-implementation-order-and-gates)). Each needs a separate owner authorization |
 
 | Status | Meaning |
 | --- | --- |
@@ -36,6 +41,8 @@ This register is the authoritative record of the owner's EI-7 decisions. It chan
 | **APPROVED — 2026-11-20** | An owner-approved technical contract (EI7-CF1, EI7-CF2, EI7-CF4) |
 | **APPROVED — 2026-11-21** | An owner-approved refinement or final confirmation of an approved contract (EI7-P1 to EI7-P8, EI7-EC1, EI7-FC1 to EI7-FC4, EI7-FC6) |
 | **ACCEPTED — 2026-11-21** | The owner's acceptance of a stated fact about this record's sources (EI7-FC5) |
+| **APPROVED — 2026-11-28** | An owner-approved technical contract (EI7-CF3, EI7-CF5, EI7-SI1, EI7-SI2) |
+| **TECHNICAL CLOSURE** | An implementation detail the 2026-11-28 approvals leave to the named slice, which must settle it within the approved contract without a new architectural choice ([section 14.7](#147-technical-closure-items)) |
 | **PENDING TECHNICAL DETAIL** | A detail the approvals explicitly left open, to be settled before the named slice ([section 13.10](#1310-pending-technical-details-and-outstanding-decisions)) |
 | **ACCEPTED** (earlier) | An earlier owner decision or accepted milestone, unchanged by EI-7 |
 | **PROPOSED — PENDING OWNER APPROVAL** | An engineering recommendation for a technical contract |
@@ -146,6 +153,8 @@ The EI-7A read-only reconnaissance (2026-11-15) read every repository at these c
 - **Options considered:** (a) reuse the Futures deployment boundary; (b) add an in-app token.
 - **Rationale:** (a) is the boundary already used, documented and pinned by a test for Futures (`test_india8e_indian_deployment.py:440`).
 - **Accepted tradeoff:** an API process run outside that boundary is unprotected; deployment must be refused unless the CF3 conditions hold.
+
+> **Note, 2026-11-28.** The CF3 conditions are approved: [section 14.2](#142-ei7-cf3-approved-private-access-contract). This direction is unchanged; no Caddy, bind or deployment change is authorized by that approval.
 
 ### 4.6 R-6: Verified recommendation details
 
@@ -277,6 +286,8 @@ EI-7 resolves none of these by presenting them. Each stays in force:
 
 > **Note, 2026-11-21.** The approved contracts add accepted limitations of their own; they are listed in [section 13.9](#139-accepted-limitations). Every limitation above stays in force.
 
+> **Note, 2026-11-28.** EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2 add the accepted limitations of [section 14.8](#148-accepted-limitations). Every limitation above and in section 13.9 stays in force.
+
 ## 8. Contract-finalization decisions (pending)
 
 R-1 to R-12 are approved at the architectural level. The contracts below are engineering recommendations for the owner's decision. **None is approved by this record.**
@@ -287,9 +298,9 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 | --- | --- | --- |
 | EI7-CF1 | Session discovery contract | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-20**; [section 13.2](#132-ei7-cf1-approved-session-discovery-contract) |
 | EI7-CF2 | API contract freeze | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-20**; [section 13.3](#133-ei7-cf2-approved-private-read-api-contract) |
-| EI7-CF3 | Private access enforcement | **PROPOSED — PENDING OWNER APPROVAL** |
+| EI7-CF3 | Private access enforcement | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-28**; [section 14.2](#142-ei7-cf3-approved-private-access-contract) |
 | EI7-CF4 | Integrity and lineage | **PROPOSED — PENDING OWNER APPROVAL** (as prepared). **APPROVED — 2026-11-20**; [section 13.4](#134-ei7-cf4-approved-integrity-lineage-and-research-status-contract) |
-| EI7-CF5 | Database and ADR clarification | **PROPOSED — PENDING OWNER APPROVAL** (the ADR-024 clarification itself is recorded; section 6.1) |
+| EI7-CF5 | Database and ADR clarification | **PROPOSED — PENDING OWNER APPROVAL** (the ADR-024 clarification itself is recorded; section 6.1) (as prepared). **APPROVED — 2026-11-28**; [section 14.3](#143-ei7-cf5-approved-equity-runtime-and-database-contract) |
 | EI7-CF6 | Web navigation and response presentation | **PROPOSED — PENDING OWNER APPROVAL** |
 | EI7-CF7 | Synthetic operator dependency | **PROPOSED — PENDING OWNER APPROVAL**; implementation **NOT AUTHORIZED** |
 
@@ -360,6 +371,8 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 - **Open questions:** same process or separate process; read-only file mount; whether the CME stack serves equity at all.
 - **Status:** **PROPOSED — PENDING OWNER APPROVAL.** No configuration change is authorized.
 
+> **Note, 2026-11-28.** **APPROVED — 2026-11-28**; the governing contract is [section 14.2](#142-ei7-cf3-approved-private-access-contract). Superseded or settled here: HEAD is permitted only where EI-7E explicitly supports it and verifies it as non-mutating, otherwise it is denied (EI7-CF3-D); the documentation routes must be disabled or unreachable at the application boundary, not only at Caddy (EI7-CF3-E); the route encoding of `StrategyIdentity` is canonical base64url of its UTF-8 text in one segment (EI7-CF3-F). "Never `0.0.0.0` by default outside a container" stands; how the loopback-only model applies to the container topology is a technical closure item of EI-7E (section 14.7). The open questions on a separate process, a read-only file mount and the CME stack are EI-7E closure items, bounded by EI7-CF3-B and the stop conditions of section 14.6. Still **NOT AUTHORIZED**: any configuration or deployment change.
+
 ### 8.4 EI7-CF4: integrity and lineage
 
 - **Approved direction:** R-6, R-12.
@@ -398,6 +411,8 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 - **Acceptance tests:** EI7-N17.
 - **Open questions:** the setting name; file location conventions; whether the API container mounts the file read-only.
 - **Status:** **PROPOSED — PENDING OWNER APPROVAL** for the remaining points.
+
+> **Note, 2026-11-28.** **APPROVED — 2026-11-28**; the governing contract is [section 14.3](#143-ei7-cf5-approved-equity-runtime-and-database-contract). Superseded or settled here: the proposed setting name is `NORTHSTAR_EQUITY_SQLITE_PATH`, replacing the example `NORTHSTAR_EQUITY_DATABASE` (EI7-CF5-B); an unconfigured runtime answers `EQUITY_NOT_CONFIGURED`, HTTP 503, not retryable (EI7-CF5-D; EI7-FC4); the initial operating model is the rollback journal, and WAL-mode files are refused (EI7-CF5-F). "Only the separately authorized operator path (EI7-CF7) writes the Equity file" stands. File location conventions and a read-only file mount are EI-7E closure items (section 14.7).
 
 ### 8.6 EI7-CF6: Web navigation and response presentation
 
@@ -471,6 +486,20 @@ R-1 to R-12 are approved at the architectural level. The contracts below are eng
 | Giving the recorded-session discovery port to EI-6C monitoring | — | **NOT AUTHORIZED** (EI6C-P7 unchanged) |
 | Synthetic operator CLI | northstar-api | **NOT AUTHORIZED** (EI7-CF7 pending; EI-7G row above) |
 
+> **Note, 2026-11-28.** Rows added by the EI-7E governance documentation PR. The rows above are not rewritten; where they say EI-7C or EI-7D is not authorized, the rows below record the later state.
+
+| Item | Repository | Status |
+| --- | --- | --- |
+| EI-7C Application read and query contracts | northstar-application | Authorized by the owner on **2026-11-21**; merged as #100 (`16bb21a`, 2026-11-21). No engineering acceptance record is in this repository; its tests are in the merged suite |
+| EI-7D Infrastructure read-only adapters | northstar-infrastructure | Authorized by the owner on **2026-11-21**; merged as #70 (`caa2c46`, 2026-11-28). No engineering acceptance record is in this repository; its tests are in the merged suite |
+| EI-7E governance documentation PR (this record of EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2) | northstar-docs | **AUTHORIZED, 2026-11-28** (documentation only); uncommitted for owner review |
+| SI-A Application storage-integrity compatibility | northstar-application | **NOT AUTHORIZED** |
+| SI-B Infrastructure storage-integrity compatibility | northstar-infrastructure | **NOT AUTHORIZED** |
+| EI-7E Private equity API | northstar-api | **NOT AUTHORIZED**; its contract dependencies EI7-CF3 and EI7-CF5 are approved; it also waits for SI-A and SI-B (section 14.6) |
+| EI-7F Equity Web experience | northstar-web | **NOT AUTHORIZED**; EI7-CF6 pending |
+| Caddy, bind, CORS, documentation-route, compose or other deployment change | northstar-api | **NOT AUTHORIZED** (approved contracts only) |
+| Automated, background, scheduled or startup integrity checking or repair | — | **NOT AUTHORIZED**; separate governance required (EI7-SI2) |
+
 ## 10. Acceptance scenario register
 
 The 24 scenarios EI7-N01 to EI7-N24, their expected behaviours, verification layers and owning slices are defined in [design section 16](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#16-acceptance-scenarios).
@@ -483,6 +512,8 @@ The 24 scenarios EI7-N01 to EI7-N24, their expected behaviours, verification lay
 | Evidence recorded | None |
 
 > **Note, 2026-11-21.** The scenarios were reconciled with the approved contracts in [design section 23.8](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#238-acceptance-reconciliation). No scenario was added or removed; the revised expected behaviours of EI7-N03, N04, N07, N10, N11, N14, N15 and N16 and the required coverage items are recorded there. All 24 stay **PLANNED — NOT TESTED**.
+
+> **Note, 2026-11-28.** The scenarios were reconciled again with EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2 in [design section 24.14](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2414-acceptance-reconciliation), which names the slice that must evidence each item (SI-A, SI-B, EI-7E, EI-7F or EI-7H). No scenario is added, removed or renumbered. The merged EI-7C and EI-7D suites contain layer-level tests, but no acceptance record of either slice exists here, so all 24 stay **PLANNED — NOT TESTED**.
 
 ## 11. Decision-change and supersession rules
 
@@ -526,6 +557,8 @@ This section records owner approvals given after sections 1 to 12 were written. 
 - **Sources** (as accepted by the owner under EI7-FC5): the owner's explicit EI-7B decisions of 2026-11-20 (the CF1, CF2 and CF4 final contract feasibility audit instruction) and of 2026-11-21 (the EI-7B Docs PR-1 instruction and its finalization instruction); the source-feasibility audit; the merged EI-7B governance (this register and the design as merged at `d9bc867`); and the current source contracts verified at the commits of section 3. The owner-approved CF contract package is not present in the six local repositories. It was not opened, read or committed in preparing this record, and nothing here is attributed to its text. Its absence does not revoke the owner's decisions, which are recorded from the instruction text.
 - **Engineering evidence.** The EI-7B CF1, CF2 and CF4 read-only feasibility audit (2026-11-20) read all six repositories at the code commits of section 3, with northstar-docs at `d9bc867`. It found the contracts implementable without a schema change, a new Core model, a new write authority or any weakening of EI-6A verification, given the additive read-only ports of section 13.8. It ran no tests; its findings rest on source inspection only. Two of its recommendations were not adopted: the identifier `northstar.equity-api/1` (EI7-P8) and a panel-level evidence-class refusal (EI7-EC1).
 - **Mechanics.** The read sequence, presentation derivation, wire examples, use-case inventory and acceptance reconciliation are in [design section 23](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#23-approved-contract-reconciliation-2026-11-21).
+
+> **Note, 2026-11-28.** The last row of the table above records the state on 2026-11-21. EI7-CF3 and EI7-CF5 were approved on 2026-11-28 ([section 14.1](#141-approval-record)); EI7-CF6 and EI7-CF7 stay pending.
 
 ### 13.2 EI7-CF1: approved session discovery contract
 
@@ -588,6 +621,8 @@ This section records owner approvals given after sections 1 to 12 were written. 
 
 - Further source-supported distinctions may be kept where needed, such as the panel statuses of section 13.6.
 - **Not errors:** a session with `declaration: NONE` (HTTP 200); a generation status of `NOT_QUERYABLE`, which is never an issuance failure; an UNKNOWN research timeline.
+
+> **Note, 2026-11-28.** Item 7 and the `EQUITY_NOT_CONFIGURED` row are settled at the contract level by [section 14](#14-approved-contracts-ei7-cf3-ei7-cf5-ei7-si1-and-ei7-si2-2026-11-28): the route encoding is canonical base64url of the identity's UTF-8 text, with no new restriction on identities (EI7-CF3-F); `EQUITY_NOT_CONFIGURED` is triggered by an absent Equity database setting (EI7-CF5-D). `PERSISTED_AUTHORITY_INVALID` also covers a permanent SQLite storage-integrity failure (`SQLITE_CORRUPT`, `SQLITE_NOTADB`) through the Application-owned contract of EI7-SI1; no code, status or retryability in the table changes, and no code is added. The five route families and the HEAD rule are refined by EI7-CF3-D: HEAD only where explicitly supported and verified as non-mutating.
 
 ### 13.4 EI7-CF4: approved integrity, lineage and research-status contract
 
@@ -705,6 +740,8 @@ The text below stays in place, marked by dated notes, and no longer governs.
 - **EI7-P4 authorization rule (EI7-FC6):** "The narrow P4 compatibility change is eligible for implementation within a separately owner-authorized EI-7C Application slice. It is not authorized by EI-7B Docs PR-1."
 - **EI-7D (still NOT AUTHORIZED)** supplies the read-only Infrastructure adapters: `mode=ro`; `PRAGMA query_only = ON`, confirmed; no DDL and no schema creation on any read; reuse of the existing verified decoders; typed unavailability and integrity failures; real-SQLite equivalence and restart tests. No write-capable reader adapter is introduced; the existing adapters stay the write authorities.
 
+> **Note, 2026-11-28.** "Still NOT AUTHORIZED" above records the state on 2026-11-21. EI-7C and EI-7D were authorized on 2026-11-21 and merged (section 9, rows of 2026-11-28). EI7-SI1 adds one Application-owned error contract to this scope, delivered by SI-A and applied to the EI-7D adapters by SI-B, each separately authorized ([section 14.4](#144-ei7-si1-approved-storage-engine-integrity-classification)).
+
 ### 13.9 Accepted limitations
 
 In addition to section 7, which stays in force:
@@ -721,6 +758,8 @@ In addition to section 7, which stays in force:
 - lifecycles have no watermark; `position` lets a client detect change;
 - a `mode=ro` reader cannot recover a hot rollback journal (EI-6C L8);
 - no time of recording and no monitoring time exist, so none is shown.
+
+> **Note, 2026-11-28.** Further limitations accepted with EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2 are in [section 14.8](#148-accepted-limitations).
 
 ### 13.10 Pending technical details and outstanding decisions
 
@@ -740,6 +779,8 @@ In addition to section 7, which stays in force:
 | EI7-CF7 synthetic operator workflow | **PROPOSED — PENDING OWNER APPROVAL**; operator CLI **NOT AUTHORIZED** | EI-7G; EI7-N22 |
 | EI4-C4 | **PENDING** | — |
 
+> **Note, 2026-11-28.** The table above is not rewritten. Three of its rows are settled at the contract level on 2026-11-28: the route encoding of `StrategyIdentity` (direction **APPROVED — 2026-11-28**, EI7-CF3-F; its padding, length and response-echo details are technical closure items); the trigger of `EQUITY_NOT_CONFIGURED` (**SETTLED — 2026-11-28**, EI7-CF5-D: the Equity database setting is absent); and EI7-CF3 and EI7-CF5 (**APPROVED — 2026-11-28**). The remaining implementation details are listed in [section 14.7](#147-technical-closure-items). The EI7-CF6, EI7-CF7, strategy-filter, policy-set lookup and EI4-C4 rows are unchanged.
+
 ### 13.11 Status
 
 | Item | Status |
@@ -756,6 +797,8 @@ In addition to section 7, which stays in force:
 | EI-6C follow-ups F1 to F10 | **NOT AUTHORIZED** |
 | EI4-C4 | **PENDING** |
 | Unchanged boundaries | Single host; synthetic-only evidence; MODELED-only issuance; no cross-connection atomicity; no durable monitoring-run provenance; no broker execution, orders or fills; no real or provider market-data activation; no scheduler; no deployment change; no EI-8 performance claim |
+
+> **Note, 2026-11-28.** The table above records the state on 2026-11-21. The current status is in [section 14.9](#149-status).
 
 ### 13.12 Final owner confirmations EI7-FC1 to EI7-FC6 (2026-11-21)
 
@@ -778,3 +821,181 @@ The owner confirmed six points on **2026-11-21**, labelled C1 to C6 in the instr
 - the existing evaluator turns a non-SYNTHETIC snapshot into a `REJECTED` decision with reason `EVIDENCE_NOT_SYNTHETIC` (Application `evaluate_equity_intraday_research.py`, line 649), so the evidence-class gate must run before any re-derived outcome is used or presented.
 
 **List and detail consistency** (verified 2026-11-21 against section 13.2 and design sections 11.3, 13 and 23.2): no EI-7 text promises an atomic lifecycle snapshot across the listed issuances. Discovery is authoritative for issuance identity and session recording facts at W. The full lifecycle belongs to the verified detail, whose issuance and lifecycle come from one read transaction. Optional per-item summaries are independent reads, not atomic with W or with one another, and each failure is an explicit item status.
+
+## 14. Approved contracts EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2 (2026-11-28)
+
+This section records owner approvals given after section 13 was written. Sections 1 to 13 are not rewritten; dated notes there point here. Where earlier proposal text in this register or in the [design](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md) differs from this section, **this section governs**. Nothing in section 13 is changed: R-1 to R-12, EI7-CF1, EI7-CF2, EI7-CF4, EI7-P1 to EI7-P8, EI7-EC1 and EI7-FC1 to EI7-FC6 stand as approved. The engineering mechanics are in [design section 24](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#24-approved-private-access-runtime-and-storage-integrity-design-2026-11-28). **These are contract approvals. Nothing here is implemented, and nothing here authorizes an implementation or a deployment change.**
+
+### 14.1 Approval record
+
+| Date | Decision | Status |
+| --- | --- | --- |
+| 2026-11-15 | R-1 to R-12 | **APPROVED — 2026-11-15**, unchanged |
+| 2026-11-20 | EI7-CF1, EI7-CF2, EI7-CF4 | **APPROVED — 2026-11-20**, unchanged |
+| 2026-11-21 | EI7-P1 to EI7-P8; EI7-EC1; EI7-FC1 to EI7-FC6 | **APPROVED — 2026-11-21** (EI7-FC5 **ACCEPTED — 2026-11-21**), unchanged |
+| 2026-11-28 | EI7-CF3, private access and deployment security | **APPROVED — 2026-11-28** |
+| 2026-11-28 | EI7-CF5, separate Equity database configuration and strictly read-only runtime | **APPROVED — 2026-11-28** |
+| 2026-11-28 | EI7-SI1, a dedicated permanent storage-integrity error contract | **APPROVED — 2026-11-28** |
+| 2026-11-28 | EI7-SI2, accepted integrity-check coverage without whole-file verification on ordinary GET requests | **APPROVED — 2026-11-28** |
+| — | EI7-CF6, EI7-CF7 | **PROPOSED — PENDING OWNER APPROVAL**, unchanged |
+
+- **Source.** The owner's EI-7E governance instruction of 2026-11-28, which states the four decisions. No separate owner working document was read; nothing is attributed to one. The decisions are recorded from the instruction text; the source facts cited below were verified read-only on 2026-11-28 at northstar-core `29bd34a`, northstar-application `16bb21a`, northstar-infrastructure `caa2c46`, northstar-api `7ad37f5`, northstar-web `5aeb94c` and northstar-docs `1e8138c`.
+- **Engineering evidence behind EI7-SI1 and EI7-SI2.** The EI-7D final pre-PR audit (2026-11-23), whose read-only adapters are merged at `caa2c46`, found that every SQLite engine failure, `SQLITE_CORRUPT` and `SQLITE_NOTADB` included, reaches EI-7C as the reader family's unavailability error and so as retryable `DEPENDENCY_UNAVAILABLE`; that the accepted issuance and lifecycle integrity errors accept only their record categories (ISSUANCE, DECLARATION, LEDGER; EVENT, HISTORY, WINDOW); that the EI-7C snapshot integrity error asserts that a stored snapshot exists; and that corruption on a page no query touches is not detected. The audit stopped short of an Application change. These are findings of that audit, not acceptance evidence.
+- **Not authorized:** SI-A, SI-B, EI-7E, EI-7F, EI-7G, EI-7H; any Caddy, bind, CORS, documentation-route, compose or other deployment change; broker or market-data integration; database creation, migration or file moves.
+
+### 14.2 EI7-CF3: approved private access contract
+
+**APPROVED — 2026-11-28.** Refines R-5; supersedes the proposal of [section 8.3](#83-ei7-cf3-private-access-enforcement) where they differ.
+
+- **Previously open.** The exact environment and route-enforcement contracts (section 8.3): bind, topology, allow-list, documentation routes, same or separate process, read-only file mount, and whether the CME stack serves Equity.
+- **Approved decision:**
+
+| Part | Decision |
+| --- | --- |
+| EI7-CF3-A Topology | Owner browser → SSH tunnel → Caddy private gateway → Northstar API on loopback → Application read queries → Infrastructure read-only SQLite adapters. The deployment must prevent any access that bypasses this gateway. Caddy basic authentication is the private authentication mechanism. No in-application bearer-token architecture is approved, and no general public or subscriber service is authorized |
+| EI7-CF3-B Network binding | A loopback-only private exposure model. The recommended backend listener is `127.0.0.1`. Existing Futures binding, port and composition are not silently changed, and are verified before EI-7E implementation. A shared listener or application composition that would expose Equity routes without the gateway fails the private-access acceptance requirements. External direct reachability of the backend is a deployment blocker |
+| EI7-CF3-C Authentication | Caddy basic authentication protects every private route. Credentials are never committed, logged or returned in a response body. Access uses the approved SSH-tunnel model; basic authentication over unprotected public HTTP is not acceptable |
+| EI7-CF3-D Default-deny routes | Only the five approved Equity GET route families of [section 13.3](#133-ei7-cf2-approved-private-read-api-contract) are exposed, with their approved query parameters, including the `watermark` semantics of section 13.2. No snapshot, separate lifecycle, generic browse or write route. HEAD is permitted only where explicitly supported and verified as non-mutating; otherwise it is denied. Every other method and path is denied by default, without a permissive wildcard that could expose future routes |
+| EI7-CF3-E API documentation | `/docs`, `/redoc` and `/openapi.json` are disabled or unreachable **at the application boundary**; hiding them at the gateway alone is insufficient. Their actual behaviour is verified in EI-7E |
+| EI7-CF3-F Strategy identity encoding | A valid `StrategyIdentity` may contain `/` and is not restricted further. The route segment is the canonical base64url encoding of the identity's UTF-8 text, one segment, with a canonical round trip and validation through the existing `StrategyIdentity` only; there is no second identity authority. Invalid encodings are request-validation failures |
+| EI7-CF3-G Same-origin access | The initial browser experience uses the authenticated same-origin gateway. No wildcard CORS. The browser never needs the backend's internal listener |
+| EI7-CF3-H Security verification | The negative tests of [design section 24.13](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2413-security-and-failure-tests) are required; they stay planned until executed in the implementing slice |
+
+- **Rationale.** Reuses the private boundary already deployed for the Indian Futures stack (Caddy basic authentication, host-loopback publication, SSH tunnel, exact-path GET allow-list; `deploy/india/Caddyfile`, `deploy/india/compose.yaml`), and makes "private by deployment" checkable at both the gateway and the application.
+- **Non-goals.** No in-app authentication, user accounts, tokens or roles; no public or multi-user service; no new route family; no write route; no change to Futures routes; no deployment change by this record.
+- **Known limitations.** Privacy is a deployment condition, not intrinsic authentication (R-5): an API process run outside the boundary is unprotected. Source facts verified on 2026-11-28 that EI-7E must resolve, not assume: the API entry point hard-codes `0.0.0.0:8000` (`northstar_api/__init__.py`), which in the Indian stack listens only inside a container with no published port, behind Caddy published on host loopback; the CME stack's Caddy publishes ports 80 and 443 and proxies every `/api/*` path (`deploy/Caddyfile`), so Equity routes added to the shared application would be reachable there without a default-deny allow-list; FastAPI's documentation routes are on today (`northstar_api/app.py`).
+- **Implementation dependency.** EI-7E, after SI-A and SI-B are merged (section 14.6); any deployment change needs its own authorization.
+- **Required acceptance evidence.** EI7-N18 and the EI7-CF3 items of [design section 24.14](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2414-acceptance-reconciliation), executed in EI-7E (application boundary) and evidenced against the deployed topology before exposure.
+
+### 14.3 EI7-CF5: approved Equity runtime and database contract
+
+**APPROVED — 2026-11-28.** Refines R-4 and R-7; supersedes the proposal of [section 8.5](#85-ei7-cf5-database-and-adr-clarification) where they differ.
+
+- **Previously open.** The setting name, file location conventions, a read-only file mount, startup isolation and the trigger of `EQUITY_NOT_CONFIGURED` (sections 8.5 and 13.10).
+- **Approved decision:**
+
+| Part | Decision |
+| --- | --- |
+| EI7-CF5-A Separate database authority | Equity uses an explicitly configured SQLite file distinct from the Futures file. No implicit fallback to the Futures database, no combined Equity and Futures schema or migration, no global database discovery |
+| EI7-CF5-B Explicit configuration | A dedicated Equity SQLite path setting. Proposed name `NORTHSTAR_EQUITY_SQLITE_PATH`. Verified 2026-11-28: no Equity setting exists; Futures-specific settings use the `NORTHSTAR_FUTURES_` prefix; the Futures file is `NORTHSTAR_DATABASE`, parsed as a path (`northstar_api/settings.py`); no variable of that name exists, so it conflicts with no setting. It replaces the example `NORTHSTAR_EQUITY_DATABASE` of section 8.5. EI-7E confirms the spelling as a technical closure item |
+| EI7-CF5-C Startup behaviour | Constructing the Equity read-only adapters opens no database, creates no file, initializes no schema, applies no migration, issues no recommendation, records no lifecycle event, triggers no monitoring, writes no evidence and attempts no journal recovery. An unconfigured Equity runtime never falls back to a writable database |
+| EI7-CF5-D Unconfigured runtime | Equity requests are refused with `EQUITY_NOT_CONFIGURED`, HTTP 503, `retryable: false` (EI7-FC4), never answered as an empty but healthy database. The top-level identifier stays `contract_id: "northstar.equity-private-read/1"` |
+| EI7-CF5-E Health | `GET /equity/health` is a narrowly scoped, non-mutating dependency probe. It distinguishes configured and safely readable; not configured; dependency unavailable; and integrity failure where detectable. A successful health response never claims that every page is valid, every recommendation verified, every lifecycle audited, the Equity universe complete, or broker or market data available. It is never a writer-driven schema initialization and carries no unrelated application metric. Body fields not already specified are part of the EI-7E wire-contract closure, within the approved error envelope |
+| EI7-CF5-F Journal mode | The initial verified operating model is SQLite's rollback journal. WAL-mode databases are refused by the EI-7D readers. Residual limitation: the WAL header check runs before SQLite opens the file, so a concurrent mode transition between the two is not eliminated by the check alone. Deployment validation and journal-mode operating controls are required before API exposure. No claim of unconditional filesystem non-mutation across unsupported modes. `immutable=1`, automatic recovery and any read-write fallback are not authorized |
+| EI7-CF5-G Hot journal | A hot rollback journal that needs recovery is a typed dependency unavailability. The read-only runtime never repairs or recovers it by a write; recovery stays outside the GET path, in an appropriately authorized existing write workflow |
+| EI7-CF5-H Futures compatibility | Existing Futures behaviour is retained. The Futures runtime initializes its own schema at startup (`build_database_runtime`, `northstar_api/runtime.py`), so the API **process** is not described as write-free; the newly exposed **Equity read stack** stays read-only |
+
+- **Rationale.** Makes R-7's separation enforceable at configuration time, keeps the R-4 read-only boundary true from construction to response, and records the EI-7D operating model (rollback journal; WAL refused; hot journal unavailable) as the governing one.
+- **Non-goals.** No Equity database creation, migration or file move; no WAL support; no recovery in a read path; no change to the Futures settings or to the Futures schema initialization.
+- **Known limitations.** The header-check-to-open race (EI7-CF5-F); a hot journal makes reads unavailable until a writer recovers it (EI-6C L8); readers delay writers' commits under the rollback journal; two files to back up, with no cross-file consistency.
+- **Implementation dependency.** EI-7E, after SI-A and SI-B; deployment journal-mode controls before exposure.
+- **Required acceptance evidence.** EI7-N12, N17 and N20 items of [design section 24.14](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2414-acceptance-reconciliation): unconfigured, missing-file, missing-table, hot-journal and WAL cases; no write at construction, startup or request; Futures regression unchanged.
+
+### 14.4 EI7-SI1: approved storage-engine integrity classification
+
+**APPROVED — 2026-11-28.** Closes the question exposed by the EI-7D audit (section 14.1).
+
+- **Previously open.** The merged EI-7D read-only adapters map SQLite engine-level corruption through the reader-family unavailability errors, so `SQLITE_CORRUPT` and `SQLITE_NOTADB` can reach EI-7C as retryable `DEPENDENCY_UNAVAILABLE`. The existing issuance and lifecycle integrity categories describe decoded-authority failures, not database-engine failures, and must not be overloaded.
+- **Approved decision.**
+  - A dedicated, **Application-owned**, typed permanent storage-integrity contract represents a permanent failure of the storage read boundary. Tentative name `EquityReadStorageIntegrityError`; the name and module are finalized in SI-A under existing naming conventions.
+  - It never requires pretending that a specific issuance, lifecycle or snapshot exists when SQLite cannot establish that fact.
+  - EI-7C maps it to the existing code `PERSISTED_AUTHORITY_INVALID`: HTTP 500, not retryable, a safe fixed public message, no raw SQLite text, no database path and no stored payload. HTTP serialization stays with EI-7E. **No new public error code is introduced.**
+  - Classification:
+
+| SQLite condition | Classification |
+| --- | --- |
+| `SQLITE_CORRUPT` | Permanent storage-integrity error |
+| `SQLITE_NOTADB` | Permanent unusable-storage error: the configured storage target is unusable without intervention. It may indicate a misconfigured path rather than literal corruption; the classification does not diagnose the cause |
+| `SQLITE_BUSY` | Dependency unavailable |
+| `SQLITE_LOCKED` | Dependency unavailable |
+| `SQLITE_CANTOPEN` | Dependency unavailable |
+| `SQLITE_READONLY_ROLLBACK` (hot journal) | Dependency unavailable |
+| Missing required tables | Dependency unavailable, under the approved initial contract |
+
+  - SI-B detects these by SQLite result codes, including extended codes, never by matching human-readable messages, and keeps the original exception safely for internal diagnosis.
+  - Implementation order: **SI-A** (Application compatibility: the typed contract and EI-7C handling, no Infrastructure change), then **SI-B** (Infrastructure compatibility: the EI-7D read-only adapters raise the contract, no Application change). Each needs a separate owner authorization.
+  - The existing EI-6A, EI-6B, EI-4D and older write-side adapters keep their behaviour unless separately authorized. No existing authority error enumeration is modified to fit the new error.
+- **Rationale.** Keeps permanent corruption from being presented as a retryable outage, without misusing record-level categories or asserting facts SQLite cannot establish, and reuses the approved public vocabulary.
+- **Non-goals.** No new public code; no change to the EI-6A or EI-6B error categories; no change to writer adapters; no repair; no full-file check (EI7-SI2).
+- **Known limitations.** `SQLITE_NOTADB` cannot distinguish a misconfigured path from damaged storage. Detection covers only what each operation reads (EI7-SI2). Until SI-A and SI-B are merged, the EI-7D behaviour recorded in section 14.1 stays in force and EI-7E is not ready (section 14.6).
+- **Implementation dependency.** SI-A, then SI-B, then EI-7E.
+- **Required acceptance evidence (planned, not verified by this record).** `SQLITE_CORRUPT`; `SQLITE_NOTADB`; busy and locked failures; a missing file and missing tables; propagation through the session, detail and research queries and the optional lifecycle summaries; no raw internal message leakage; correct retryable semantics; writer-side backward compatibility; the read-only adapters' non-mutation preserved ([design section 24.10](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2410-storage-engine-error-compatibility-contract)).
+
+### 14.5 EI7-SI2: approved integrity-check coverage
+
+**APPROVED — 2026-11-28.**
+
+- **Previously open.** Whether ordinary GET requests must prove the integrity of the whole database file.
+- **Approved decision.**
+  - The read-only adapters verify the authoritative data each operation accesses, under its existing accepted contract. They do not promise to detect corruption on pages no query accesses.
+  - The EI-7D whole-ledger issuance verification stays required and is not weakened (EI7-P6).
+  - No full `PRAGMA integrity_check` on every GET. No background integrity automation, automatic repair service, monitoring scheduler, periodic maintenance job or implicit startup repair. Any future offline or periodic integrity inspection needs separate governance.
+  - **Communication rule.** A successfully verified query result, a healthy read dependency and a database-wide integrity certification are different claims and are never conflated in health responses, logs or user-interface language.
+- **Rationale.** Per-request whole-file checks would make every GET cost proportional to the file and add no authority the verified decoders do not already provide for the data presented.
+- **Non-goals.** Integrity certification; scheduled checks; repair.
+- **Known limitations.** Corruption outside the pages a request reads stays undetected by that request, and a healthy probe says nothing about it.
+- **Implementation dependency.** None of its own; it constrains SI-B, EI-7E (health) and EI-7F (language).
+- **Required acceptance evidence.** The health and wording items of [design section 24.14](../architecture/Equity-Intraday-V1-EI7-Private-API-and-Web-Design-v1.0.md#2414-acceptance-reconciliation); the existing whole-ledger tests stay green.
+
+### 14.6 Implementation order and gates
+
+| Stage | Slice | Repository | Precondition | Status |
+| --- | --- | --- | --- | --- |
+| 1 | EI-7E governance documentation PR (this record) | northstar-docs | Owner review | **AUTHORIZED, 2026-11-28** (documentation only) |
+| 2 | SI-A Application compatibility: the typed permanent storage-integrity contract and EI-7C handling; no Infrastructure change | northstar-application | Stage 1 merged; separate owner authorization | **NOT AUTHORIZED** |
+| 3 | SI-B Infrastructure compatibility: the EI-7D read-only adapters classify SQLite engine failures with the SI-A contract; no Application change | northstar-infrastructure | SI-A merged; separate owner authorization | **NOT AUTHORIZED** |
+| 4 | EI-7E private API: the five GET families and the EI7-CF3 and EI7-CF5 runtime and security contracts | northstar-api | SI-A and SI-B merged and their compatibility verified; separate owner authorization | **NOT AUTHORIZED** |
+| 5 | EI-7F Web | northstar-web | EI7-CF6 approved; separate owner authorization | **NOT AUTHORIZED** |
+| 6 | EI-7G operator CLI; EI-7H end-to-end acceptance | northstar-api; all | Separate governance (EI7-CF7) and authorization | **NOT AUTHORIZED**; EI-7H **not accepted** |
+
+**EI-7E stop conditions.** EI-7E stops and reports, rather than deciding, if: a route or composition would expose Equity routes outside the approved gateway, including through the CME stack's `/api/*` proxy; the backend would be reachable directly from outside the host; documentation routes cannot be disabled at the application boundary without an unreviewed Futures-visible change; the health probe would need a write, a schema initialization, a route family beyond the five, or an Application port beyond SI-A; the Equity setting would fall back to the Futures file; `StrategyIdentity` encoding would need a restriction on valid identities; SI-A or SI-B is not merged; or any GET path would reach a writer.
+
+### 14.7 Technical closure items
+
+Implementation details the approvals leave to the named slice. Each is settled within the approved contract, stated in that slice's PR, and needs an owner decision only if it cannot be.
+
+| Item | Bound | Slice |
+| --- | --- | --- |
+| Final name and module of the storage-integrity error, and its relation to the reader-family errors, such that no unavailability handler can receive it first and present it as retryable | EI7-SI1 | SI-A |
+| Presentation of a storage-integrity failure met in an optional read (an evidence panel, a per-item lifecycle summary): whole-response `PERSISTED_AUTHORITY_INVALID` or the panel's or item's `invalid` status; never `unavailable`, never retryable, never silent | EI7-SI1; EI7-EC1; section 13.2 item 7 | SI-A |
+| Mapping of EI-7D's pre-open refusals that carry no SQLite code (an unreadable or unresolvable path; a WAL-mode file): today dependency unavailability, kept unless the owner decides otherwise | EI7-SI1; EI7-CF5-F | SI-B |
+| Exact spelling of the Equity setting (`NORTHSTAR_EQUITY_SQLITE_PATH` proposed); treatment of a set but empty value; file location conventions; whether the API container mounts the Equity file read-only | EI7-CF5-A to EI7-CF5-D | EI-7E |
+| Health probe: its location given that Equity route modules import no Infrastructure type (section 13.3 item 2), the exact read it performs, and its body fields | EI7-CF5-E; EI7-SI2 | EI-7E |
+| How the loopback-only model applies to the container topology, where the API listens on the compose network behind Caddy, and the default bind of the non-container entry point, without silently changing Futures behaviour | EI7-CF3-B; EI7-CF5-H | EI-7E |
+| Whether disabling the documentation routes applies to the whole process (a Futures-visible change, to be explicit and tested) or only to an Equity-only application | EI7-CF3-E | EI-7E |
+| Whether HEAD is supported on the five families, and its non-mutation proof | EI7-CF3-D | EI-7E |
+| Treatment of unknown query parameters on the five families | EI7-CF3-D | EI-7E |
+| Base64url padding (with or without `=`), maximum segment length, and whether responses echo the decoded identity, the encoded segment or both | EI7-CF3-F | EI-7E |
+| How the CME stack is kept from reaching Equity routes (a separately authorized deployment change, or a composition in which they are absent) | EI7-CF3-A; EI7-CF3-B | EI-7E |
+| Deployment journal-mode validation and operating controls | EI7-CF5-F | EI-7E deployment |
+
+### 14.8 Accepted limitations
+
+In addition to sections 7 and 13.9, which stay in force:
+
+- privacy depends on deployment: an API process outside the approved boundary is unprotected (R-5; EI7-CF3);
+- the WAL header check and the SQLite open are two steps; a concurrent mode transition between them is not eliminated by the check alone (EI7-CF5-F);
+- a hot rollback journal makes every Equity read unavailable until an authorized write workflow recovers it (EI7-CF5-G; EI-6C L8);
+- the API process as a whole may write the Futures file at startup; only the Equity read stack is read-only (EI7-CF5-H);
+- `SQLITE_NOTADB` is reported as unusable storage, whatever its cause (EI7-SI1);
+- corruption on pages that no request reads is not detected, and a healthy dependency probe is not an integrity certification (EI7-SI2);
+- until SI-A and SI-B are merged, SQLite engine corruption reaches EI-7C as retryable unavailability, as merged in EI-7D (section 14.1).
+
+### 14.9 Status
+
+| Item | Status |
+| --- | --- |
+| R-1 to R-12 | **APPROVED — 2026-11-15** |
+| EI7-CF1, EI7-CF2, EI7-CF4 | **APPROVED — 2026-11-20** |
+| EI7-P1 to EI7-P8; EI7-EC1; EI7-FC1 to EI7-FC6 | **APPROVED — 2026-11-21** (EI7-FC5 accepted) |
+| EI7-CF3, EI7-CF5, EI7-SI1, EI7-SI2 | **APPROVED — 2026-11-28** |
+| EI7-CF6, EI7-CF7 | **PROPOSED — PENDING OWNER APPROVAL** |
+| EI-7C | Authorized 2026-11-21; merged (#100, `16bb21a`); no acceptance record here |
+| EI-7D | Authorized 2026-11-21; merged (#70, `caa2c46`); no acceptance record here |
+| SI-A, SI-B, EI-7E, EI-7F, EI-7G, EI-7H | **NOT AUTHORIZED** |
+| EI7-N01 to EI7-N24 | **PLANNED — NOT TESTED** (24) |
+| Technical closure items | Section 14.7, each with its slice |
+| EI-6B E1 to E9; EI-6C L1 to L13 | In force |
+| EI-6C follow-ups F1 to F10 | **NOT AUTHORIZED** |
+| EI4-C4 | **PENDING** |
+| Unchanged boundaries | Single host; synthetic-only evidence; MODELED-only issuance; no cross-connection atomicity; no durable monitoring-run provenance; no broker execution, orders or fills; no real or provider market-data activation; no scheduler; no deployment change; no EI-8 performance claim |
