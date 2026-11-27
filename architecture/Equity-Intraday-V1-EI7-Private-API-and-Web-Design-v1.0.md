@@ -21,6 +21,8 @@
 
 > **Note, 2026-11-28 (EI-7E governance documentation PR).** The status and the note above are not rewritten. EI-7C and EI-7D were authorized on 2026-11-21 and are merged (northstar-application `16bb21a`; northstar-infrastructure `caa2c46`). The owner approved **EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2 on 2026-11-28** ([register section 14](../product/Equity-Intraday-V1-EI7-Decision-Register.md#14-approved-contracts-ei7-cf3-ei7-cf5-ei7-si1-and-ei7-si2-2026-11-28)); their design mechanics are in [section 24](#24-approved-private-access-runtime-and-storage-integrity-design-2026-11-28), which governs private access, the Equity runtime and database, health, journal mode and storage-engine error classification. Dated notes in sections 4, 7, 8, 10, 11, 12, 15, 16, 18, 19, 20, 21 and 23 point there. SI-A, SI-B and EI-7E to EI-7H stay **NOT AUTHORIZED**; EI7-CF6 and EI7-CF7 stay **PROPOSED — PENDING OWNER APPROVAL**; EI7-N01 to EI7-N24 stay **PLANNED — NOT TESTED**. Source facts for section 24 were verified on 2026-11-28 at northstar-core `29bd34a`, northstar-application `16bb21a`, northstar-infrastructure `caa2c46`, northstar-api `7ad37f5`, northstar-web `5aeb94c` and northstar-docs `1e8138c`.
 
+> **Note, 2026-11-28 (EI-7E technical-closure governance documentation).** The status and the notes above are not rewritten. SI-A and SI-B were since separately authorized and merged (northstar-application #101, `090bb54`; northstar-infrastructure #71, `f65e66a`). After the EI-7E read-only technical-closure audit, the owner approved the technical-closure decisions **EI7E-D01 to EI7E-D07B** (D-01 to D-07, with D-07A and D-07B) on **2026-11-28** ([register section 15](../product/Equity-Intraday-V1-EI7-Decision-Register.md#15-ei-7e-technical-closure-decisions-d-01-to-d-07-2026-11-28)). Their mechanics are in [section 25](#25-ei-7e-approved-technical-closure-architecture-2026-11-28): the dedicated Equity application, CME isolation, the India network direction, database isolation, the read-only health probe, the V1 session-list boundary, strategy encoding and unexpected-failure safety. Dated notes in sections 8, 11, 12, 16, 18, 19, 20, 21, 23 and 24 point there. The EI-7E slices P1, P2, E1, D1 and V1, and EI-7F to EI-7H, stay **NOT AUTHORIZED**; operational Equity exposure is prohibited until EI7E-D05 is satisfied; EI7-N01 to EI7-N24 stay **PLANNED — NOT TESTED**. The audit read northstar-core `29bd34a`, northstar-application `090bb54`, northstar-infrastructure `f65e66a`, northstar-api `7ad37f5`, northstar-web `5aeb94c` and northstar-docs `0d6fe0b`.
+
 Code was read at:
 
 | Repository | Branch | Commit |
@@ -191,6 +193,8 @@ No generation is replayed.
 
 > **Note, 2026-11-28.** Superseded in part by EI7-CF5 ([section 24.7](#247-equity-database-configuration-and-read-only-startup)): the proposed setting is `NORTHSTAR_EQUITY_SQLITE_PATH`, not `NORTHSTAR_EQUITY_DATABASE`; when it is absent Equity routes answer `EQUITY_NOT_CONFIGURED` (HTTP 503, not retryable), not `DEPENDENCY_UNAVAILABLE`. The Futures runtime still initializes its own schema at startup, so only the Equity read stack, not the whole API process, is described as read-only (EI7-CF5-H).
 
+> **Note, 2026-11-28 (technical closure).** EI7E-D01 places the Equity composition root in a **dedicated Equity application and process**, not alongside the Futures runtime in the existing application, and EI7E-D04 fixes its database isolation ([sections 25.1](#251-dedicated-equity-api-composition) and [25.4](#254-equity-database-isolation)). Because the Equity process never builds the Futures runtime, it inherits no Futures startup write. The existing `/health` and its Futures probe are unchanged.
+
 ## 9. Bounded discovery
 
 | View | Source | Shows | Proposed contract (EI7-CF1) |
@@ -275,6 +279,8 @@ Common to every view: owned by northstar-application; exact decimal strings for 
 
 As section 11.3, plus a per-item `covered_by_declaration`, and `recording_watermark` always present. Source: the bounded port of section 9. Label: completeness is certified only through the declaration, if any.
 
+> **Note, 2026-11-28 (technical closure).** In the V1 HTTP projections of sections 11.3 and 11.4, the per-item lifecycle summary is omitted, and no lifecycle read is made to build a session list (EI7E-D06; [section 25.6](#256-v1-session-list-presentation-boundary)). The lifecycle stays in the detail.
+
 ### 11.5 `EquityResearchTimelineView`
 
 | Attribute | Proposal |
@@ -305,6 +311,8 @@ As section 11.3, plus a per-item `covered_by_declaration`, and `recording_waterm
 
 > **Note, 2026-11-28.** Superseded by EI7-CF5-E and EI7-SI2 ([section 24.8](#248-health-semantics)): four distinguishable outcomes (readable, not configured, dependency unavailable, integrity failure where detectable); no database-wide claim. The field names above remain proposals for the EI-7E wire-contract closure.
 
+> **Note, 2026-11-28 (technical closure).** Settled by EI7E-D02. A readable probe answers HTTP 200 `{"contract_id": "northstar.equity-private-read/1", "status": "READABLE"}`, and the three failure outcomes use the error envelope. The probe is an Application-owned port with an Infrastructure adapter (P1, P2); its required tables are checked through the EI-7D read-only transaction ([section 25.5](#255-read-only-health-probe)).
+
 ## 12. Errors
 
 **Levels.** A failure of required authority fails the **whole response** closed. A failure of a supporting panel is reported **on the panel**. A field is `null` only when the contract says it is not applicable or not stored, never because a read failed.
@@ -327,6 +335,8 @@ Corruption is never converted into an empty success. Exact statuses and payloads
 > **Note, 2026-11-21.** The table above is superseded by the approved status mapping in [register section 13.3](../product/Equity-Intraday-V1-EI7-Decision-Register.md#133-ei7-cf2-approved-private-read-api-contract). `DISCOVERY_LIMIT_EXCEEDED` and `EVIDENCE_CLASS_UNSUPPORTED` are HTTP 409, not "422 (open)". A non-SYNTHETIC snapshot refuses the affected response and is never a panel (EI7-EC1). A watermark above 2^63−1 is 409 `WATERMARK_AHEAD` (EI7-P7). `EQUITY_NOT_CONFIGURED` (503) is added where applicable under EI7-CF5. `EVIDENCE_NOT_FOUND` is a panel status only while the snapshot endpoint is deferred. `NOT_QUERYABLE` is a research status, not an error. Every error body carries `contract_id`.
 
 > **Note, 2026-11-28.** `EQUITY_NOT_CONFIGURED` is triggered by an absent Equity database setting (EI7-CF5-D). A permanent storage-engine failure (`SQLITE_CORRUPT`, `SQLITE_NOTADB`) maps to `PERSISTED_AUTHORITY_INVALID`, HTTP 500, not retryable, through the Application-owned storage-integrity contract of EI7-SI1; busy, locked, cannot-open, hot-journal and missing-table conditions stay `DEPENDENCY_UNAVAILABLE` ([section 24.10](#2410-storage-engine-error-compatibility-contract)). No public error code is added.
+
+> **Note, 2026-11-28 (technical closure).** EI7E-D07B keeps the mapping above unchanged. It adds that an unexpected, unclassified failure answers HTTP 500 through a fixed, generic **non-contract fallback**. That fallback is not a member of the domain-error vocabulary and is never labelled `PERSISTED_AUTHORITY_INVALID` without evidence. Unknown paths and unsupported methods keep their framework 404 and 405 ([section 25.8](#258-unexpected-http-failure-safety)).
 
 ## 13. Read consistency
 
@@ -425,6 +435,8 @@ Layers: **AU** Application unit; **PC** port and contract; **IS** Infrastructure
 
 > **Note, 2026-11-28.** A second reconciliation, for EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2, with the slice responsible for each item, is in [section 24.14](#2414-acceptance-reconciliation). No scenario is added, removed or renumbered; all 24 stay **PLANNED — NOT TESTED**.
 
+> **Note, 2026-11-28 (technical closure).** A third reconciliation, for EI7E-D01 to EI7E-D07B, separating existing layer evidence from the evidence owed by P1 and P2, E1, D1 and V1, and EI-7F and EI-7H, is in [section 25.12](#2512-acceptance-and-negative-test-matrix). All 24 stay **PLANNED — NOT TESTED**.
+
 ## 17. Test strategy
 
 | Layer | Repository | Scope |
@@ -457,6 +469,8 @@ EI-7C and EI-7D are not independent: the bounded port and the reader-port contra
 > **Note, 2026-11-21.** The EI7-CF1, CF2 and CF4 dependencies of EI-7C are met (approved 2026-11-20); the slice itself is still **NOT AUTHORIZED**. EI-7C's "out of scope: new abstract methods on existing ports" stands: the three new ports are separate ([section 23.6](#236-ei-7c-use-cases-and-ports)). The one permitted exception to "no change to existing code" is the narrow EI7-P4 reader-only adjustment of the EI-3C research rehydration dependency (EI7-FC6): "The narrow P4 compatibility change is eligible for implementation within a separately owner-authorized EI-7C Application slice. It is not authorized by EI-7B Docs PR-1." EI-7D's deliverables no longer include a policy catalog reader (EI7-P3). EI-7E still needs EI7-CF3 and EI7-CF5; EI-7F still needs EI7-CF6; EI-7G still needs EI7-CF7 and separate governance. The revised sequence is in [section 23.9](#239-sequencing).
 
 > **Note, 2026-11-28.** EI-7C and EI-7D are authorized (2026-11-21) and merged. EI7-CF3 and EI7-CF5 are approved, and two slices, SI-A (Application) and SI-B (Infrastructure), now precede EI-7E. The governing sequence is [section 24.12](#2412-dependency-ordering-and-gates).
+
+> **Note, 2026-11-28 (technical closure).** SI-A and SI-B are merged. EI-7E is now delivered as G, P1, P2, E1, D1 and V1, each separately authorized ([section 25.11](#2511-implementation-sequence); [register section 15.9](../product/Equity-Intraday-V1-EI7-Decision-Register.md#159-dependency-and-authorization-gates)). The EI-7E outline below stays as written. Its deployment items are D1 and V1, and its "safe bind configuration" is EI7E-D03.
 
 **EI-7C — Application read and query contracts**
 
@@ -536,6 +550,8 @@ EI-7C and EI-7D are not independent: the bounded port and the reader-port contra
 
 > **Note, 2026-11-28.** EI7-CF3 and EI7-CF5 are no longer open (approved 2026-11-28). The implementation details they leave to SI-A, SI-B and EI-7E are the technical closure items of [register section 14.7](../product/Equity-Intraday-V1-EI7-Decision-Register.md#147-technical-closure-items) and [section 24.16](#2416-technical-closure-items). EI7-CF6 and EI7-CF7 stay open.
 
+> **Note, 2026-11-28 (technical closure).** Most EI-7E closure items are settled by EI7E-D01 to EI7E-D07B. The state of each is in [register section 14.7, note](../product/Equity-Intraday-V1-EI7-Decision-Register.md#147-technical-closure-items). Still open, for E1: unknown query parameters; the precedence between `EQUITY_NOT_CONFIGURED` and request validation; the non-container default bind. Still open, for D1 and V1: the Equity port, the file location and journal-mode controls.
+
 ## 20. Limitations
 
 EI-7 inherits, and does not resolve, the limitations listed in the [register, section 7](../product/Equity-Intraday-V1-EI7-Decision-Register.md#7-inherited-limitations). In addition:
@@ -550,11 +566,24 @@ EI-7 inherits, and does not resolve, the limitations listed in the [register, se
 
 > **Note, 2026-11-28.** The limitations accepted with EI7-CF3, EI7-CF5, EI7-SI1 and EI7-SI2 (deployment-dependent privacy, the WAL check-to-open race, hot-journal unavailability, a process-wide Futures startup write, `SQLITE_NOTADB` as unusable storage, no detection of unread corruption) are in [register section 14.8](../product/Equity-Intraday-V1-EI7-Decision-Register.md#148-accepted-limitations).
 
+> **Note, 2026-11-28 (technical closure).** Further limitations and deployment blockers are in [register section 15.10](../product/Equity-Intraday-V1-EI7-Decision-Register.md#1510-source-facts-residual-limitations-and-deployment-blockers) and [section 25.13](#2513-source-facts-residual-risks-and-limitations):
+> - READABLE health is not an integrity certification;
+> - strategy identities are transport-bounded;
+> - V1 lists carry no lifecycle state;
+> - no Equity database is provisioned;
+> - hot-journal recovery is unowned.
+
 ## 21. Non-authorizations
 
 This design authorizes nothing. In particular it does not authorize: any EI-7C to EI-7H implementation; the operator CLI or the synthetic listing-eligibility source; a scheduler; a Caddy, bind or deployment change; database creation, migration or file moves; real or provider data; ACTUAL issuance or new issuance functionality; broker integration, orders or fills; EI-8 metrics or restatement; the EI-6C follow-ups F1 to F10; changes to Core or to the EI-2B, EI-4D, EI-6A, EI-6B or EI-6C contracts. The existing EI-6A synthetic MODELED issuance authority is not revoked. EI4-C4 stays pending.
 
 > **Note, 2026-11-28.** The sentence above is not rewritten; EI-7C and EI-7D were later authorized separately (2026-11-21). Section 24 likewise authorizes nothing: not SI-A, SI-B or EI-7E to EI-7H, and not any Caddy, bind, CORS, documentation-route, compose or other deployment change, integrity-check automation or repair.
+
+> **Note, 2026-11-28 (technical closure).** Section 25 likewise authorizes nothing. It does not authorize:
+> - P1, P2 or E1;
+> - the D1 deployment change or the V1 verification;
+> - Equity database provisioning, population, copying, recovery or repair;
+> - any Equity writer.
 
 ## 22. Related documents
 
@@ -613,6 +642,8 @@ Both views are built in the Application from one result of section 23.1:
 - **Optional per-item lifecycle summary** (`state`, `is_terminal`, `outcome_class`, `position`). It comes from an independent `load_lifecycle` call per item, made after the session read. It is not pinned to W, not atomic with the session read or with the other items, and may reflect events recorded after W. No response field or label may present the summaries as one consistent lifecycle observation. Each summary carries its own status: a failure is that item's explicit `invalid` (`LIFECYCLE_HISTORY_INVALID`) or `unavailable` status, never an omitted, defaulted or successful-looking summary. An issuance-authority failure fails the response.
 - **Overflow (EI7-FC1).** Above 50 recorded issuances at W, both projections refuse with HTTP 409. The bound belongs to this EI-7 projection layer, not to the EI-6A authority, and the refusal is not a corruption verdict.
 
+> **Note, 2026-11-28 (technical closure).** The optional per-item lifecycle summary above is not used by the V1 HTTP session lists (EI7E-D06; [section 25.6](#256-v1-session-list-presentation-boundary)). The Application capability is unchanged.
+
 ### 23.3 Wire representation
 
 Illustrative only. Values in angle brackets are placeholders, not real identities.
@@ -657,6 +688,8 @@ Illustrative only. Values in angle brackets are placeholders, not real identitie
 - Integer strings match `^(0|[1-9][0-9]*)$`. The request `watermark` uses the same syntax: anything else is HTTP 422 `UNSUPPORTED_SCOPE`, and a valid value above 2^63−1 is HTTP 409 `WATERMARK_AHEAD`.
 - Booleans are JSON booleans. No value is a JSON number.
 - Clients treat identities and integer strings as opaque text and compare integers exactly, never through a binary float.
+
+> **Note, 2026-11-28 (technical closure).** The item-level `lifecycle` object in the first example above is not part of the V1 session-list responses (EI7E-D06). Every other field and both envelopes stand. Unexpected failures outside the vocabulary use the non-contract fallback of EI7E-D07B ([section 25.8](#258-unexpected-http-failure-safety)).
 
 ### 23.4 Verified detail and evidence panels
 
@@ -889,6 +922,8 @@ Equity SQLite file  (separate from the Futures file; rollback journal)
 | The Indian Caddy allows GET and HEAD on three exact Futures paths and answers every other `/api/*` path with 404 | `deploy/india/Caddyfile` | The precedent for EI7-CF3-D; Equity paths are added only by a separately authorized deployment change |
 | The CME stack's Caddy publishes ports 80 and 443 and reverse-proxies every `/api/*` path to the same API image | `deploy/Caddyfile`; `deploy/compose.yaml` | Equity routes added to the shared application would be reachable there without the SSH tunnel and without a default-deny allow-list. EI-7E must prevent this before any Equity route exists in a deployable image (section 24.15) |
 
+> **Note, 2026-11-28 (technical closure).** These facts were re-verified by the EI-7E technical-closure audit at northstar-api `7ad37f5`. EI7E-D01 keeps Equity routes out of the application that the CME stack serves ([section 25.2](#252-cme-isolation)). EI7E-D03 sets the India direction: the dedicated Equity process shares the India Caddy network namespace and binds `127.0.0.1`, subject to deployment verification ([section 25.3](#253-india-private-network-topology)). The Futures listener is unchanged. Nothing is deployed.
+
 ### 24.2 Authentication boundary
 
 - Caddy basic authentication protects every private route, with a hashed credential supplied through the deployment environment, as the Futures stacks do today (`NORTHSTAR_BASIC_AUTH_USER`, `NORTHSTAR_BASIC_AUTH_HASH`). No credential value appears in any repository, log or response body.
@@ -909,9 +944,13 @@ Equity SQLite file  (separate from the Futures file; rollback journal)
 - **HEAD.** Permitted only where EI-7E explicitly supports it and its tests prove it non-mutating and equivalent to the GET without a body; otherwise refused at both layers.
 - **Paths.** Alternate slashes, trailing slashes, dot segments and percent-encoded separators never reach a different handler, and no redirect names the internal listener or leaves the gateway path space. The exact trailing-slash behaviour is verified in EI-7E (section 24.13).
 
+> **Note, 2026-11-28 (technical closure).** GET only in V1. HEAD is not enabled without a separate, verified approval; FastAPI answers it with 405 on a GET route. The dedicated application disables trailing-slash redirects ([section 25.1](#251-dedicated-equity-api-composition)). The treatment of unknown query parameters stays an E1 closure item, with no new public code.
+
 ### 24.4 Documentation endpoints
 
 `/docs`, `/redoc` and `/openapi.json` are disabled or unreachable **at the application boundary**; a gateway rule alone is insufficient (EI7-CF3-E). Today FastAPI is constructed with its default documentation routes (`northstar_api/app.py`). The OpenAPI document may still be generated in-process by tests, for the allow-list comparison, without being served. Whether the routes are disabled for the whole process, which Futures would observe, or only for an Equity-only application is a technical closure item; either way the Futures effect must be explicit and tested.
+
+> **Note, 2026-11-28 (technical closure).** Settled by EI7E-D01. The documentation routes are disabled in the dedicated Equity application only. The existing Futures application and its documentation routes are unchanged.
 
 ### 24.5 Strategy identity encoding
 
@@ -931,6 +970,12 @@ Equity SQLite file  (separate from the Futures file; rollback journal)
 - Technical closure items: padding (with or without `=`), a maximum segment length, and whether responses echo the decoded identity, the canonical segment or both.
 - Web deep links for research (EI7-CF6, still pending) would carry the same canonical segment; that is for EI-7F under EI7-CF6.
 
+> **Note, 2026-11-28 (technical closure).** The closure items above are settled by EI7E-D07A ([section 25.7](#257-canonical-strategy-identity-encoding)):
+> - **unpadded** base64url, with `=` rejected;
+> - strict canonical re-encoding;
+> - no Application-defined maximum length, since only transport limits apply and they are verified, never truncating;
+> - responses carry the decoded canonical identity from the Application view, never the segment in its place.
+
 ### 24.6 Same-origin browser access
 
 - The browser reaches the API only through the authenticated same-origin gateway, as the Futures dashboard does through `/api/*` today.
@@ -948,6 +993,14 @@ Equity SQLite file  (separate from the Futures file; rollback journal)
 | Configured but absent file | The readers report dependency unavailability (no file is created; EI-7D `mode=ro`) |
 | Futures (EI7-CF5-H) | Futures settings and startup are unchanged. The Futures runtime initializes its own schema at startup (`build_database_runtime`, `northstar_api/runtime.py`), so the API process is not described as write-free; the Equity read stack is read-only, and Equity code never touches the Futures file |
 
+> **Note, 2026-11-28 (technical closure).** Settled by EI7E-D04 ([section 25.4](#254-equity-database-isolation)):
+> - the spelling `NORTHSTAR_EQUITY_SQLITE_PATH` is confirmed;
+> - an unset or whitespace-only value is not configured;
+> - relative paths are refused and Futures aliasing is prevented (E1 obligations);
+> - the Equity storage is dedicated and mounted read-only, with no Futures volume or setting in the Equity container.
+>
+> Under EI7E-D01, the Equity process is separate and does not build the Futures runtime.
+
 ### 24.8 Health semantics
 
 `GET /equity/health` is one narrowly scoped, non-mutating dependency probe through the same strictly read-only connection path as the readers (EI7-CF5-E).
@@ -963,6 +1016,13 @@ Equity SQLite file  (separate from the Futures file; rollback journal)
 - No writer-driven schema initialization; no unrelated application metric; no Futures dependency; no path or SQLite text in the body.
 - The probe's location, its exact read and its body fields are technical closure items of EI-7E. Equity route modules import no Infrastructure type (register section 13.3, item 2); if the probe would need an Application port beyond SI-A, EI-7E stops (section 24.15).
 
+> **Note, 2026-11-28 (technical closure).** Settled by EI7E-D02 ([section 25.5](#255-read-only-health-probe)):
+> - the probe is an Application-owned read-only port (P1), implemented by an Infrastructure SQLite adapter (P2) through the EI-7D read-only transaction, and consumed by the dedicated Equity runtime (E1);
+> - it checks `query_only` and the required tables, and scans no data;
+> - a readable probe answers 200 with `{"contract_id": "northstar.equity-private-read/1", "status": "READABLE"}`.
+>
+> The API runs no SQL for health.
+
 ### 24.9 Journal mode, WAL refusal and hot journal
 
 | Condition | Behaviour (as merged in EI-7D unless stated) | Classification |
@@ -974,6 +1034,11 @@ Equity SQLite file  (separate from the Futures file; rollback journal)
 
 - **Required before API exposure:** deployment validation of the journal mode of the configured file, and operating controls that keep it in the rollback journal. Their form is a technical closure item.
 - **Not authorized:** WAL support, `immutable=1`, automatic recovery, any read-write fallback, and any claim of unconditional filesystem non-mutation across unsupported modes.
+
+> **Note, 2026-11-28 (technical closure).** The rules above stand.
+> - EI7E-D04 requires a read-only mount of the dedicated Equity storage once deployed. It is expected to mitigate, not eliminate, the check-to-open race; V1 verifies that.
+> - EI7E-D05 prohibits operational exposure until database provisioning and **recovery**, including the owner of hot-journal recovery, are authorized and verified. No Equity recovery workflow is authorized today.
+> - Journal-mode validation and controls stay D1 and V1 obligations ([section 25.10](#2510-deployment-prerequisites)).
 
 ### 24.10 Storage-engine error compatibility contract
 
@@ -1086,6 +1151,8 @@ EI-7E stops and reports, rather than deciding, if:
 9. a new public error code or a change to the approved HTTP vocabulary would be needed;
 10. any deployment, Caddy, compose, bind or CORS change would be made without its own authorization.
 
+> **Note, 2026-11-28 (technical closure).** Condition 1 is met: SI-A and SI-B are merged. Condition 5's "an Application port beyond SI-A" no longer stops EI-7E for the EI7E-D02 probe port, which P1 and P2 deliver before E1. A probe needing anything beyond EI7E-D02 still stops it. Every other condition stands. The per-slice conditions are in [section 25.14](#2514-stop-conditions).
+
 ### 24.16 Technical closure items
 
 The same items as [register section 14.7](../product/Equity-Intraday-V1-EI7-Decision-Register.md#147-technical-closure-items), which governs. Each is settled within the approved contract and stated in its slice's PR:
@@ -1093,3 +1160,311 @@ The same items as [register section 14.7](../product/Equity-Intraday-V1-EI7-Deci
 - **SI-A:** the final name, module and type relations of the storage-integrity error; its presentation in optional reads (whole response or the panel's or item's `invalid` status; never `unavailable`).
 - **SI-B:** the classification of EI-7D's pre-open refusals that carry no SQLite code (unreadable or unresolvable path; WAL-mode file), kept as dependency unavailability unless the owner decides otherwise.
 - **EI-7E:** the setting's spelling and empty-value treatment; file location and a read-only mount; the health probe's location, read and body fields; the container application of the loopback model and the non-container default bind; process-wide or Equity-only documentation disabling; HEAD support; the treatment of unknown query parameters; base64url padding, maximum segment length and response echo; how the CME stack is kept from reaching Equity routes; deployment journal-mode validation and controls.
+
+> **Note, 2026-11-28 (technical closure).** The state of each item is in the note to [register section 14.7](../product/Equity-Intraday-V1-EI7-Decision-Register.md#147-technical-closure-items).
+> - **SI-A and SI-B items:** settled as merged.
+> - **Settled by EI7E-D01 to EI7E-D07B:** the setting and empty value, and the read-only mount (D04); health (D02); the container loopback model (D03); documentation routes (D01); HEAD (not supported in V1); base64url (D07A); CME (D01).
+> - **Still open:** unknown query parameters and the non-container default bind, both for E1; the Equity file location and journal-mode controls, for D1 and V1.
+
+## 25. EI-7E approved technical closure architecture (2026-11-28)
+
+Added by the EI-7E technical-closure governance documentation. Sections 1 to 24 are not rewritten; dated notes there point here. The decisions are recorded in [register section 15](../product/Equity-Intraday-V1-EI7-Decision-Register.md#15-ei-7e-technical-closure-decisions-d-01-to-d-07-2026-11-28), which governs; this section gives their interfaces, behaviour, dependencies and tests. Everything in register sections 13 and 14 and design sections 23 and 24 stands, in particular:
+
+- **Routes:** exactly the five GET families of section 24.3, with the `watermark` parameter on the two session routes only.
+- **Security:** default deny; GET only in V1; no wildcard CORS; no in-application bearer token; no basic authentication over unencrypted public connections.
+- **Wire format:** top-level `contract_id`; no JSON numbers; canonical decimal strings; canonical UTC instants; the distinction between N and W; SYNTHETIC evidence and MODELED issuance only; no fill, P&L or broker activity.
+- **Storage:** the EI-7D strictly read-only SQLite access; the SI-A and SI-B permanent error mapping; the rollback-journal-only model; WAL refusal; no repair on a GET; no full integrity scan per GET; no claim that unread corrupt pages are detected (EI7-SI2).
+- **Data states:** `NONE` (not declared), `NOT_QUERYABLE` and `UNKNOWN` stay data states, never HTTP errors.
+
+Module and type names below are proposals (register section 11). **Nothing here is implemented or authorized.**
+
+### 25.1 Dedicated Equity API composition
+
+EI7E-D01: one dedicated FastAPI application in its own process, beside, never inside, the existing Futures application.
+
+| Component (proposed) | Responsibility | Must not |
+| --- | --- | --- |
+| Equity application factory | Builds the dedicated FastAPI application: the five GET routes, the Equity error handlers, the Equity runtime | Register on, mount into or import the existing `northstar_api.app`; serve `/docs`, `/redoc` or `/openapi.json` |
+| Equity entry point | A separate console entry point that serves only the Equity application | Change the existing `northstar-api` entry point |
+| Equity settings | Read `NORTHSTAR_EQUITY_SQLITE_PATH` only (EI7E-D04) | Read or require any Futures setting; fall back to `NORTHSTAR_DATABASE` |
+| Equity runtime (composition root) | Construct the EI-7D read-only readers, the EI-7C query use cases and the P1 probe with its P2 adapter, opening nothing | Construct a writer, recorder, issuer, monitor, scheduler, write-capable store or the Futures `DatabaseRuntime` |
+| Equity routes and serializers | Decode the request, call one Application use case, map the immutable view to the wire | Import any Infrastructure type, `sqlite3` or SQL; catch any Infrastructure error (register section 13.3, item 2) |
+| Equity error handlers | Map Application refusals and runtime conditions to the approved envelope; the non-contract fallback (EI7E-D07B) | Serialize an exception, a cause, a traceback or request input |
+
+**Construction of the dedicated application** (E1 obligations, verified against FastAPI 0.141.1 by the audit's probe):
+
+- `docs_url`, `redoc_url` and `openapi_url` disabled: the documentation routes answer 404 at the application boundary. The OpenAPI document can still be generated in process by tests, for the allow-list comparison.
+- `redirect_slashes` disabled, so a trailing slash is a 404, never a redirect. By default FastAPI answers a trailing slash with a 307 whose location is built from the `Host` header; behind the gateway's prefix stripping, that location leaves the `/api` path space.
+- `debug` disabled.
+- GET routes only. FastAPI does not add HEAD to a GET route, so HEAD, OPTIONS and every other method answer 405 at the application; HEAD stays unsupported in V1.
+- No wildcard CORS. Same-origin access through the gateway needs none (EI7-CF3-G).
+- A request-validation handler that never echoes input; FastAPI's default handler echoes it.
+
+**Architecture tests (AR), E1:**
+- no Equity path in the existing `create_app().openapi()`;
+- no import from the Equity package of `northstar_api.app`, `northstar_api.routers` or `northstar_api.runtime`, each of which builds Futures objects at import or startup;
+- no `sqlite3` import and no Infrastructure import in the Equity route and serializer modules;
+- the EI4-D11 scan: no writer, recorder, issuer, monitor or write-capable store anywhere in the Equity composition.
+
+### 25.2 CME isolation
+
+| Layer | Mechanism | Evidence owed |
+| --- | --- | --- |
+| Application | The CME stack runs the existing `northstar-api` entry point, which serves only `northstar_api.app:app`; the Equity routes are absent from it by construction (EI7E-D01) | E1: AR test of `create_app().openapi()` and of imports |
+| Gateway | The CME Caddyfile is unchanged; its `/api/*` proxy reaches only the existing application | The existing pin `test_the_cme_deployment_is_unchanged` stays green |
+| Deployment | No CME compose, Caddy or command change | — |
+
+Running the Equity entry point in the CME stack would be a deployment change, not authorized by any record.
+
+### 25.3 India private network topology
+
+EI7E-D03, the approved direction, subject to deployment verification:
+
+```text
+Owner browser
+   │ SSH tunnel (ssh -N -L 8081:127.0.0.1:8081 …)
+   ▼
+host 127.0.0.1:8081 ──▶ india-web: Caddy :8080   (basic auth; anchored GET allow-list; default deny)
+                          │                     │
+                          │ project network     │ shared network namespace, loopback only
+                          ▼                     ▼
+                  india-api :8000         Equity API 127.0.0.1:<port>   (dedicated process)
+                  (Futures, unchanged)          │ EI-7D read-only readers; P2 probe
+                                                ▼
+                                         Equity SQLite file  (dedicated storage, read-only mount)
+```
+
+- The Equity process joins the India Caddy container's network namespace (the equivalent of `network_mode: "service:india-web"`) and binds `127.0.0.1:<port>`. Only processes in that namespace (Caddy) can connect. `india-operations` and `india-api` share the project network with `india-web`, but not its loopback interface.
+- `<port>` is chosen by D1 so that it does not conflict with Caddy's `:8080` or any other listener in the namespace, and it is verified in V1. This record fixes no port.
+- Futures is unchanged: `india-api` keeps `0.0.0.0:8000` on the project network, and Caddy keeps reaching it as `india-api:8000`.
+- Points D1 must design and V1 must verify:
+  - lifecycle coupling: a recreated `india-web` takes the shared namespace with it;
+  - the Equity process's startup ordering with respect to Caddy;
+  - the gateway's anchored GET templates and default deny (section 24.3), with segment classes no wider than the approved syntax:
+    - exchange: canonical `ExchangeCode` text;
+    - date: `YYYY-MM-DD`;
+    - issuance: `eiris1-sha256:` followed by 64 hexadecimal digits;
+    - strategy: the base64url alphabet;
+    - symbol: canonical `Symbol` text;
+  - Caddy's case, decoding and dot-segment handling on the deployed version (the web image uses the floating `caddy:2-alpine` tag);
+  - how the basic-authentication header is handled upstream, so that credentials never appear in API logs or responses;
+  - that the API does not rely on forwarded headers for any decision: uvicorn trusts `X-Forwarded-*` from `127.0.0.1` by default, which is Caddy's address in the shared namespace.
+- A container-local `0.0.0.0` listener for the Equity process does not satisfy EI7E-D03. If Compose or Docker Desktop cannot support the shared namespace, D1 stops; it does not fall back to another topology without an owner decision.
+
+### 25.4 Equity database isolation
+
+| Configuration state (EI7E-D04) | Behaviour |
+| --- | --- |
+| `NORTHSTAR_EQUITY_SQLITE_PATH` unset, empty or whitespace-only | Not configured: every Equity route, health included, answers 503 `EQUITY_NOT_CONFIGURED`, `retryable: false` |
+| A relative path | Refused, never resolved against the working directory. The mechanism is fixed in E1, with no new public code |
+| The same file as `NORTHSTAR_DATABASE`, when both are present (resolved path, or same file for existing files) | Refused, without opening or changing either file |
+| An absolute path to a missing file, a missing table, a lock, a hot journal or a WAL-mode file | 503 `DEPENDENCY_UNAVAILABLE`, retryable, at request time; nothing is created (EI-7D) |
+| A configured, readable file | Served by the EI-7D readers |
+
+- Construction opens nothing: the EI-7D readers hold only a path until a call.
+- Deployment (D1): dedicated Equity storage, mounted read-only in the Equity container. No Futures volume, no `NORTHSTAR_DATABASE` and no Futures secret is given to the Equity container. No writable fallback, schema creation, migration, monitoring, issuance or generation at startup.
+- E1 acceptance obligations: validate the configuration without opening a writable database; cover missing, empty, relative, equivalent-spelling, symbolic-link and aliasing cases.
+
+### 25.5 Read-only health probe
+
+EI7E-D02. The Application owns the probe contract (P1); Infrastructure implements it (P2); the dedicated runtime consumes it (E1).
+
+```text
+GET /equity/health
+  → Equity runtime: not configured?  → 503 EQUITY_NOT_CONFIGURED (not retryable)
+  → P1 Application probe (read-only port, typed outcome)
+      → P2 SQLite adapter, through the EI-7D read-only transaction:
+          WAL header check before open; open mode=ro; confirm query_only;
+          BEGIN; check that the required Equity tables exist; ROLLBACK; close
+  → READABLE              → 200 {"contract_id": "northstar.equity-private-read/1", "status": "READABLE"}
+  → dependency unavailable → 503 DEPENDENCY_UNAVAILABLE (retryable)
+  → storage integrity      → 500 PERSISTED_AUTHORITY_INVALID (not retryable)
+```
+
+**P1 requirements (Application, separately authorized):**
+
+- One read-only port, separate from the existing ports, with no write, repair, recovery or clock dependency.
+- Typed outcomes that keep the three distinctions: readable; dependency unavailable (retryable); permanent storage integrity (not retryable).
+- The permanent case reuses the SI-A contract `EquityReadStorageIntegrityError` and its existing mapping to `PERSISTED_AUTHORITY_INVALID`. Missing required tables are dependency unavailability, as in EI7-SI1.
+- The existing refusal vocabulary is used; no public code is added. `EQUITY_NOT_CONFIGURED` stays a runtime condition of the API, not a query refusal (EI-7C).
+- READABLE claims only that the dependency was read safely (EI7-SI2): never database-wide integrity, complete or verified history, market data, broker connectivity, execution, performance or operational readiness.
+- No outcome message carries SQLite text, a path or a stored payload.
+
+**P2 requirements (Infrastructure, separately authorized):**
+
+- Implement the P1 port with the EI-7D `read_only_transaction` machinery and its SI-B classification. One connection and one short read transaction; schema-catalog reads only; no data-row scan, no issuance enumeration, no ledger walk.
+- The required table set is the set of tables the EI-7D readers of the five families read. P2 states it in its PR.
+- **Never:** creation, initialization, migration, recovery, repair, checkpoint, journal-mode change, `immutable=1`, read-write fallback or `PRAGMA integrity_check`.
+- Real-SQLite tests on disposable files:
+  - readable;
+  - missing file, missing table, empty file;
+  - WAL-mode file; hot journal; held lock;
+  - a damaged schema page (`SQLITE_CORRUPT`) and a foreign file (`SQLITE_NOTADB`);
+  - file bytes and sidecar files unchanged.
+
+**E1 requirements:**
+- The four outcomes with exact bodies.
+- The health route imports no Infrastructure type, runs no SQL, and substitutes no snapshot or issuance lookup for the probe.
+- No metric, timestamp, path or SQLite text in any health response.
+
+### 25.6 V1 session-list presentation boundary
+
+EI7E-D06: the V1 declared and recorded session responses are built from one call of `ListEquityDeclaredSessionRecommendationsUseCase` or `ListEquityRecordedSessionIssuancesUseCase` and nothing else.
+
+| Kept | Omitted in V1 |
+| --- | --- |
+| `contract_id`, `exchange_code`, `trading_date`, `evidence_class`, `recording_position` (N), `recording_watermark` (W), the declaration state at W; per item the issuance identity, `recording_sequence`, modeled `issued_at`, `issuance_kind`, `actionable` and, in the recorded view, `covered_by_declaration`; each view's approved order; the limit of 50; the watermark rules | The per-item `lifecycle` object of the section 23.3 example, and any list-level lifecycle status |
+
+- `GetEquityLifecycleSummaryUseCase` is not called by a session route. It stays in the Application, unchanged.
+- E1 test: a session request makes no lifecycle read, so its outcome never depends on lifecycle availability.
+
+### 25.7 Canonical strategy identity encoding
+
+EI7E-D07A, within EI7-CF3-F. The ten decoding steps of register section 15.8 refine the five steps of section 24.5:
+
+| Input segment | Result |
+| --- | --- |
+| Canonical unpadded base64url of a valid identity's UTF-8 bytes | The decoded identity is used and returned as the Application view states it |
+| Any character outside `A`–`Z`, `a`–`z`, `0`–`9`, `_`, `-` (including `=`, `+`, `/`, `%`) | 422 `UNSUPPORTED_SCOPE` |
+| Non-canonical trailing bits, or a length that cannot be canonical | 422 |
+| Bytes that are not strict UTF-8 | 422 |
+| Text that `StrategyIdentity` rejects (empty) or canonicalizes differently (surrounding whitespace) | 422 |
+
+- Errors never echo the segment. Responses carry the decoded canonical identity, never the segment in its place.
+- `%2F` is decoded by uvicorn before routing and so splits the path; the base64url alphabet never needs percent-encoding.
+- **Transport limitation:** no Application maximum exists. The inspected stack is uvicorn 0.52.4 with h11 0.16.0; httptools is not in the lock. Its request-head limit (about 16 KiB by default) and the gateway's limits bound the addressable identity length. These are transport facts to verify in E1 and V1, not domain restrictions. An over-long request is refused by the transport, never truncated.
+- **E1 tests:**
+  - identities containing `/`; Unicode;
+  - identities whose encoding would contain `+`, `=` or `%` in other alphabets;
+  - empty segments; padded segments;
+  - invalid UTF-8; non-canonical trailing bits; surrounding and other non-canonical whitespace;
+  - `%2F`, `%252F` and other encoded separators;
+  - percent-encoding interactions;
+  - safe response echo.
+
+### 25.8 Unexpected HTTP failure safety
+
+EI7E-D07B. Three layers, kept distinct:
+
+| Layer | Trigger | Response |
+| --- | --- | --- |
+| Framework | Unknown path; unsupported method | The framework's 404 or 405, handled safely; never mapped to a domain code |
+| Contracted | `EquityReadQueryRefusedError` (EI-7C, SI-A); the not-configured runtime; request validation | The approved envelope with the section 13.3 status, `retryable` and a fixed API-owned message |
+| Non-contract fallback | Any other exception | HTTP 500 with a fixed generic response; not a member of the domain vocabulary; never `PERSISTED_AUTHORITY_INVALID` without evidence of a persisted-authority failure |
+
+- No response on any layer carries a traceback, SQL, SQLite driver text, file path, configuration value, credential, request input or chained cause.
+- `debug` is disabled. The fallback's exact representation is fixed in E1, and tested. No logging change is authorized by this record.
+
+### 25.9 Runtime and HTTP integration
+
+| Route | Request decoding (E1) | Application call | Notes |
+| --- | --- | --- | --- |
+| `/equity/health` | None | P1 probe | Section 25.5 |
+| `/equity/sessions/{exchange}/{date}/recommendations` | Exchange, date, optional `watermark` | `ListEquityDeclaredSessionRecommendationsUseCase.execute` | No lifecycle reads (section 25.6) |
+| `/equity/sessions/{exchange}/{date}/recorded-issuances` | Same | `ListEquityRecordedSessionIssuancesUseCase.execute` | Same |
+| `/equity/recommendations/{issuance_id}` | Issuance identity | `GetEquityRecommendationDetailUseCase.execute` | Full lifecycle; evidence panels |
+| `/equity/research/{strategy}/{exchange}/{symbol}/{date}` | Strategy codec (section 25.7), listing, date | `GetEquityResearchTimelineUseCase.execute` | Data states stay data |
+
+- **Watermark.** Canonical decimal syntax only (section 23.3). A syntactically valid value above 2^63−1 must reach the Application's `WATERMARK_AHEAD` refusal (EI7-P7) without an unbounded integer conversion.
+- **Errors.** One handler maps `EquityReadQueryRefusedError.reason` to the section 13.3 status and takes `retryable` from the refusal. The API never inspects SQLite errors; permanent storage failures reach it only as the Application's `PERSISTED_AUTHORITY_INVALID` (SI-A, SI-B).
+- **Still E1 closure items**, settled within the approved contracts and stated in the E1 PR:
+  - the treatment of unknown and repeated query parameters (FastAPI ignores unknown ones and keeps the last of a repeated one), without a new public code;
+  - the precedence between `EQUITY_NOT_CONFIGURED` and request validation;
+  - the default bind of the dedicated entry point outside a container (EI7-CF3-B; "never `0.0.0.0` by default outside a container" stands).
+
+### 25.10 Deployment prerequisites
+
+Before any operational exposure (D1 and V1, each separately authorized):
+
+1. EI7E-D05 satisfied: an Equity database exists, and its provisioning, source authority, recovery and acceptance evidence are authorized and verified. D1 provisions and populates nothing.
+2. The topology of section 25.3, and the ten checks of register section 15.4, verified on the deployment machine.
+3. The anchored GET allow-list and default deny at the India gateway. Their equality with the dedicated application's OpenAPI templates is tested.
+4. The read-only mount, and the absence of the Futures volume, settings and secrets in the Equity container.
+5. Journal-mode validation (rollback journal) and operating controls (EI7-CF5-F). A recovery owner for a hot journal under EI7E-D05.
+6. The India gateway's own deployment acceptance, which is not yet recorded (runbook section 2).
+7. CME and Futures unchanged and functional.
+
+### 25.11 Implementation sequence
+
+```text
+G (docs, this record) ─▶ P1 (application: probe port) ─▶ P2 (infrastructure: SQLite probe)
+                                                                  │
+                                       E1 (api: dedicated Equity app, code only) ◀┘
+                                                                  │
+                         D1 (api deploy/india: gateway, network, read-only mount) ◀┘  separate deployment authorization
+                                                                  │
+                         V1 (deployment-machine verification; EI7E-D05 prerequisites) ◀┘
+```
+
+Each step needs its own authorization ([register section 15.9](../product/Equity-Intraday-V1-EI7-Decision-Register.md#159-dependency-and-authorization-gates)). EI-7F, EI-7G and EI-7H stay separately governed.
+
+### 25.12 Acceptance and negative-test matrix
+
+**Third reconciliation (2026-11-28).** All 24 scenarios stay **PLANNED — NOT TESTED** for full EI-7 acceptance. "Existing layer evidence" means tests in the merged EI-7C, EI-7D, SI-A and SI-B suites; none has an acceptance record. No result is recorded here.
+
+| Scenario | Existing layer evidence | P1 / P2 owed | E1 owed (AS, AR, XP) | D1 / V1 owed | EI-7F / EI-7H owed |
+| --- | --- | --- | --- | --- | --- |
+| N01 `NO_SIGNAL` | EI-7C research view; EI-7D timeline reader | — | Stored outcome and reason serialized, never a candidate | — | F; H |
+| N02 `REJECTED` | Same | — | Distinct from N01; the evaluator's `EVIDENCE_NOT_SYNTHETIC` never presented | — | F; H |
+| N03 Generation status | EI-7C types and view rules | — | Only `PROPOSED` or `NOT_QUERYABLE` with its reason; never "issued" without an issuance | — | F |
+| N04 UNKNOWN versus `NOT_QUERYABLE` | EI-7C | — | Both as HTTP 200 data, never conflated | — | F |
+| N05 Unknown issuance | EI-7C detail | — | 404 `ISSUANCE_NOT_FOUND`; a malformed identity is 422 | — | F |
+| N06 `RECORDED`, no events | EI-7C; EI-7D | — | Empty events, `position` `"0"`, no last-check time | — | F |
+| N07 Recorded before declaration | EI-7C; EI-7D | — | `covered_by_declaration: false`; absent from the declared view; `declaration: NONE` with N and W as HTTP 200 | — | F |
+| N08 Modeled lifecycle | EI-7C | — | Modeled vocabulary; nothing executed or filled | — | F |
+| N09 `INCOMPLETE_EVIDENCE` | EI-7C; EI-7D | — | Terminal, `UNRESOLVED`, deficiencies, no exit price | — | F |
+| N10 Missing cited snapshot | EI-7C panels | — | Panel statuses serialized; required facts intact | — | F |
+| N11 Corrupt persisted authority | EI-7C lineage; SI-A (AU, PC); SI-B real damaged pages (IS) | Probe CORRUPT and NOTADB outcomes | 500, not retryable, fixed message, over disposable real SQLite for every route and health; a programming error never mapped to it (EI7E-D07B) | — | H |
+| N12 Dependency unavailable | SI-B: busy, cannot open, missing file and tables, hot journal, WAL (IS) | Probe unavailable outcomes | 503 `DEPENDENCY_UNAVAILABLE` retryable; 503 `EQUITY_NOT_CONFIGURED` not retryable on all five routes, including whitespace-only configuration | Deployed health with the deployed file | F (Retry only when retryable) |
+| N13 Unsupported scope | EI-7C validation | — | The section 25.7 codec matrix; exchange, date, symbol and identity validation; 422 without echo | — | — |
+| N14 Non-SYNTHETIC | EI-7C (EI7-EC1) | — | 409, no payload | — | F; H |
+| N15 Watermarks | EI-7C; EI-7D | — | Canonical syntax; 409 above N and above 2^63−1; 422 malformed; N and W as strings | — | — |
+| N16 Bounded discovery | EI-7C; EI-7D | — | 50 succeed, 51 refused with 409 in both views; both orders; no lifecycle read in lists (EI7E-D06) | — | — |
+| N17 No read-side writes | EI-7D; SI-B non-mutation suites | Probe non-mutation: bytes, sidecars, no DDL | Construction opens nothing; no fallback; health writes nothing; EI4-D11 scan; no Futures imports or Futures schema initialization in the Equity process | Read-only mount; no Futures volume | H |
+| N18 Private access | — | — | Five routes only; 404 or 405 elsewhere; HEAD 405; no documentation routes; no trailing-slash redirect; encoded paths; no CORS widening; no Equity path in `create_app().openapi()`; `debug` off | The ten checks of register section 15.4; allow-list equal to the OpenAPI templates; CME unchanged | H |
+| N19 Deep links | — | — | — | — | F (EI7-CF6) |
+| N20 Restart | EI-7D fresh-process reads | Fresh-process probe | Fresh API process from the Equity setting alone gives identical responses | Equity restart and lifecycle (section 15.4, check 9) | H |
+| N21 Read consistency | EI-7C; EI-7D | — | Detail issuance and lifecycle in one transaction; lists pinned to W | — | H |
+| N22 Synthetic operator | — | — | — | — | G, H (conditional; EI7-CF7) |
+| N23 Vocabulary and safe failures | — | — | No performance vocabulary; health carries no metric; the fallback is fixed and safe; no driver text, path or credential in any response | No credential in logs or responses | F |
+| N24 Typed distinctions | EI-7C types | READABLE never an integrity certification | A verified result, a healthy dependency and database-wide integrity never conflated; candidate, proposal, issuance, lifecycle and trade distinct | — | F |
+
+The section 24.13 negative tests stand. These are added:
+- the D07A codec matrix;
+- the D07B fallback;
+- the D06 no-lifecycle-read test;
+- the D01 OpenAPI and import tests;
+- the D04 configuration and aliasing tests;
+- the D02 four-outcome health tests;
+- the D03 topology checks.
+
+### 25.13 Source facts, residual risks and limitations
+
+The verified source facts are listed in [register section 15.10](../product/Equity-Intraday-V1-EI7-Decision-Register.md#1510-source-facts-residual-limitations-and-deployment-blockers). They describe source as inspected, not deployed behaviour.
+
+| Risk | Severity | State after EI7E-D01 to EI7E-D07B | Remaining gate |
+| --- | --- | --- | --- |
+| Equity reachable through the CME `/api/*` proxy | Critical | Resolved at the architecture-decision level (EI7E-D01); not implemented | E1 AR tests |
+| Gateway bypass by a container on the India project network | High | Direction approved (EI7E-D03) | D1, V1 |
+| The India gateway has no recorded deployment acceptance | High | Unchanged | V1 |
+| No provisioned Equity database; hot-journal recovery unowned | High | Exposure prohibited (EI7E-D05) | Later explicit authorization |
+| Health would need SQL in the API | High | Resolved at the governance level (EI7E-D02) | P1, P2, E1 |
+| Input echo, trailing-slash redirects, documentation routes | Medium | Required off in the dedicated application (section 25.1) | E1 |
+| Floating Caddy tag; gateway matcher, case and encoding semantics | Medium | Unverified | D1, V1 |
+| Credentials forwarded upstream by the gateway | Low | Unverified | D1, V1 |
+| WAL check-to-open race | Low | Accepted (EI7-CF5-F); the read-only mount is expected to mitigate it | V1 |
+| Transport-bounded strategy identities | Low | Accepted (EI7E-D07A) | E1, V1 verification |
+
+Accepted limitations are those of register sections 7, 13.9, 14.8 and 15.10.
+
+### 25.14 Stop conditions
+
+The stop conditions of section 24.15 stand. Condition 5 is changed only as register section 14.6 notes: the EI7E-D02 probe port, delivered by P1 and P2, is approved. Each slice also stops and reports, rather than deciding, if:
+
+| Slice | Stops if |
+| --- | --- |
+| P1 | The probe needs a write, a repair or recovery, a data scan, a new public code or a change to an existing port's contract |
+| P2 | The probe cannot be served by the EI-7D read-only transaction; it would need DDL, `integrity_check`, `immutable=1`, a read-write fallback or a scan of data rows; or it cannot keep the files unchanged |
+| E1 | An Equity path would appear in the existing application or its OpenAPI; any Futures module, CME file or deployment file would need a change; a session list would need lifecycle reads; the codec would need an identity restriction; a new public code would be needed; health would need anything beyond EI7E-D02 |
+| D1 | The shared-namespace topology cannot be supported; any other topology would need an owner decision. Also if CME would change, or a database would be provisioned or populated |
+| V1 | Any check of register section 15.4 or section 25.10 fails. Exposure is then refused |
